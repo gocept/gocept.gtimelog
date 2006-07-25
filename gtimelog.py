@@ -218,6 +218,7 @@ class TimeWindow(object):
                 entries = slack
             else:
                 entries = work
+            entry = ':'.join(entry.split(':')[:2])
             if entry in entries:
                 old_start, old_entry, old_duration = entries[entry]
                 start = min(start, old_start)
