@@ -1,6 +1,5 @@
 import pkg_resources
 pkg_resources.require('lxml')
-pkg_resources.require('ZopeTestbrowser')
 
 import urllib
 import urllib2
