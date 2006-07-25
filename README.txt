@@ -152,6 +152,29 @@ starting with a '#' are ignored.  Task names should consist of a group name
 be grouped.  If there is no colon on a line, the task will be grouped under
 "Other".
 
+Hourtracker
+-----------
+If you're using the hourtracker version from gocept, add a new section
+to your configuration file:
+
+    [hours]
+    url = http://www.myhourtracker.com/
+    username = foo
+    password = bar
+
+Specify the projects and tasks like the following example:
+
+    2006-07-25 09:37: operations: General activities: Morgen meeting
+    date       time   project     task                description
+
+Note: You don't have to provide the _full_ project name. In the example
+above the string 'operat' will probably match operations if nothing else
+starts with 'operat' in the project listing of the hour tracker system.
+
+Start your gtimelog in the console first. It'll print out usefull debug
+information.
+
+Use the File > Fill Hour Tracker menuitem to upload your hours.
 
 Author
 ------
@@ -166,6 +189,7 @@ Contributors
 Thom May
 Dafydd Harries
 Ignas Mikalajūnas
+
 
 
 Icon

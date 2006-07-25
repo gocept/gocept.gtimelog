@@ -29,3 +29,9 @@ hours = 8
 # When does one work end and another begin
 virtual_midnight = 02:00
 
+# only used if you're using an hourtracker system
+#
+# [hours]
+# url = http://www.myhourtracker.com/
+# username = foo
+# password = bar
