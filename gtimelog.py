@@ -1028,7 +1028,7 @@ class MainWindow(object):
             self.mail(window.weekly_report)
 
     def on_fill_hour_tracker_activate(self, widget):
-        """File -> Fill our tracker"""
+        """File -> Fill hour tracker"""
         day = self.choose_date()
         if day:
             import hours
