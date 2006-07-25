@@ -23,6 +23,7 @@ editor = gvim
 gtk-completion = False
 
 # How many hours' work in a day.
+# hours = 7.5
 hours = 8
 
 # When does one work end and another begin
