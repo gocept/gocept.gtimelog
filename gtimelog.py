@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2.4
 """
 A Gtk+ application for keeping track of time.
 """
@@ -719,6 +719,8 @@ class MainWindow(object):
                               self.on_calendar_day_selected_double_click)
         self.main_window = tree.get_widget("main_window")
         self.main_window.connect("delete_event", self.delete_event)
+        self.statusbar = tree.get_widget("statusbar")
+        self.statusbarmsgs = 0
         self.log_view = tree.get_widget("log_view")
         self.set_up_log_view_columns()
         self.task_pane_info_label = tree.get_widget("task_pane_info_label")
@@ -1038,9 +1040,16 @@ class MainWindow(object):
             week = int(window.min_timestamp.strftime('%W'))
             year = int(window.min_timestamp.strftime('%Y'))
             
-            tracker.loadWeek(week, year)
-            tracker.setHours(window.all_entries())
-            tracker.saveWeek()
+            try:
+                tracker.loadWeek(week, year)
+                tracker.setHours(window.all_entries())
+                tracker.saveWeek()
+            except (KeyError, ValueError), err:
+                msg = "An error during upload occured: %s" % err
+                self.statusbarmsgs += 1
+                contextid = self.statusbarmsgs
+                self.statusbar.push(contextid, msg)
+
 
     def on_edit_timelog_activate(self, widget):
         """File -> Edit timelog.txt"""
