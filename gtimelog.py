@@ -571,8 +571,8 @@ class Settings(object):
     hours = 8
     virtual_midnight = datetime.time(2, 0)
 
-    task_list_url = 'http://cosmos.infrae.com/uren/tasks'
-    project_list_url = 'http://cosmos.infrae.com/uren/projects'
+    task_list_url = ''
+    project_list_url = ''
     edit_task_list_cmd = ''
 
     hours_url = 'http://cosmos.infrae.com/uren/'
