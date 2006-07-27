@@ -1,4 +1,4 @@
-#!/usr/bin/python2.4
+#!/usr/bin/python
 """
 A Gtk+ application for keeping track of time.
 """
@@ -18,6 +18,7 @@ import gtk
 import gtk.glade
 import pango
 
+import hours
 
 resource_dir = os.path.dirname(os.path.realpath(__file__))
 ui_file = os.path.join(resource_dir, "gtimelog.glade")
@@ -218,7 +219,6 @@ class TimeWindow(object):
                 entries = slack
             else:
                 entries = work
-            entry = ':'.join(entry.split(':')[:2])
             if entry in entries:
                 old_start, old_entry, old_duration = entries[entry]
                 start = min(start, old_start)
@@ -489,11 +489,15 @@ class RemoteTaskList(TaskList):
     Keeps a cached copy of the list in a local file, so you can use it offline.
     """
 
-    def __init__(self, url, cache_filename):
-        self.url = url
-        TaskList.__init__(self, cache_filename)
+    def __init__(self, settings, projects_filename, tasks_filename):
+        self.project_url = settings.project_list_url
+        self.task_url = settings.task_list_url
+        self.projects_file = projects_filename
+        TaskList.__init__(self, tasks_filename)
         self.first_time = True
 
+        self.hours = hours.HourTracker(settings)
+        
     def check_reload(self):
         """Check whether the task list needs to be reloaded.
 
@@ -504,7 +508,8 @@ class RemoteTaskList(TaskList):
         """
         if self.first_time:
             self.first_time = False
-            if not os.path.exists(self.filename):
+            if not os.path.exists(self.filename) or not os.path.exists(
+                self.projects_file):
                 self.download()
                 return True
         return TaskList.check_reload(self)
@@ -514,7 +519,13 @@ class RemoteTaskList(TaskList):
         if self.loading_callback:
             self.loading_callback()
         try:
-            urllib.urlretrieve(self.url, self.filename)
+            f = file(self.filename, 'w')
+            f.write(self.hours.getPage(self.task_url))
+            f.close()
+
+            f = file(self.projects_file, 'w')
+            f.write(self.hours.getPage(self.project_url))
+            f.close()
         except IOError:
             if self.error_callback:
                 self.error_callback()
@@ -522,6 +533,24 @@ class RemoteTaskList(TaskList):
         if self.loaded_callback:
             self.loaded_callback()
 
+    def load(self):
+        """Load task list from a file named self.filename."""
+        groups = {}
+        self.last_mtime = self.get_mtime()
+        try:
+            for project in file(self.projects_file):
+                project = project.strip()
+                if not project or project.startswith('#'):
+                    continue
+                for task in  file(self.filename):
+                    if not task or task.startswith('#'):
+                        continue
+                    groups.setdefault(project, []).append(' '.join(task.split()[1:]))
+        except IOError:
+            pass # the file's not there, so what?
+        self.groups = groups.items()
+        self.groups.sort()
+            
     def reload(self):
         """Reload the task list."""
         self.download()
@@ -542,12 +571,13 @@ class Settings(object):
     hours = 8
     virtual_midnight = datetime.time(2, 0)
 
-    task_list_url = ''
+    task_list_url = 'http://cosmos.infrae.com/uren/tasks'
+    project_list_url = 'http://cosmos.infrae.com/uren/projects'
     edit_task_list_cmd = ''
 
-    hours_url = 'http://hours.gocept.com/'
-    hours_username = 'myuser'
-    hours_password = 'mypassword'
+    hours_url = 'http://cosmos.infrae.com/uren/'
+    hours_username = ''
+    hours_password = ''
 
     def _config(self):
         config = ConfigParser.RawConfigParser()
@@ -568,6 +598,8 @@ class Settings(object):
         config.set('hours', 'url', self.hours_url)
         config.set('hours', 'username', self.hours_username)
         config.set('hours', 'password', self.hours_password)
+        config.set('hours', 'tasks', self.task_list_url)
+        config.set('hours', 'projects', self.project_list_url)
         return config
 
     def load(self, filename):
@@ -588,6 +620,8 @@ class Settings(object):
         self.hours_url = config.get('hours', 'url')
         self.hours_username = config.get('hours', 'username')
         self.hours_password = config.get('hours', 'password')
+        self.task_list_url = config.get('hours', 'tasks')
+        self.project_list_url = config.get('hours', 'projects')
         
 
     def save(self, filename):
@@ -687,6 +721,7 @@ class TrayIcon(object):
             tip += "\nTime left at work: %s" % format_duration(time_left)
         return tip
 
+
 class MainWindow(object):
     """Main application window."""
 
@@ -718,9 +753,6 @@ class MainWindow(object):
                               self.on_calendar_day_selected_double_click)
         self.main_window = tree.get_widget("main_window")
         self.main_window.connect("delete_event", self.delete_event)
-        self.statusbar = tree.get_widget("statusbar")
-        self.statusbarmsgids = []
-        gobject.timeout_add(5000, self.purge_statusbar)
         self.log_view = tree.get_widget("log_view")
         self.set_up_log_view_columns()
         self.task_pane_info_label = tree.get_widget("task_pane_info_label")
@@ -801,11 +833,6 @@ class MainWindow(object):
         self.add_footer()
         self.scroll_to_end()
         self.lock = False
-    
-    def purge_statusbar(self):
-        """Purges all messages in the statusbar"""
-        for msgid in self.statusbarmsgids:
-            self.statusbar.pop(msgid)
 
     def delete_footer(self):
         buffer = self.log_buffer
@@ -1035,30 +1062,18 @@ class MainWindow(object):
             self.mail(window.weekly_report)
 
     def on_fill_hour_tracker_activate(self, widget):
-        """File -> Fill hour tracker"""
+        """File -> Fill our tracker"""
         day = self.choose_date()
         if day:
-            import hours
             tracker = hours.HourTracker(self.settings)
 
             window = self.weekly_window(day=day)
             week = int(window.min_timestamp.strftime('%W'))
             year = int(window.min_timestamp.strftime('%Y'))
             
-            try:
-                tracker.loadWeek(week, year)
-                tracker.setHours(window.all_entries())
-                tracker.saveWeek()
-                msg = "Upload to Hourtracker successfull"
-                contextid = len(self.statusbarmsgids)
-                msgid = self.statusbar.push(contextid, msg)
-                self.statusbarmsgids.append(msgid)
-            except (KeyError, ValueError), err:
-                msg = "An error during upload occured: %s" % err
-                contextid = len(self.statusbarmsgids)
-                msgid = self.statusbar.push(contextid, msg)
-                self.statusbarmsgids.append(msgid)
-
+            tracker.loadWeek(week, year)
+            tracker.setHours(window.all_entries())
+            tracker.saveWeek()
 
     def on_edit_timelog_activate(self, widget):
         """File -> Edit timelog.txt"""
@@ -1233,8 +1248,10 @@ def main():
     timelog = TimeLog(os.path.join(configdir, 'timelog.txt'),
                       settings.virtual_midnight)
     if settings.task_list_url:
-        tasks = RemoteTaskList(settings.task_list_url,
-                               os.path.join(configdir, 'remote-tasks.txt'))
+        tasks = RemoteTaskList(
+            settings,
+            os.path.join(configdir, 'projects'),
+            os.path.join(configdir, 'tasks'))
     else:
         tasks = TaskList(os.path.join(configdir, 'tasks.txt'))
     main_window = MainWindow(timelog, settings, tasks)
@@ -1246,3 +1263,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

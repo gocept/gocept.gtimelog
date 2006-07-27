@@ -39,11 +39,11 @@ class Memoize(object):
             key = (args, tuple(kw))
             try:
                 v = self.cache[key]
-                #print "cache"
+                print "cache"
                 if (time.time() - v[1]) > self.timeout:
                     raise KeyError
             except KeyError:
-                #print "new"
+                print "new"
                 v = self.cache[key] = f(*args,**kwargs),time.time()
             return v[0]
 
@@ -65,12 +65,15 @@ class HourTracker(object):
         opener = urllib2.build_opener(auth_handler)
         urllib2.install_opener(opener)
 
-
-    def loadWeek(self, week, year):
+    def downloadWeek(self, week, year):
         view_url = '%s?view_name=%s&view_week=%d&view_year=%d&view=1' % (
             self.settings.hours_url, self.settings.hours_username,
             week, year)
-        data = self._get_page(view_url)
+        data = self.getPage(view_url)
+        return data
+
+    def loadWeek(self, week, year):
+        data = self.downloadWeek(week, ywar)
         tree = etree.HTML(data)
 
         self.tree = tree
@@ -80,8 +83,8 @@ class HourTracker(object):
         self.loadProjects()
         self.loadTasks()
 
-    @Memoize(300)
-    def _get_page(self, url):
+    @Memoize(3000)
+    def getPage(self, url):
         response = urllib2.urlopen(url)
         data = response.read()
         return data
