@@ -687,7 +687,6 @@ class TrayIcon(object):
             tip += "\nTime left at work: %s" % format_duration(time_left)
         return tip
 
-
 class MainWindow(object):
     """Main application window."""
 
@@ -720,7 +719,8 @@ class MainWindow(object):
         self.main_window = tree.get_widget("main_window")
         self.main_window.connect("delete_event", self.delete_event)
         self.statusbar = tree.get_widget("statusbar")
-        self.statusbarmsgs = 0
+        self.statusbarmsgids = []
+        gobject.timeout_add(5000, self.purge_statusbar)
         self.log_view = tree.get_widget("log_view")
         self.set_up_log_view_columns()
         self.task_pane_info_label = tree.get_widget("task_pane_info_label")
@@ -801,6 +801,11 @@ class MainWindow(object):
         self.add_footer()
         self.scroll_to_end()
         self.lock = False
+    
+    def purge_statusbar(self):
+        """Purges all messages in the statusbar"""
+        for msgid in self.statusbarmsgids:
+            self.statusbar.pop(msgid)
 
     def delete_footer(self):
         buffer = self.log_buffer
@@ -1044,11 +1049,15 @@ class MainWindow(object):
                 tracker.loadWeek(week, year)
                 tracker.setHours(window.all_entries())
                 tracker.saveWeek()
+                msg = "Upload to Hourtracker successfull"
+                contextid = len(self.statusbarmsgids)
+                msgid = self.statusbar.push(contextid, msg)
+                self.statusbarmsgids.append(msgid)
             except (KeyError, ValueError), err:
                 msg = "An error during upload occured: %s" % err
-                self.statusbarmsgs += 1
-                contextid = self.statusbarmsgs
-                self.statusbar.push(contextid, msg)
+                contextid = len(self.statusbarmsgids)
+                msgid = self.statusbar.push(contextid, msg)
+                self.statusbarmsgids.append(msgid)
 
 
     def on_edit_timelog_activate(self, widget):
