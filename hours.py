@@ -177,7 +177,8 @@ class HourTracker(object):
                     comments.extend(day_comments)
                     
 
-                data['opm%d' % row] = '; '.join(set(comments))
+                data['opm%d' % row] = unicode('; '.join(set(comments)),
+                                              'utf-8').encode('latin1')
         print '%d rows' % row
         return data
 
