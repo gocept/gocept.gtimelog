@@ -73,7 +73,7 @@ class HourTracker(object):
         return data
 
     def loadWeek(self, week, year):
-        data = self.downloadWeek(week, ywar)
+        data = self.downloadWeek(week, year)
         tree = etree.HTML(data)
 
         self.tree = tree
