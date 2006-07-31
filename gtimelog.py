@@ -721,6 +721,18 @@ class TrayIcon(object):
             tip += "\nTime left at work: %s" % format_duration(time_left)
         return tip
 
+class TimelogStatusbar(object):
+    """The Gtimelog Statusbar"""
+
+    def __init__(self, tree):
+        self.statusbar = tree.get_widget("statusbar")
+        self.statusbarmsgids = []
+
+    def post_message(self, msg):
+        """Writes a msg to the statusbar"""
+        contextid = len(self.statusbarmsgids)
+        msgid = self.statusbar.push(contextid, msg)
+        self.statusbarmsgids.append(msgid)
 
 class MainWindow(object):
     """Main application window."""
@@ -751,6 +763,7 @@ class MainWindow(object):
         self.calendar = tree.get_widget("calendar")
         self.calendar.connect("day_selected_double_click",
                               self.on_calendar_day_selected_double_click)
+        self.statusbar = TimelogStatusbar(tree)
         self.main_window = tree.get_widget("main_window")
         self.main_window.connect("delete_event", self.delete_event)
         self.log_view = tree.get_widget("log_view")
@@ -1070,10 +1083,17 @@ class MainWindow(object):
             window = self.weekly_window(day=day)
             week = int(window.min_timestamp.strftime('%W'))
             year = int(window.min_timestamp.strftime('%Y'))
+
+            try:
+                tracker.loadWeek(week, year)
+                tracker.setHours(window.all_entries())
+                tracker.saveWeek()
+                msg = "Upload to Hourtracker successfull"
+                self.statusbar.post_message(msg)
+            except (KeyError, ValueError), err:
+                msg = "An error during upload occured: %s" % err
+                self.statusbar.post_message(msg)
             
-            tracker.loadWeek(week, year)
-            tracker.setHours(window.all_entries())
-            tracker.saveWeek()
 
     def on_edit_timelog_activate(self, widget):
         """File -> Edit timelog.txt"""
