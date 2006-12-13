@@ -957,7 +957,12 @@ class MainWindow(object):
         self.history_undo = ''
         if not self.have_completion:
             return
+
         seen = sets.Set()
+        # Populate with existing choices
+        for choice in self.completion_choices:
+            seen.add(choice[0])
+
         for entry in self.history:
             if entry not in seen:
                 seen.add(entry)
