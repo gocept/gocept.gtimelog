@@ -126,6 +126,7 @@ class HourTracker(object):
                 continue
             if entry.endswith('**'):
                 continue
+            print "%s -> %s" % (start, stop),
             project, task, desc = self.mapEntry(entry)
             print '[%s] [%s] %s %s' % (project, task, duration, desc)
             
@@ -197,7 +198,7 @@ class HourTracker(object):
 
         actual_task = self.tasks.get(task)
         if not actual_task:
-            raise KeyError("Task %r not found" % task)
+            raise KeyError("Task %r not found in %r" % (task, entry))
 
         return project, actual_task, desc
 
