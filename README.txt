@@ -167,9 +167,10 @@ Specify the projects and tasks like the following example:
     2006-07-25 09:37: operations: General activities: Morgen meeting
     date       time   project     task                description
 
-Note: You don't have to provide the _full_ project name. In the example
-above the string 'operat' will probably match operations if nothing else
-starts with 'operat' in the project listing of the hour tracker system.
+Note: You don't have to provide the _full_ project and task name. In
+the example above the string 'operat' will probably match operations
+if nothing else starts with 'operat' in the project listing of the
+hour tracker system.
 
 Start your gtimelog in the console first. It'll print out usefull debug
 information.
@@ -189,7 +190,7 @@ Contributors
 Thom May
 Dafydd Harries
 Ignas Mikalajūnas
-
+Michael Howitz
 
 
 Icon

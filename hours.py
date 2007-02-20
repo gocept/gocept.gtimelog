@@ -111,13 +111,11 @@ class HourTracker(object):
             self.projects_transformed[self._transform_project(project)] = \
                     project
 
-
     def loadTasks(self):
         tree = self.tree
         self.tasks = tasks = {}
         for task in tree.xpath('//select[@name="t1"]/option'):
             tasks[task.text.lower().strip()] = task.get('value')
-
             
     def setHours(self, hour_tuples):
         self.hours = {}
@@ -137,7 +135,6 @@ class HourTracker(object):
                     setdefault(weekday, []). \
                     append((duration, desc))
 
-
     def saveWeek(self):
         data = self._get_empty_form()
         data.update(self._aggregate_hour_data())
@@ -156,7 +153,6 @@ class HourTracker(object):
         for name in self.tree.xpath('(//select|//input)/@name'):
             form[name] = ''
         return form
-
 
     def _aggregate_hour_data(self):
         row = 0
@@ -183,7 +179,6 @@ class HourTracker(object):
         print '%d rows' % row
         return data
 
-
     def mapEntry(self, entry):
         parts = entry.split(':')
 
@@ -195,13 +190,9 @@ class HourTracker(object):
         desc = ':'.join(parts[2:]).strip()
 
         project = self.findProject(project)
-
-        actual_task = self.tasks.get(task)
-        if not actual_task:
-            raise KeyError("Task %r not found in %r" % (task, entry))
+        actual_task = self.findTask(task)
 
         return project, actual_task, desc
-
 
     def findProject(self, project):
         trans_p = self._transform_project(project)
@@ -226,13 +217,25 @@ class HourTracker(object):
             raise KeyError("Couldn't match project %r" % project)
 
         return match
+
+    def findTask(self, task):
+        "Match an (abreviated) task name."
+        match = self.tasks.get(task)
+        if match is None:
+            candidates = [t for t in self.tasks if t.startswith(task)]
+            if len(candidates) > 1:
+                raise ValueError("Ambigous task %r, found %r" % (
+                        task, candidates))
+            if candidates:
+                match = self.tasks.get(candidates[0])
+        if match is None:
+            raise KeyError("Could not match task %r" % task)
+        return match
     
     @classmethod
     def _transform_project(cls, project):
         project = project.split('-')[0]
         return project.strip().lower().replace('_', ' ')
-
-
 
 
 if __name__ == '__main__':
