@@ -24,15 +24,23 @@ There's also a Tasks pane that lists tasks found in ~/.gtimelog/tasks.txt.
 You can click on those to save typing.  Or you can specify a URL in
 ~/.gtimelog/gtimelogrc and download the task list from a wiki or wherever.
 
-There are two broad categories of activities: ones that count as work (coding,
-planning, writing proposals or reports, answering work-related email), and ones
+There are three broad categories of activities: ones that count as work (coding,
+planning, writing proposals or reports, answering work-related email), ones
 that don't (browsing the web for fun, reading personal email, chatting with
-a friend on the phone for two hours, going out for a lunch break).  To indicate
-which activities are not work related add two asterisks to the activity name:
+a friend on the phone for two hours, going out for a lunch break) and ones 
+which count as "half-work" (This are activities where only half of the time 
+spent for is counted as work. Depending on your employer, time spend in train 
+or plane when you do not work as described above, may count as "half-work".)
+
+To indicate which activities are not work related add two asterisks to the 
+activity name. To indicate that an activity is "half-work" add '/2' at the end
+of the activity name. 
+Look at the following examples:
 
   lunch **
   browsing slashdot **
   napping on the couch **
+  in train to Frankfurt/2
 
 GTimeLog displays all the things you've done today, and calculates the total
 time you spent working, and the total time you spent "slacking".  It also

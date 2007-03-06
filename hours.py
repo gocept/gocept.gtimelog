@@ -126,6 +126,10 @@ class HourTracker(object):
                 continue
             print "%s -> %s" % (start, stop),
             project, task, desc = self.mapEntry(entry)
+            if desc.endswith('/2'):
+                # if task ends with /2 divide the duration by two
+                duration /= 2
+                desc = desc[:-2]
             print '[%s] [%s] %s %s' % (project, task, duration, desc)
             
             weekday = self.days[start.weekday()]
