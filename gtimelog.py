@@ -207,6 +207,7 @@ class TimeWindow(object):
 
         Returns two list: work entries and slacking entries.  Slacking
         entries are identified by finding two asterisks in the title.
+        The duration of entries ending with '/2' is divided by two.
         Entry lists are sorted, and contain (start, entry, duration) tuples.
         """
         work = {}
@@ -219,6 +220,10 @@ class TimeWindow(object):
                 entries = slack
             else:
                 entries = work
+            if entry.endswith('/2'):
+                # if entry endswith /2 count only half of the duration
+                duration /= 2
+            # strip task description away
             entry = ':'.join(entry.split(':')[:2])
             if entry in entries:
                 old_start, old_entry, old_duration = entries[entry]
@@ -238,6 +243,8 @@ class TimeWindow(object):
 
         Slacking entries are identified by finding two asterisks in the title.
 
+        The duration of entries ending with '/2' is divided by two.
+
         Assuming that
 
             total_work, total_slacking = self.totals()
@@ -253,6 +260,9 @@ class TimeWindow(object):
         """
         total_work = total_slacking = datetime.timedelta(0)
         for start, stop, duration, entry in self.all_entries():
+            if entry.endswith('/2'):
+                # if entry endswith /2 count only half of the duration
+                duration /= 2
             if '**' in entry:
                 total_slacking += duration
             else:
