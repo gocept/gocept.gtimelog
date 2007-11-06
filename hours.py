@@ -147,10 +147,13 @@ class HourTracker(object):
         data['year'] = self.year
         data['week'] = self.week
         data['curr_week'] = self.week
-    
+
         request = urllib2.Request(self.settings.hours_url,
                                   urllib.urlencode(data))
         result = urllib2.urlopen(request)
+        # read the contents of result, otherwise python2.5 will not do the
+        # request
+        result.readlines()
     
     def _get_empty_form(self):
         form = {}
