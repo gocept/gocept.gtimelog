@@ -9,6 +9,8 @@ import sets
 import urllib
 import datetime
 import tempfile
+import sys
+import getopt
 import ConfigParser
 
 import pygtk
@@ -1268,8 +1270,10 @@ class MainWindow(object):
         return True
 
 
-def main():
+def main(argv=None):
     """Run the program."""
+    if argv is None:
+        argv = sys.argv
     configdir = os.path.expanduser('~/.gtimelog')
     try:
         os.makedirs(configdir) # create it if it doesn't exist
@@ -1291,6 +1295,9 @@ def main():
     else:
         tasks = TaskList(os.path.join(configdir, 'tasks.txt'))
     main_window = MainWindow(timelog, settings, tasks)
+    # start gtimelog hidden to tray
+    if "--start-hidden" in argv:
+        main_window.on_hide_activate("")
     tray_icon = TrayIcon(main_window)
     try:
         gtk.main()
