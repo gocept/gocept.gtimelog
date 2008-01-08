@@ -68,6 +68,31 @@ def parse_time(t):
     return datetime.time(hour, min)
 
 
+def strftime_emulate_percent_V(timestamp):
+    """M$ Windows does not know %V as strftime option, so we have to emulate it.
+
+    Manual of strftime:
+     %V    is replaced by the week number of the year (Monday as the first day
+           of the week) as a decimal number (01-53).  If the week containing
+           January 1 has four or more days in the new year, then it is week 1;
+           otherwise it is the last week of the previous year, and the next
+           week is week 1.
+
+     %W    is replaced by the week number of the year (Monday as the first day
+           of the week) as a decimal number (00-53).
+
+    """
+    # the week of January 1 has four or more days in the new year,
+    # when January 1 is Mon, Tue, Wen or Thu. In this case we have to
+    # add 1 to the value returned by %W
+    jan_1 = parse_datetime("%s-01-01 00:00" % timestamp.year)
+    if jan_1.isoweekday <= 4:
+        # monday till thursday
+        delta = 1
+    else:
+        delta = 0
+    return str(int(timestamp.strftime('%W') + delta))
+
 def virtual_day(dt, virtual_midnight):
     """Return the "virtual day" of a timestamp.
 
@@ -303,7 +328,7 @@ class TimeWindow(object):
         # would give us translated names
         weekday_names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         weekday = weekday_names[self.min_timestamp.weekday()]
-        week = self.min_timestamp.strftime('%V')
+        week = strftime_emulate_percent_V(self.min_timestamp)
         print >> output, "To: %(email)s" % {'email': email}
         print >> output, ("Subject: %(date)s report for %(who)s"
                           " (%(weekday)s, week %(week)s)"
@@ -343,7 +368,7 @@ class TimeWindow(object):
 
         Writes a weekly report template in RFC-822 format to output.
         """
-        week = self.min_timestamp.strftime('%V')
+        week = strftime_emulate_percent_V(self.min_timestamp)
         print >> output, "To: %(email)s" % {'email': email}
         print >> output, "Subject: Weekly report for %s (week %s)" % (who,
                                                                       week)
@@ -1099,7 +1124,7 @@ class MainWindow(object):
             tracker = hours.HourTracker(self.settings)
 
             window = self.weekly_window(day=day)
-            week = int(window.min_timestamp.strftime('%V'))
+            week = int(strftime_emulate_percent_V(window.min_timestamp))
             year = int(window.min_timestamp.strftime('%Y'))
 
             try:
@@ -1303,6 +1328,7 @@ def main(argv=None):
         gtk.main()
     except KeyboardInterrupt:
         pass
+    
 
 if __name__ == '__main__':
     main()
