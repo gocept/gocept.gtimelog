@@ -1099,7 +1099,7 @@ class MainWindow(object):
             tracker = hours.HourTracker(self.settings)
 
             window = self.weekly_window(day=day)
-            week = int(window.min_timestamp.strftime('%W'))
+            week = int(window.min_timestamp.strftime('%V'))
             year = int(window.min_timestamp.strftime('%Y'))
 
             try:
