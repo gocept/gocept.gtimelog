@@ -86,7 +86,7 @@ def strftime_emulate_percent_V(timestamp):
     # when January 1 is Mon, Tue, Wen or Thu. In this case we have to
     # add 1 to the value returned by %W
     jan_1 = parse_datetime("%s-01-01 00:00" % timestamp.year)
-    if jan_1.isoweekday <= 4:
+    if jan_1.isoweekday() <= 4:
         # monday till thursday
         delta = 1
     else:
