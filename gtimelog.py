@@ -91,7 +91,7 @@ def strftime_emulate_percent_V(timestamp):
         delta = 1
     else:
         delta = 0
-    return str(int(timestamp.strftime('%W') + delta))
+    return str(int(timestamp.strftime('%W')) + delta)
 
 def virtual_day(dt, virtual_midnight):
     """Return the "virtual day" of a timestamp.
