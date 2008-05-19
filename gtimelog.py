@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python
 """
 A Gtk+ application for keeping track of time.
 """
@@ -27,21 +27,23 @@ ui_file = os.path.join(resource_dir, "gtimelog.glade")
 icon_file = os.path.join(resource_dir, "gtimelog-small.png")
 
 
+def calc_duration(duration):
+    """Calculates duration and returns tuple (h, m)"""
+    return divmod((duration.days * 24 * 60 + duration.seconds // 60), 60)
+
 def format_duration(duration):
     """Format a datetime.timedelta with minute precision."""
-    h, m = divmod((duration.days * 24 * 60 + duration.seconds // 60), 60)
-    return '%d h %d min' % (h, m)
+    return '%d h %d min' % calc_duration(duration)
 
 
 def format_duration_short(duration):
     """Format a datetime.timedelta with minute precision."""
-    h, m = divmod((duration.days * 24 * 60 + duration.seconds // 60), 60)
-    return '%d:%02d' % (h, m)
+    return '%d:%02d' % calc_duration(duration)
 
 
 def format_duration_long(duration):
     """Format a datetime.timedelta with minute precision, long format."""
-    h, m = divmod((duration.days * 24 * 60 + duration.seconds // 60), 60)
+    h, m = calc_duration(duration)
     if h and m:
         return '%d hour%s %d min' % (h, h != 1 and "s" or "", m)
     elif h:
@@ -142,11 +144,12 @@ class TimeWindow(object):
     """
 
     def __init__(self, filename, min_timestamp, max_timestamp,
-                 virtual_midnight, callback=None):
+                 virtual_midnight, callback=None, settings=None):
         self.filename = filename
         self.min_timestamp = min_timestamp
         self.max_timestamp = max_timestamp
         self.virtual_midnight = virtual_midnight
+        self.settings = settings
         self.reread(callback)
 
     def reread(self, callback=None):
@@ -232,19 +235,25 @@ class TimeWindow(object):
     def grouped_entries(self, skip_first=True):
         """Return consolidated entries (grouped by entry title).
 
-        Returns two list: work entries and slacking entries.  Slacking
-        entries are identified by finding two asterisks in the title.
+        Returns two list: work entries, slacking entries and holidays.
+        Slacking entries are identified by finding two asterisks in the
+        title.
+        The holidays are indicated by '$$$'.
         The duration of entries ending with '/2' is divided by two.
-        Entry lists are sorted, and contain (start, entry, duration) tuples.
+        Entry lists are sorted, and contain (start, entry, duration)
+        tuples.
         """
         work = {}
         slack = {}
+        hold = {}
         for start, stop, duration, entry in self.all_entries():
             if skip_first:
                 skip_first = False
                 continue
             if '**' in entry:
                 entries = slack
+            if entry.endswith('$$$'):
+                entries = hold
             else:
                 entries = work
             if entry.endswith('/2'):
@@ -261,21 +270,25 @@ class TimeWindow(object):
         work.sort()
         slack = slack.values()
         slack.sort()
-        return work, slack
+        hold = hold.values()
+        hold.sort()
+        return work, slack, hold
 
     def totals(self):
         """Calculate total time of work and slacking entries.
 
-        Returns (total_work, total_slacking) tuple.
+        Returns (total_work, total_slacking, total_holiday) tuple.
 
-        Slacking entries are identified by finding two asterisks in the title.
+        Slacking entries are identified by finding two asterisks in the
+        title. Holidays are identified by three $ symbols by the end of
+        the entry.
 
         The duration of entries ending with '/2' is divided by two.
 
         Assuming that
 
             total_work, total_slacking = self.totals()
-            work, slacking = self.grouped_entries()
+            work, slacking, holidays = self.grouped_entries()
 
         It is always true that
 
@@ -285,16 +298,19 @@ class TimeWindow(object):
 
         (that is, it would be true if sum could operate on timedeltas).
         """
-        total_work = total_slacking = datetime.timedelta(0)
+        total_work = total_slacking = total_holiday = datetime.timedelta(0)
         for start, stop, duration, entry in self.all_entries():
             if entry.endswith('/2'):
                 # if entry endswith /2 count only half of the duration
                 duration /= 2
+            if entry.endswith('$$$') and self.settings:
+                total_holiday += duration
+                continue
             if '**' in entry:
                 total_slacking += duration
             else:
                 total_work += duration
-        return total_work, total_slacking
+        return total_work, total_slacking, total_holiday
 
     def icalendar(self, output):
         """Create an iCalendar file with activities."""
@@ -313,7 +329,7 @@ class TimeWindow(object):
             print >> output, "SUMMARY:%s" % (entry.replace('\\', '\\\\')
                                                   .replace(';', '\\;')
                                                   .replace(',', '\\,'))
-            print >> output, "DTSTART:%s" % start.strftime('%Y%m%dT%H%M%S')
+            nprint >> output, "DTSTART:%s" % start.strftime('%Y%m%dT%H%M%S')
             print >> output, "DTEND:%s" % stop.strftime('%Y%m%dT%H%M%S')
             print >> output, "DTSTAMP:%s" % dtstamp
             print >> output, "END:VEVENT"
@@ -343,8 +359,8 @@ class TimeWindow(object):
         entry = entry[:1].upper() + entry[1:]
         print >> output, "%s at %s" % (entry, start.strftime('%H:%M'))
         print >> output
-        work, slack = self.grouped_entries()
-        total_work, total_slacking = self.totals()
+        work, slack, hold = self.grouped_entries()
+        total_work, total_slacking, total_holidays = self.totals()
         if work:
             for start, entry, duration in work:
                 entry = entry[:1].upper() + entry[1:]
@@ -382,8 +398,8 @@ class TimeWindow(object):
             print >> output, "estimated       actual"
         else:
             print >> output, "                time"
-        work, slack = self.grouped_entries()
-        total_work, total_slacking = self.totals()
+        work, slack, hold = self.grouped_entries()
+        total_work, total_slacking, total_holidays = self.totals()
         if work:
             work = [(entry, duration) for start, entry, duration in work]
             work.sort()
@@ -409,9 +425,10 @@ class TimeLog(object):
     the end.
     """
 
-    def __init__(self, filename, virtual_midnight):
+    def __init__(self, filename, settings):
         self.filename = filename
-        self.virtual_midnight = virtual_midnight
+        self.settings = settings
+        self.virtual_midnight = settings.virtual_midnight
         self.reread()
 
     def reread(self):
@@ -422,12 +439,15 @@ class TimeLog(object):
         self.history = []
         self.window = TimeWindow(self.filename, min, max,
                                  self.virtual_midnight,
-                                 callback=self.history.append)
+                                 callback=self.history.append, 
+                                 settings=self.settings)
         self.need_space = not self.window.items
 
     def window_for(self, min, max):
         """Return a TimeWindow for a specified time interval."""
-        return TimeWindow(self.filename, min, max, self.virtual_midnight)
+        return TimeWindow(self.filename, min, max,
+                          self.virtual_midnight, 
+                          settings=self.settings)
 
     def raw_append(self, line):
         """Append a line to the time log file."""
@@ -607,6 +627,7 @@ class Settings(object):
     enable_gtk_completion = True  # False enables gvim-style completion
 
     hours = 8
+    week_hours = 43
     virtual_midnight = datetime.time(2, 0)
 
     task_list_url = ''
@@ -627,9 +648,9 @@ class Settings(object):
         config.set('gtimelog', 'gtk-completion',
                    str(self.enable_gtk_completion))
         config.set('gtimelog', 'hours', str(self.hours))
+        config.set('gtimelog', 'week_hours', str(self.week_hours))
         config.set('gtimelog', 'virtual_midnight',
                    self.virtual_midnight.strftime('%H:%M'))
-        config.set('gtimelog', 'task_list_url', self.task_list_url)
         config.set('gtimelog', 'edit_task_list_cmd', self.edit_task_list_cmd)
 
         config.add_section('hours')
@@ -650,9 +671,9 @@ class Settings(object):
         self.enable_gtk_completion = config.getboolean('gtimelog',
                                                        'gtk-completion')
         self.hours = config.getfloat('gtimelog', 'hours')
+        self.week_hours = config.getfloat('gtimelog', 'week_hours')
         self.virtual_midnight = parse_time(config.get('gtimelog',
                                                       'virtual_midnight'))
-        self.task_list_url = config.get('gtimelog', 'task_list_url')
         self.edit_task_list_cmd = config.get('gtimelog', 'edit_task_list_cmd')
 
         self.hours_url = config.get('hours', 'url')
@@ -750,7 +771,8 @@ class TrayIcon(object):
         if not current_task: 
             current_task = "nothing"
         tip = "GTimeLog: working on %s" % current_task
-        total_work, total_slacking = self.timelog.window.totals()
+        total_work, total_slacking, total_holidays = (
+            self.timelog.window.totals())
         tip += "\nWork done today: %s" % format_duration(total_work)
         time_left = self.gtimelog_window.time_left_at_work(total_work)
         if time_left is not None:
@@ -758,6 +780,7 @@ class TrayIcon(object):
                 time_left = datetime.timedelta(0)
             tip += "\nTime left at work: %s" % format_duration(time_left)
         return tip
+
 
 class TimelogStatusbar(object):
     """The Gtimelog Statusbar"""
@@ -771,6 +794,93 @@ class TimelogStatusbar(object):
         contextid = len(self.statusbarmsgids)
         msgid = self.statusbar.push(contextid, msg)
         self.statusbarmsgids.append(msgid)
+
+
+class WorkProgressbar(object):
+    """Progressbar to show easily how much worktime is todo."""
+
+    def __init__(self, tree, settings, timelog):
+        self.week_hours = settings.week_hours
+        self.visibility_state = True
+        self.timelog = timelog
+        self.from_week = timelog.day
+
+        self.progressbar = tree.get_widget("workprogress")
+
+        self.calendar_dialog = tree.get_widget("calendar_dialog")
+        self.calendar = tree.get_widget("calendar")
+
+        self.from_week_window_btn = tree.get_widget("from_week_window_button")
+        self.from_week_window_btn.connect("clicked", self.set_from_week)
+
+        self.update()
+
+    def update(self):
+        """Updates the progress bar.
+
+        week_window = timedelta of the current week
+        """
+        min, max, weeks = self.get_timeframe()
+        weekly_window = self.week_window(min, max)
+        week_total_work, week_total_slacking, week_total_holidays = (
+            weekly_window.totals())
+        work_days_this_week = weekly_window.count_days()
+
+        week_done = calc_duration(week_total_work)[0]
+        week_exp = ((self.week_hours * weeks) -
+                    calc_duration(week_total_holidays)[0])
+        week_todo = int(week_exp) - week_done
+
+        percent, rem = divmod(week_done / week_exp, 1)
+        self.progressbar.set_fraction(percent)
+        work_text = "%s / %s / %s" %(int(week_exp), week_done, week_todo)
+        self.progressbar.set_text("%s" % work_text)
+
+    def set_from_week(self, widget):
+        self.from_week = self.get_clicked_calendar_day()
+        self.update()
+
+    def get_clicked_calendar_day(self):
+        if self.calendar_dialog.run() == gtk.RESPONSE_OK:
+            y, m1, d = self.calendar.get_date()
+            date = datetime.date(y, m1+1, d)
+        else:
+            date = None
+        self.calendar_dialog.hide()
+        return date
+
+    def get_timeframe(self):
+        """Returns from dates and to dates used for calulating the
+           weekly time-window. Addtionally the number of weeks is 
+           returned.
+
+           Returns (min, max, weekcount)
+        """
+        day = self.from_week
+        monday = day - datetime.timedelta(day.weekday())
+        min = datetime.datetime.combine(monday,
+                        self.timelog.virtual_midnight)
+        this_monday = (self.timelog.day -
+                       datetime.timedelta(self.timelog.day.weekday()))
+        max = datetime.datetime.combine(
+            this_monday + datetime.timedelta(7), self.timelog.virtual_midnight)
+        delta = max - min
+        weeks = delta.days / 7
+        return (min, max, weeks)
+
+    def week_window(self, min, max):
+        return self.timelog.window_for(min, max)
+
+    def toggle_visibility(self):
+        if self.visibility_state:
+            self.progressbar.hide()
+            self.from_week_window_btn.hide()
+            self.visibility_state = False
+        else:
+            self.progressbar.show()
+            self.from_week_window_btn.show()
+            self.visibility_state = True
+
 
 class MainWindow(object):
     """Main application window."""
@@ -802,11 +912,11 @@ class MainWindow(object):
         self.calendar.connect("day_selected_double_click",
                               self.on_calendar_day_selected_double_click)
         self.statusbar = TimelogStatusbar(tree)
+        self.workprogressbar = WorkProgressbar(tree, settings, timelog)
         self.main_window = tree.get_widget("main_window")
         self.main_window.connect("delete_event", self.delete_event)
         self.log_view = tree.get_widget("log_view")
         self.set_up_log_view_columns()
-        self.task_pane_info_label = tree.get_widget("task_pane_info_label")
         tasks.loading_callback = self.task_list_loading
         tasks.loaded_callback = self.task_list_loaded
         tasks.error_callback = self.task_list_error
@@ -875,7 +985,7 @@ class MainWindow(object):
             for item in self.timelog.window.all_entries():
                 self.write_item(item)
         else:
-            work, slack = self.timelog.window.grouped_entries()
+            work, slack, hold = self.timelog.window.grouped_entries()
             for start, entry, duration in work + slack:
                 self.write_group(entry, duration)
             where = buffer.get_end_iter()
@@ -896,10 +1006,11 @@ class MainWindow(object):
         buffer = self.log_buffer
         self.footer_mark = buffer.create_mark('footer', buffer.get_end_iter(),
                                               True)
-        total_work, total_slacking = self.timelog.window.totals()
-        weekly_window = self.weekly_window()
-        week_total_work, week_total_slacking = weekly_window.totals()
-        work_days_this_week = weekly_window.count_days()
+        total_work, total_slacking, total_holidays = (
+            self.timelog.window.totals())
+        week_total_work, week_total_slacking, week_total_holidays = (
+            self.weekly_window().totals())
+        work_days_this_week = self.weekly_window().count_days()
 
         self.w('\n')
         self.w('Total work done: ')
@@ -984,7 +1095,6 @@ class MainWindow(object):
                 else:
                     task = group_name + ': ' + item
                 self.task_store.append(t, [item, task])
-        self.task_list.expand_all()
 
     def set_up_history(self):
         """Set up history."""
@@ -1078,6 +1188,9 @@ class MainWindow(object):
             window = self.timelog.window_for(min, max)
             self.mail(window.daily_report)
 
+    def on_workprogress_activate(self, widget):
+        self.workprogressbar.toggle_visibility()
+
     def choose_date(self):
         """Pop up a calendar dialog.
 
@@ -1133,7 +1246,9 @@ class MainWindow(object):
                 tracker.saveWeek()
                 msg = "Upload to Hourtracker successfull"
                 self.statusbar.post_message(msg)
-            except (KeyError, ValueError), err:
+            # not sure if we really want a bare except, but in case
+            # something happens tell the user about it
+            except StandardError,err:
                 msg = "An error during upload occured: %s" % err
                 self.statusbar.post_message(msg)
             
@@ -1196,20 +1311,18 @@ class MainWindow(object):
 
     def task_list_loading(self):
         self.task_list_loading_failed = False
-        self.task_pane_info_label.set_text("Loading...")
-        self.task_pane_info_label.show()
+        self.statusbar.post_message("Loading...")
         # let the ui update become visible
-        while gtk.events_pending():
-            gtk.main_iteration()
+        #while gtk.events_pending():
+        #     gtk.main_iteration()
 
     def task_list_error(self):
         self.task_list_loading_failed = True
-        self.task_pane_info_label.set_text("Could not get task list.")
-        self.task_pane_info_label.show()
+        self.statusbar.post_message("Could not get task list.")
 
     def task_list_loaded(self):
         if not self.task_list_loading_failed:
-            self.task_pane_info_label.hide()
+            self.statusbar.post_message("Task list successfully loaded.")
 
     def task_entry_changed(self, widget):
         """Reset history position when the task entry is changed."""
@@ -1290,6 +1403,7 @@ class MainWindow(object):
             self.time_label.set_text(format_duration(now - last_time))
             # Update "time left to work"
             if not self.lock:
+                self.workprogressbar.update()
                 self.delete_footer()
                 self.add_footer()
         return True
@@ -1311,7 +1425,7 @@ def main(argv=None):
     else:
         settings.load(settings_file)
     timelog = TimeLog(os.path.join(configdir, 'timelog.txt'),
-                      settings.virtual_midnight)
+                      settings)
     if settings.task_list_url:
         tasks = RemoteTaskList(
             settings,

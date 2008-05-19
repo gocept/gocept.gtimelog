@@ -169,6 +169,8 @@ to your configuration file:
     url = http://www.myhourtracker.com/
     username = foo
     password = bar
+    tasks = http://www.myhourtracker.com/tasks
+    projects = http://www.myhourtracker.com/projects
 
 Specify the projects and tasks like the following example:
 
@@ -185,6 +187,12 @@ information.
 
 Use the File > Fill Hour Tracker menuitem to upload your hours.
 
+Holidays
+--------
+
+Holidays are indicated by '$$$'
+
+
 Author
 ------
 
@@ -199,7 +207,7 @@ Thom May
 Dafydd Harries
 Ignas Mikalajūnas
 Michael Howitz
-
+Roman Joost
 
 Icon
 ----
