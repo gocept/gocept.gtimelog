@@ -124,6 +124,8 @@ class HourTracker(object):
                 continue
             if entry.endswith('**'):
                 continue
+            if entry.endswith('$$$'): # we don't track holidays
+                continue
             print "%s -> %s" % (start, stop),
             project, task, desc = self.mapEntry(entry)
             if desc.endswith('/2'):
@@ -147,7 +149,6 @@ class HourTracker(object):
         data['year'] = self.year
         data['week'] = self.week
         data['curr_week'] = self.week
-
         request = urllib2.Request(self.settings.hours_url,
                                   urllib.urlencode(data))
         result = urllib2.urlopen(request)
@@ -179,7 +180,7 @@ class HourTracker(object):
                     day_comments = (e[1].strip() for e in entries)
                     day_comments = (c for c in day_comments if c)
                     comments.extend(day_comments)
-                    
+
 
                 data['opm%d' % row] = unicode('; '.join(set(comments)),
                                               'utf-8').encode('latin1')
