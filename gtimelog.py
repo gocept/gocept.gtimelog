@@ -831,7 +831,9 @@ class WorkProgressbar(object):
                     calc_duration(week_total_holidays)[0])
         week_todo = int(week_exp) - week_done
 
-        percent, rem = divmod(week_done / week_exp, 1)
+        percent = week_done / week_exp
+        if percent > 1.0:
+            percent = 1.0
         self.progressbar.set_fraction(percent)
         work_text = "%s / %s / %s" %(int(week_exp), week_done, week_todo)
         self.progressbar.set_text("%s" % work_text)
