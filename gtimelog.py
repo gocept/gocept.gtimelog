@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 A Gtk+ application for keeping track of time.
 """
@@ -239,7 +240,8 @@ class TimeWindow(object):
         Slacking entries are identified by finding two asterisks in the
         title.
         The holidays are indicated by '$$$'.
-        The duration of entries ending with '/2' is divided by two.
+        For entries ending with '/2' half is counted as work and other half is 
+        counted as slacking.
         Entry lists are sorted, and contain (start, entry, duration)
         tuples.
         """
@@ -251,21 +253,23 @@ class TimeWindow(object):
                 skip_first = False
                 continue
             if '**' in entry:
-                entries = slack
+                entries_list = (slack, )
             if entry.endswith('$$$'):
-                entries = hold
+                entries_list = (hold, )
             else:
-                entries = work
+                entries_list = (work, )
             if entry.endswith('/2'):
                 # if entry endswith /2 count only half of the duration
                 duration /= 2
+                entries_list = (work, slack)
             # strip task description away
             entry = ':'.join(entry.split(':')[:2])
-            if entry in entries:
-                old_start, old_entry, old_duration = entries[entry]
-                start = min(start, old_start)
-                duration += old_duration
-            entries[entry] = (start, entry, duration)
+            for entries in entries_list:
+                if entry in entries:
+                    old_start, old_entry, old_duration = entries[entry]
+                    start = min(start, old_start)
+                    duration += old_duration
+                entries[entry] = (start, entry, duration)
         work = work.values()
         work.sort()
         slack = slack.values()
@@ -283,7 +287,8 @@ class TimeWindow(object):
         title. Holidays are identified by three $ symbols by the end of
         the entry.
 
-        The duration of entries ending with '/2' is divided by two.
+        For entries ending with '/2' is half of the time is counted as work 
+        and the other half is counted as slacking.
 
         Assuming that
 
@@ -301,8 +306,10 @@ class TimeWindow(object):
         total_work = total_slacking = total_holiday = datetime.timedelta(0)
         for start, stop, duration, entry in self.all_entries():
             if entry.endswith('/2'):
-                # if entry endswith /2 count only half of the duration
                 duration /= 2
+                total_slacking += duration
+                total_work += duration
+                continue
             if entry.endswith('$$$') and self.settings:
                 total_holiday += duration
                 continue
@@ -329,7 +336,7 @@ class TimeWindow(object):
             print >> output, "SUMMARY:%s" % (entry.replace('\\', '\\\\')
                                                   .replace(';', '\\;')
                                                   .replace(',', '\\,'))
-            nprint >> output, "DTSTART:%s" % start.strftime('%Y%m%dT%H%M%S')
+            print >> output, "DTSTART:%s" % start.strftime('%Y%m%dT%H%M%S')
             print >> output, "DTEND:%s" % stop.strftime('%Y%m%dT%H%M%S')
             print >> output, "DTSTAMP:%s" % dtstamp
             print >> output, "END:VEVENT"
@@ -627,7 +634,7 @@ class Settings(object):
     enable_gtk_completion = True  # False enables gvim-style completion
 
     hours = 8
-    week_hours = 43
+    week_hours = 40
     virtual_midnight = datetime.time(2, 0)
 
     task_list_url = ''
@@ -831,11 +838,17 @@ class WorkProgressbar(object):
                     calc_duration(week_total_holidays)[0])
         week_todo = int(week_exp) - week_done
 
-        percent = week_done / week_exp
+        if week_exp == 0:
+            percent = 0.0
+        else:
+            percent = week_done / week_exp
         if percent > 1.0:
             percent = 1.0
         self.progressbar.set_fraction(percent)
-        work_text = "%s / %s / %s" %(int(week_exp), week_done, week_todo)
+        work_text = (
+            u"%s – %s: %s h still to work (%s h required, %s h done)" % (
+                min.strftime('%Y-%m-%d'), max.strftime('%Y-%m-%d'), week_todo,
+                int(week_exp), week_done))
         self.progressbar.set_text("%s" % work_text)
 
     def set_from_week(self, widget):
@@ -868,6 +881,9 @@ class WorkProgressbar(object):
             this_monday + datetime.timedelta(7), self.timelog.virtual_midnight)
         delta = max - min
         weeks = delta.days / 7
+        if delta.days <= 0:
+            # start in future
+            weeks = abs(weeks) + 1
         return (min, max, weeks)
 
     def week_window(self, min, max):
