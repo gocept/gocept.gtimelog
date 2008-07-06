@@ -22,11 +22,13 @@ editor = gvim
 # 2.4), False disables and lets you access history by pressing Up/Down.
 gtk-completion = False
 
-# How many hours' work in a day.
-# hours = 7.5
+# How many hours work in a day.
 hours = 8
 
-# When does one work end and another begin
+# How many hours work in a week.
+hours = 40
+
+# When does one work day end and another begin
 virtual_midnight = 02:00
 
 # only used if you're using an hourtracker system
@@ -35,3 +37,5 @@ virtual_midnight = 02:00
 # url = http://www.myhourtracker.com/
 # username = foo
 # password = bar
+# tasks = http://www.myhourtracker.com/tasks
+# projects = http://www.myhourtracker.com/projects

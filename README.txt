@@ -187,10 +187,17 @@ information.
 
 Use the File > Fill Hour Tracker menuitem to upload your hours.
 
+
 Holidays
 --------
 
-Holidays are indicated by '$$$'
+Holidays are indicated by ending a line in '$$$'. Holidays are
+substracted from required work time, so it's necessary to have two
+entries for a holiday those duration is the time you would work when
+you are notin holiday.
+
+CAUTION: Only use this feature, if you do _not_ want to save your
+holiday times in hourtracker.
 
 
 Author

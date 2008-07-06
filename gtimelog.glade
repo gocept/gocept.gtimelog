@@ -335,9 +335,9 @@
 	  <child>
 	    <widget class="GtkButton" id="from_week_window_button">
 	      <property name="visible">True</property>
-	      <property name="tooltip" translatable="yes">From what week should be calculated?</property>
+	      <property name="tooltip" translatable="yes">Select the start week for progressbar calculation.</property>
 	      <property name="can_focus">True</property>
-	      <property name="label" translatable="yes">week</property>
+	      <property name="label" translatable="yes">Set week</property>
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
