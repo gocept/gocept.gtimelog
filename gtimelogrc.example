@@ -39,3 +39,8 @@ virtual_midnight = 02:00
 # password = bar
 # tasks = http://www.myhourtracker.com/tasks
 # projects = http://www.myhourtracker.com/projects
+
+# # settings only for Mac OS X variant (gtimelog.app)
+# [gtimelog.app]
+# # path to python
+# python = /opt/local/bin/python2.5
