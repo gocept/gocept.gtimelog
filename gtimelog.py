@@ -22,6 +22,7 @@ import gtk.glade
 import pango
 
 import hours
+import redmine
 
 resource_dir = os.path.dirname(os.path.realpath(__file__))
 ui_file = os.path.join(resource_dir, "gtimelog.glade")
@@ -645,6 +646,10 @@ class Settings(object):
     hours_username = ''
     hours_password = ''
 
+    redmine_url = 'https://intra.gocept.com/projects'
+    redmine_username = ''
+    redmine_password = ''
+
     def _config(self):
         config = ConfigParser.RawConfigParser()
         config.add_section('gtimelog')
@@ -666,6 +671,11 @@ class Settings(object):
         config.set('hours', 'password', self.hours_password)
         config.set('hours', 'tasks', self.task_list_url)
         config.set('hours', 'projects', self.project_list_url)
+
+        config.add_section('redmine')
+        config.set('redmine', 'url', self.redmine_url)
+        config.set('redmine', 'username', self.redmine_username)
+        config.set('redmine', 'password', self.redmine_password)
         return config
 
     def load(self, filename):
@@ -688,7 +698,12 @@ class Settings(object):
         self.hours_password = config.get('hours', 'password')
         self.task_list_url = config.get('hours', 'tasks')
         self.project_list_url = config.get('hours', 'projects')
-        
+
+        self.redmine_url = config.get('redmine', 'url')
+        if self.redmine_url.endswith('/'):
+            self.redmine_url = self.redmine_url[:-1]
+        self.redmine_username = config.get('redmine', 'username')
+        self.redmine_password = config.get('redmine', 'password')
 
     def save(self, filename):
         config = self._config()
@@ -1262,14 +1277,17 @@ class MainWindow(object):
                 tracker.loadWeek(week, year)
                 tracker.setHours(window.all_entries())
                 tracker.saveWeek()
-                msg = "Upload to Hourtracker successfull"
+
+                redupdate = redmine.RedmineTimelogUpdater(self.settings)
+                redupdate.update(window)
+
+                msg = "Upload to Hourtracker successful"
                 self.statusbar.post_message(msg)
             # not sure if we really want a bare except, but in case
             # something happens tell the user about it
             except StandardError,err:
                 msg = "An error during upload occured: %s" % err
                 self.statusbar.post_message(msg)
-            
 
     def on_edit_timelog_activate(self, widget):
         """File -> Edit timelog.txt"""
