@@ -58,6 +58,8 @@ class RedmineTimelogUpdater(object):
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
 
     def update(self, window):
+        if not self.settings.redmine_url:
+            return
         self.login()
         for entry in timelog_to_issues(window):
             self.update_entry(entry)
