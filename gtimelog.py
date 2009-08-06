@@ -646,7 +646,7 @@ class Settings(object):
     hours_username = ''
     hours_password = ''
 
-    redmine_url = 'https://intra.gocept.com/projects'
+    redmine_url = ''
     redmine_username = ''
     redmine_password = ''
 
