@@ -12,6 +12,15 @@ class TimelogEntry(object):
         self.issue = issue
         self.comment = comment
 
+        self.project = None
+        parts = self.comment.split(':')
+        try:
+            first = parts[0]
+            if '#' not in first:
+                self.project = first
+        except IndexError:
+            pass
+
 
 def duration_to_float(duration):
     result = duration.seconds / 3600.0
@@ -62,11 +71,21 @@ class RedmineTimelogUpdater(object):
             return
         self.login()
         for entry in timelog_to_issues(window):
+            if not self._entry_wanted(entry):
+                continue
+
             try:
                 self.update_entry(entry)
             except urllib2.HTTPError, e:
                 raise RuntimeError(
                     '#%s %s: %s' % (entry.issue, entry.date, str(e)))
+
+    def _entry_wanted(self, entry):
+        update = False
+        for project in self.settings.redmine_projects:
+            if entry.project.startswith(project):
+                return True
+        return False
 
     def update_entry(self, entry):
         params = urllib.urlencode(dict(
