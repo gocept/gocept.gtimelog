@@ -52,6 +52,19 @@ class ConvertTimelogTest(unittest.TestCase):
                          entries[0].comment)
         self.assertEqual(1, entries[1].duration)
 
+    def test_extract_project_from_comment(self):
+        window = TestWindow()
+        window.add('2009-08-01 08:00', 'arrived')
+        window.add('2009-08-01 10:00', 'Operations: Programming: #123: foo')
+        window.add('2009-08-01 10:15', '#2: foo')
+        window.add('2009-08-01 10:45', 'foo bar (#34)')
+        entries = convert(window)
+        self.assertEqual(3, len(entries))
+        self.assertEqual('Operations', entries[0].project)
+        self.assertEqual(None, entries[1].project)
+        self.assertEqual(None, entries[2].project)
+
+
 
 if __name__ == '__main__':
     unittest.main()

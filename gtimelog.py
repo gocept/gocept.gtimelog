@@ -649,6 +649,7 @@ class Settings(object):
     redmine_url = ''
     redmine_username = ''
     redmine_password = ''
+    redmine_projects = []
 
     def _config(self):
         config = ConfigParser.RawConfigParser()
@@ -676,6 +677,7 @@ class Settings(object):
         config.set('redmine', 'url', self.redmine_url)
         config.set('redmine', 'username', self.redmine_username)
         config.set('redmine', 'password', self.redmine_password)
+        config.set('redmine', 'projects', ' '.join(self.redmine_projects))
         return config
 
     def load(self, filename):
@@ -704,6 +706,7 @@ class Settings(object):
             self.redmine_url = self.redmine_url[:-1]
         self.redmine_username = config.get('redmine', 'username')
         self.redmine_password = config.get('redmine', 'password')
+        self.redmine_projects = config.get('redmine', 'projects').split()
 
     def save(self, filename):
         config = self._config()
