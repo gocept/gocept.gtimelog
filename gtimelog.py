@@ -1278,16 +1278,18 @@ class MainWindow(object):
                 tracker.setHours(window.all_entries())
                 tracker.saveWeek()
 
+                message = "HT: success"
+            except Exception,err:
+                message = "HT: %s" % err
+
+            try:
                 redupdate = redmine.RedmineTimelogUpdater(self.settings)
                 redupdate.update(window)
+                message += " Redmine: success"
+            except Exception,err:
+                message += " Redmine: %s" % err
 
-                msg = "Upload to Hourtracker successful"
-                self.statusbar.post_message(msg)
-            # not sure if we really want a bare except, but in case
-            # something happens tell the user about it
-            except StandardError,err:
-                msg = "An error during upload occured: %s" % err
-                self.statusbar.post_message(msg)
+            self.statusbar.post_message(message)
 
     def on_edit_timelog_activate(self, widget):
         """File -> Edit timelog.txt"""

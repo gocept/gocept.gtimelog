@@ -62,7 +62,11 @@ class RedmineTimelogUpdater(object):
             return
         self.login()
         for entry in timelog_to_issues(window):
-            self.update_entry(entry)
+            try:
+                self.update_entry(entry)
+            except urllib2.HTTPError, e:
+                raise RuntimeError(
+                    '#%s %s: %s' % (entry.issue, entry.date, str(e)))
 
     def update_entry(self, entry):
         params = urllib.urlencode(dict(
@@ -79,4 +83,4 @@ class RedmineTimelogUpdater(object):
         self.open('/login', params)
 
     def open(self, path, params):
-        self.opener.open(self.settings.redmine_url + path, params)
+        response = self.opener.open(self.settings.redmine_url + path, params)
