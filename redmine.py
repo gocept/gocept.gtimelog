@@ -84,3 +84,6 @@ class RedmineTimelogUpdater(object):
 
     def open(self, path, params):
         response = self.opener.open(self.settings.redmine_url + path, params)
+        # XXX kludgy error handling
+        if 'Invalid user or password' in response.read():
+            raise RuntimeError('Invalid user or password')
