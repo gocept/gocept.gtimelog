@@ -83,7 +83,7 @@ class RedmineTimelogUpdater(object):
     def _entry_wanted(self, entry):
         update = False
         for project in self.settings.redmine_projects:
-            if entry.project.startswith(project):
+            if entry.project.lower().startswith(project.lower()):
                 return True
         return False
 
