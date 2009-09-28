@@ -182,10 +182,28 @@ the example above the string 'operat' will probably match operations
 if nothing else starts with 'operat' in the project listing of the
 hour tracker system.
 
-Start your gtimelog in the console first. It'll print out usefull debug
+Start your gtimelog in the console first. It'll print out useful debug
 information.
 
 Use the File > Fill Hour Tracker menuitem to upload your hours.
+
+
+Redmine
+-------
+
+If you're using the Redmine issue tracker with the plugin from
+<http://svn.gocept.com/repos/gocept/redmine_timelog_update/trunk> installed,
+you can upload the gtimelog data there, too. This will happen automatically with
+the 'Fill Hour Tracker' command if the following configuration is provided:
+
+    [redmine]
+    url=https://www.my-redmine.com/
+    username=user
+    password=secret
+    projects = My_Project1
+               My_Project2
+
+Only tasks that belong to the projects listed there will be uploaded to Redmine.
 
 
 Holidays

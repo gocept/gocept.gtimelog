@@ -44,3 +44,12 @@ virtual_midnight = 02:00
 # [gtimelog.app]
 # # path to python
 # python = /opt/local/bin/python2.5
+
+# only used for integration with the Redmine issue tracker
+#
+# [redmine]
+# url=https://www.my-redmine.com/
+# username=user
+# password=secret
+# projects = My_Project1
+#            My_Project2
