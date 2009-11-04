@@ -1,18 +1,17 @@
-from redmine import timelog_to_issues as convert
+from gocept.gtimelog.redmine import timelog_to_issues as convert
 import datetime
-import gtimelog
+import gocept.gtimelog.gtimelog
 import tempfile
 import unittest
 
-
-class TestWindow(gtimelog.TimeWindow):
+class TestWindow(gocept.gtimelog.gtimelog.TimeWindow):
 
     def __init__(self):
         self.items = []
         self.virtual_midnight = datetime.time(2, 0)
 
     def add(self, timestamp, entry):
-        self.items.append((gtimelog.parse_datetime(timestamp), entry))
+        self.items.append((gocept.gtimelog.gtimelog.parse_datetime(timestamp), entry))
         self.min_timestamp = self.items[0][0]
         self.max_timestamp = self.items[-1][0]
 
@@ -63,8 +62,3 @@ class ConvertTimelogTest(unittest.TestCase):
         self.assertEqual('Operations', entries[0].project)
         self.assertEqual(None, entries[1].project)
         self.assertEqual(None, entries[2].project)
-
-
-
-if __name__ == '__main__':
-    unittest.main()
