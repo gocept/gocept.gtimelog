@@ -6,7 +6,6 @@ A Gtk+ application for keeping track of time.
 
 import re
 import os
-import sets
 import urllib
 import datetime
 import tempfile
@@ -1141,7 +1140,7 @@ class MainWindow(object):
         if not self.have_completion:
             return
 
-        seen = sets.Set()
+        seen = set()
         # Populate with existing choices
         for choice in self.completion_choices:
             seen.add(choice[0])

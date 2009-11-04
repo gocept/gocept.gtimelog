@@ -1,13 +1,13 @@
-#!/usr/bin/python
-"""
-Tests for gtimelog.py
-"""
+import doctest
+from gocept.gtimelog.gtimelog import (
+    format_duration, format_duration_short, format_duration_long,
+    parse_datetime, parse_time, virtual_day, different_days, uniq)
+from datetime import timedelta, datetime, time
+
 
 def doctest_format_duration():
     """Tests for format_duration.
 
-        >>> from gtimelog import format_duration
-        >>> from datetime import timedelta
         >>> format_duration(timedelta(0))
         '0 h 0 min'
         >>> format_duration(timedelta(minutes=1))
@@ -20,8 +20,6 @@ def doctest_format_duration():
 def doctest_format_short():
     """Tests for format_duration_short.
 
-        >>> from gtimelog import format_duration_short
-        >>> from datetime import timedelta
         >>> format_duration_short(timedelta(0))
         '0:00'
         >>> format_duration_short(timedelta(minutes=1))
@@ -39,8 +37,6 @@ def doctest_format_short():
 def doctest_format_duration_long():
     """Tests for format_duration_long.
 
-        >>> from gtimelog import format_duration_long
-        >>> from datetime import timedelta
         >>> format_duration_long(timedelta(0))
         '0 min'
         >>> format_duration_long(timedelta(minutes=1))
@@ -59,7 +55,6 @@ def doctest_format_duration_long():
 def doctest_parse_datetime():
     """Tests for parse_datetime
 
-        >>> from gtimelog import parse_datetime
         >>> parse_datetime('2005-02-03 02:13')
         datetime.datetime(2005, 2, 3, 2, 13)
         >>> parse_datetime('xyzzy')
@@ -72,7 +67,6 @@ def doctest_parse_datetime():
 def doctest_parse_time():
     """Tests for parse_time
 
-        >>> from gtimelog import parse_time
         >>> parse_time('02:13')
         datetime.time(2, 13)
         >>> parse_time('xyzzy')
@@ -85,10 +79,7 @@ def doctest_parse_time():
 def doctest_virtual_day():
     """Tests for virtual_day
 
-        >>> from datetime import datetime, time
-        >>> from gtimelog import virtual_day
-
-    Virtual midnight
+    Virtual midnigh
 
         >>> vm = time(2, 0)
 
@@ -110,9 +101,6 @@ def doctest_virtual_day():
 def doctest_different_days():
     """Tests for different_days
 
-        >>> from datetime import datetime, time
-        >>> from gtimelog import different_days
-
     Virtual midnight
 
         >>> vm = time(2, 0)
@@ -131,7 +119,6 @@ def doctest_different_days():
 def doctest_uniq():
     """Tests for uniq
 
-        >>> from gtimelog import uniq
         >>> uniq(['a', 'b', 'b', 'c', 'd', 'b', 'd'])
         ['a', 'b', 'c', 'd', 'b', 'd']
         >>> uniq(['a'])
@@ -141,8 +128,5 @@ def doctest_uniq():
 
     """
 
-if __name__ == '__main__':
-    import doctest
-    fail, total = doctest.testmod()
-    if not fail:
-        print "%d tests passed." % total
+def test_suite():
+    return doctest.DocTestSuite()
