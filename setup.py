@@ -26,7 +26,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'setuptools',
-        'gocept.collmex',
+        'gocept.collmex>=0.7',
     ],
     zip_safe=False,
     entry_points = """
