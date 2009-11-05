@@ -644,6 +644,7 @@ class Settings(object):
 
     collmex_customer_id = ''
     collmex_company_id = 1
+    collmex_employee_id = ''
     collmex_username = ''
     collmex_password = ''
 
@@ -674,6 +675,7 @@ class Settings(object):
         config.add_section('collmex')
         config.set('collmex', 'customer_id', self.collmex_customer_id)
         config.set('collmex', 'company_id', self.collmex_company_id)
+        config.set('collmex', 'employee_id', self.collmex_employee_id)
         config.set('collmex', 'username', self.collmex_username)
         config.set('collmex', 'password', self.collmex_password)
 
@@ -708,6 +710,7 @@ class Settings(object):
 
         self.collmex_customer_id = config.get('collmex', 'customer_id')
         self.collmex_company_id = config.get('collmex', 'company_id')
+        self.collmex_employee_id = config.get('collmex', 'employee_id')
         self.collmex_username = config.get('collmex', 'username')
         self.collmex_password = config.get('collmex', 'password')
 
