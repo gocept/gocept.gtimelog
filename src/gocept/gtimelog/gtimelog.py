@@ -22,6 +22,7 @@ import pango
 
 import hours
 import redmine
+import gocept.gtimelog.collmex
 
 resource_dir = os.path.dirname(os.path.realpath(__file__))
 ui_file = os.path.join(resource_dir, "gtimelog.glade")
@@ -641,6 +642,11 @@ class Settings(object):
     project_list_url = ''
     edit_task_list_cmd = ''
 
+    collmex_customer_id = ''
+    collmex_company_id = 1
+    collmex_username = ''
+    collmex_password = ''
+
     hours_url = 'http://cosmos.infrae.com/uren/'
     hours_username = ''
     hours_password = ''
@@ -664,6 +670,12 @@ class Settings(object):
         config.set('gtimelog', 'virtual_midnight',
                    self.virtual_midnight.strftime('%H:%M'))
         config.set('gtimelog', 'edit_task_list_cmd', self.edit_task_list_cmd)
+
+        config.add_section('collmex')
+        config.set('collmex', 'customer_id', self.collmex_customer_id)
+        config.set('collmex', 'company_id', self.collmex_company_id)
+        config.set('collmex', 'username', self.collmex_username)
+        config.set('collmex', 'password', self.collmex_password)
 
         config.add_section('hours')
         config.set('hours', 'url', self.hours_url)
@@ -693,6 +705,11 @@ class Settings(object):
         self.virtual_midnight = parse_time(config.get('gtimelog',
                                                       'virtual_midnight'))
         self.edit_task_list_cmd = config.get('gtimelog', 'edit_task_list_cmd')
+
+        self.collmex_customer_id = config.get('collmex', 'customer_id')
+        self.collmex_company_id = config.get('collmex', 'company_id')
+        self.collmex_username = config.get('collmex', 'username')
+        self.collmex_password = config.get('collmex', 'password')
 
         self.hours_url = config.get('hours', 'url')
         self.hours_username = config.get('hours', 'username')
@@ -1264,6 +1281,17 @@ class MainWindow(object):
         if day:
             window = self.weekly_window(day=day)
             self.mail(window.weekly_report)
+
+    def on_fill_collmex_activate(self, widget):
+        day = self.choose_date()
+        if not day:
+            return
+        min = datetime.datetime.combine(
+            day, self.timelog.virtual_midnight)
+        max = min + datetime.timedelta(days=1)
+        window = self.timelog.window_for(min, max)
+        collmex = gocept.gtimelog.collmex.Collmex(self.settings)
+        collmex.report(window.all_entries())
 
     def on_fill_hour_tracker_activate(self, widget):
         """File -> Fill our tracker"""
