@@ -616,10 +616,30 @@ class RemoteTaskList(TaskList):
             pass # the file's not there, so what?
         self.groups = groups.items()
         self.groups.sort()
-            
+
     def reload(self):
         """Reload the task list."""
         self.download()
+
+
+class CollmexTaskList(TaskList):
+
+    def __init__(self, filename, settings):
+        self.settings = settings
+        super(CollmexTaskList, self).__init__(filename)
+
+    def download(self):
+        projects = gocept.gtimelog.collmex.get_collmex(
+            self.settings).get_projects()
+        tasks = open(self.filename, 'w')
+        for project in projects:
+            tasks.write('%s: %s\n' % (project['Bezeichnung'],
+                                      project['Satz Bezeichnung']))
+        tasks.close()
+
+    def reload(self):
+        self.download()
+        self.load()
 
 
 class Settings(object):
@@ -1498,7 +1518,7 @@ def main(argv=None):
     except OSError:
         pass
     settings = Settings()
-    settings_file = os.path.join(configdir, 'gtimelogrc') 
+    settings_file = os.path.join(configdir, 'gtimelogrc')
     if not os.path.exists(settings_file):
         settings.save(settings_file)
     else:
@@ -1510,6 +1530,9 @@ def main(argv=None):
             settings,
             os.path.join(configdir, 'projects'),
             os.path.join(configdir, 'tasks'))
+    elif settings.collmex_customer_id:
+        tasks = CollmexTaskList(
+            os.path.join(configdir, 'tasks-collmex.txt'), settings)
     else:
         tasks = TaskList(os.path.join(configdir, 'tasks.txt'))
     main_window = MainWindow(timelog, settings, tasks)
@@ -1521,7 +1544,7 @@ def main(argv=None):
         gtk.main()
     except KeyboardInterrupt:
         pass
-    
+
 
 if __name__ == '__main__':
     main()

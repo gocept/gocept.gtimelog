@@ -1,22 +1,26 @@
 # Copyright (c) 2009 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-import logging
 import datetime
 import gocept.collmex.collmex
 import gocept.collmex.model
+import logging
 import transaction
+
+
+def get_collmex(settings):
+    return gocept.collmex.collmex.Collmex(
+        settings.collmex_customer_id,
+        settings.collmex_company_id,
+        settings.collmex_username,
+        settings.collmex_password)
 
 
 class Collmex(object):
 
     def __init__(self, settings):
         self.settings = settings
-        self.collmex = gocept.collmex.collmex.Collmex(
-            self.settings.collmex_customer_id,
-            self.settings.collmex_company_id,
-            self.settings.collmex_username,
-            self.settings.collmex_password)
+        self.collmex = get_collmex(self.settings)
         self.projects = self.getProjectsAndTasks()
 
     def report(self, entries):
