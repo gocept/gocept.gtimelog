@@ -2,6 +2,9 @@
 # See also LICENSE.txt
 
 import gocept.collmex.collmex
+import gocept.collmex.model
+import transaction
+import datetime
 
 class Collmex(object):
 
@@ -15,7 +18,37 @@ class Collmex(object):
         self.projects = self.getProjectsAndTasks()
 
     def report(self, entries):
-        pass
+        for start, stop, duration, entry in entries:
+            if not duration:
+                continue
+            if entry.endswith('**'):
+                continue
+            if entry.endswith('$$$'): # we don't track holidays
+                continue
+            print "%s -> %s" % (start, stop),
+            project, task, desc = self.mapEntry(entry)
+
+            break_ = datetime.timedelta(0)
+            if desc.endswith('/2'):
+                # if task ends with /2 divide the duration by two
+                desc = desc[:-2]
+                break_ = duration / 2
+            print '[%s] [%s] %s %s' % (project, task, duration, desc)
+
+            assert start.date() == stop.date()
+
+            act = gocept.collmex.model.Activity()
+            act['Projekt Nr'] = project.id
+            act['Mitarbeiter Nr'] = self.settings.collmex_employee_id
+            act['Satz Nr'] = task.id
+            act['Beschreibung'] = desc
+            act['Datum'] = start.date()
+            act['Von'] = start.time()
+            act['Bis'] = stop.time()
+            act['Pausen'] = break_
+            self.collmex.create(act)
+
+        transaction.commit()
 
     def getProjectsAndTasks(self):
         projects = {}
@@ -37,14 +70,11 @@ class Collmex(object):
         if len(parts) < 2:
             raise ValueError("Couldn't split %r correctly" % entry)
 
-        project = parts[0].strip()
-        task = parts[1].strip().lower()
+        project = match(parts[0].strip(), self.projects)
+        task = match(parts[1].strip(), project.references)
         desc = ':'.join(parts[2:]).strip()
 
-        project = self.findProject(project)
-        actual_task = self.findTask(task)
-
-        return project, actual_task, desc
+        return project, task, desc
 
 
 class MatchableObject(object):

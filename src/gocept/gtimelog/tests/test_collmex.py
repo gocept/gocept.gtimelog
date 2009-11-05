@@ -83,6 +83,24 @@ class CollmexTest(unittest.TestCase):
         self.assertEquals('Research', tasks[1].match_string)
         self.assertEquals('2', tasks[1].id)
 
+    def test_split_timelog_entry(self):
+        collmex = gocept.gtimelog.collmex.Collmex(
+            gocept.gtimelog.gtimelog.Settings())
+
+        entry = 'I_ZODB: Research: Testing the timelog split'
+        r = collmex.mapEntry(entry)
+        self.assertEquals('I_ZODBIndexing', r[0].match_string)
+        self.assertEquals('Research', r[1].match_string)
+        self.assertEquals('Testing the timelog split', r[2])
+
+        invalid_entries = [
+            'administration: Research: Did something stupid.',
+            'administration: This is not a valid entry.',
+            'foo: bar: This is not a valid entry.',
+        ]
+        for entry in invalid_entries:
+            self.assertRaises(ValueError, collmex.mapEntry, entry)
+
 
 class MatchableTest(unittest.TestCase):
 
