@@ -29,4 +29,8 @@ setup(
         'gocept.collmex',
     ],
     zip_safe=False,
+    entry_points = """
+        [console_scripts]
+        gtimelog = gocept.gtimelog.gtimelog:main
+    """,
     )
