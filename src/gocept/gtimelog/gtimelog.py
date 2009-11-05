@@ -629,14 +629,22 @@ class CollmexTaskList(TaskList):
         super(CollmexTaskList, self).__init__(filename)
 
     def download(self):
-        projects = gocept.gtimelog.collmex.get_collmex(
-            self.settings).get_projects()
+        collmex = gocept.gtimelog.collmex.get_collmex(self.settings)
+        projects = collmex.get_projects()
+        products = dict((p['Produktnummer'], p) for p in
+                        collmex.get_products())
+        lang = self.settings.collmex_task_language
         tasks = open(self.filename, 'w')
         for project in projects:
+            product = products.get(project['Produktnummer'])
+
             if project['Abgeschlossen'] != u'0':
                 continue
-            tasks.write('%s: %s\n' % (project['Bezeichnung'],
-                                      project['Satz Bezeichnung']))
+            if lang != 'de' and product and product['Bezeichnung Eng']:
+                task_desc = product['Bezeichnung Eng']
+            else:
+                task_desc = project['Satz Bezeichnung']
+            tasks.write('%s: %s\n' % (project['Bezeichnung'], task_desc))
         tasks.close()
 
     def reload(self):
@@ -669,6 +677,7 @@ class Settings(object):
     collmex_employee_id = ''
     collmex_username = ''
     collmex_password = ''
+    collmex_task_language = 'en'
 
     hours_url = 'http://cosmos.infrae.com/uren/'
     hours_username = ''
@@ -700,6 +709,7 @@ class Settings(object):
         config.set('collmex', 'employee_id', self.collmex_employee_id)
         config.set('collmex', 'username', self.collmex_username)
         config.set('collmex', 'password', self.collmex_password)
+        config.set('collmex', 'task_language', self.collmex_task_language)
 
         config.add_section('hours')
         config.set('hours', 'url', self.hours_url)
@@ -735,6 +745,7 @@ class Settings(object):
         self.collmex_employee_id = config.get('collmex', 'employee_id')
         self.collmex_username = config.get('collmex', 'username')
         self.collmex_password = config.get('collmex', 'password')
+        self.collmex_task_language= config.get('collmex', 'task_language')
 
         self.hours_url = config.get('hours', 'url')
         self.hours_username = config.get('hours', 'username')
