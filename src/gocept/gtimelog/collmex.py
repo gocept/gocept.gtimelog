@@ -1,10 +1,14 @@
 # Copyright (c) 2009 gocept gmbh & co. kg
 # See also LICENSE.txt
 
+import logging
+import datetime
 import gocept.collmex.collmex
 import gocept.collmex.model
 import transaction
-import datetime
+
+
+logging.basicConfig(level=logging.DEBUG)
 
 class Collmex(object):
 
@@ -51,6 +55,8 @@ class Collmex(object):
         transaction.commit()
 
     def getProjectsAndTasks(self):
+        products = dict(
+            (p['Produktnummer'], p) for p in self.collmex.get_products())
         projects = {}
         for result in self.collmex.get_projects():
             if result['Abgeschlossen'] != u'0':
@@ -60,8 +66,13 @@ class Collmex(object):
             if project is None:
                 projects[pid] = project = MatchableObject(
                     result['Bezeichnung'], pid, [])
-            project.references.append(MatchableObject(
-                result['Satz Bezeichnung'], result['Satz Nr']))
+            project.references.append(
+                MatchableObject(result['Satz Bezeichnung'], result['Satz Nr']))
+            product = products.get(result['Produktnummer'])
+            if product and product['Bezeichnung Eng']:
+                project.references.append(
+                    MatchableObject(product['Bezeichnung Eng'],
+                                    result['Satz Nr']))
         return [p for p in projects.values()]
 
     def mapEntry(self, entry):
@@ -96,6 +107,9 @@ class MatchableObject(object):
     def transform_matchable(match_string):
         match_transformed = match_string.split('-')[0]
         return match_transformed.strip().lower().replace('_', ' ')
+
+    def __str__(self):
+        return self.match_string
 
 
 def match(match_string, matchables):
