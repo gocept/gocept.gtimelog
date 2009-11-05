@@ -27,26 +27,31 @@ class CollmexMock(object):
             {'Bezeichnung': u'I_ZODBIndexing',
              'Projektnummer': u'1',
              'Abgeschlossen': u'0',
+             'Produktnummer': u'3',
              'Satz Bezeichnung': u'Programming application',
              'Satz Nr': u'1'},
             {'Bezeichnung': u'I_ZODBIndexing',
              'Projektnummer': u'1',
              'Abgeschlossen': u'0',
+             'Produktnummer': u'2',
              'Satz Bezeichnung': u'Research',
              'Satz Nr': u'2'},
             {'Bezeichnung': u'I_ZODBIndexing',
              'Projektnummer': u'1',
              'Abgeschlossen': u'0',
+             'Produktnummer': u'1',
              'Satz Bezeichnung': u'Consultancy',
              'Satz Nr': u'3'},
             {'Bezeichnung': u'administration',
              'Projektnummer': u'2',
              'Abgeschlossen': u'0',
+             'Produktnummer': u'3',
              'Satz Bezeichnung': u'Programming application',
              'Satz Nr': u'1'},
             {'Bezeichnung': u'old',
              'Projektnummer': u'3',
              'Abgeschlossen': u'1',
+             'Produktnummer': u'3',
              'Satz Bezeichnung': u'Programming application',
              'Satz Nr': u'1'},
         ]
@@ -57,6 +62,12 @@ class CollmexMock(object):
 
     def get_projects(self):
         return self.projects
+
+    def get_products(self):
+        product = gocept.collmex.model.Product()
+        product['Produktnummer'] = '3'
+        product['Bezeichnung Eng'] = 'Programming application in english'
+        return [product]
 
 
 class CollmexTest(unittest.TestCase):
@@ -79,9 +90,12 @@ class CollmexTest(unittest.TestCase):
         self.assertEquals('I_ZODBIndexing', zodbi.match_string)
         self.assertEquals('1', zodbi.id)
         tasks = zodbi.references
-        self.assertEquals(3, len(tasks))
-        self.assertEquals('Research', tasks[1].match_string)
-        self.assertEquals('2', tasks[1].id)
+        self.assertEquals(4, len(tasks))
+        self.assertEquals('Research', tasks[2].match_string)
+        self.assertEquals('2', tasks[2].id)
+        self.assertEquals('Programming application in english',
+                          tasks[1].match_string)
+        self.assertEquals('1', tasks[1].id)
 
     def test_split_timelog_entry(self):
         collmex = gocept.gtimelog.collmex.Collmex(
