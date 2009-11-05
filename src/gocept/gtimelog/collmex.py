@@ -8,8 +8,6 @@ import gocept.collmex.model
 import transaction
 
 
-logging.basicConfig(level=logging.DEBUG)
-
 class Collmex(object):
 
     def __init__(self, settings):
@@ -52,7 +50,11 @@ class Collmex(object):
             act['Pausen'] = break_
             self.collmex.create(act)
 
-        transaction.commit()
+        try:
+            transaction.commit()
+        except gocept.collmex.collmex.APIError:
+            transaction.abort()
+            raise
 
     def getProjectsAndTasks(self):
         products = dict(

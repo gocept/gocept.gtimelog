@@ -1293,36 +1293,44 @@ class MainWindow(object):
             day, self.timelog.virtual_midnight)
         max = min + datetime.timedelta(days=1)
         window = self.timelog.window_for(min, max)
-        collmex = gocept.gtimelog.collmex.Collmex(self.settings)
-        collmex.report(window.all_entries())
+        try:
+            collmex = gocept.gtimelog.collmex.Collmex(self.settings)
+            collmex.report(window.all_entries())
+        except Exception,err:
+            message = "Collmex: %s" % err
+        else:
+            message = "Collmex: success "
+            message += self.fill_redmine(window)
+        self.statusbar.post_message(message)
 
     def on_fill_hour_tracker_activate(self, widget):
         """File -> Fill our tracker"""
         day = self.choose_date()
-        if day:
-            tracker = hours.HourTracker(self.settings)
+        if not day:
+            return
+        tracker = hours.HourTracker(self.settings)
+        window = self.weekly_window(day=day)
+        week = int(strftime_emulate_percent_V(window.min_timestamp))
+        year = int(window.min_timestamp.strftime('%Y'))
+        try:
+            tracker.loadWeek(week, year)
+            tracker.setHours(window.all_entries())
+            tracker.saveWeek()
+        except Exception,err:
+            message = "HT: %s" % err
+        else:
+            message = "HT: success "
+            message += self.fill_redmine(window)
+        self.statusbar.post_message(message)
 
-            window = self.weekly_window(day=day)
-            week = int(strftime_emulate_percent_V(window.min_timestamp))
-            year = int(window.min_timestamp.strftime('%Y'))
-
-            try:
-                tracker.loadWeek(week, year)
-                tracker.setHours(window.all_entries())
-                tracker.saveWeek()
-
-                message = "HT: success"
-            except Exception,err:
-                message = "HT: %s" % err
-
-            try:
-                redupdate = redmine.RedmineTimelogUpdater(self.settings)
-                redupdate.update(window)
-                message += " Redmine: success"
-            except Exception,err:
-                message += " Redmine: %s" % err
-
-            self.statusbar.post_message(message)
+    def fill_redmine(self, window):
+        try:
+            redupdate = redmine.RedmineTimelogUpdater(self.settings)
+            redupdate.update(window)
+            message = " Redmine: success"
+        except Exception,err:
+            message = " Redmine: %s" % err
+        return message
 
     def on_edit_timelog_activate(self, widget):
         """File -> Edit timelog.txt"""
