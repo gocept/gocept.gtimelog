@@ -633,6 +633,8 @@ class CollmexTaskList(TaskList):
             self.settings).get_projects()
         tasks = open(self.filename, 'w')
         for project in projects:
+            if project['Abgeschlossen'] != u'0':
+                continue
             tasks.write('%s: %s\n' % (project['Bezeichnung'],
                                       project['Satz Bezeichnung']))
         tasks.close()
