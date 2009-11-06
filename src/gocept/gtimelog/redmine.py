@@ -1,4 +1,5 @@
 import datetime
+import lxml.html.soupparser
 import re
 import urllib
 import urllib2
@@ -28,6 +29,13 @@ def duration_to_float(duration):
     return result
 
 
+def comment_to_issue(comment):
+    match = re.search(r'#(\d+)', comment)
+    if not match:
+        return
+    return match.group(1)
+
+
 def timelog_to_issues(window):
     """converts a gtimelog window into a list of TimelogEntries.
 
@@ -38,11 +46,10 @@ def timelog_to_issues(window):
     entries = {}
     order = []
     for start, stop, duration, comment in window.all_entries():
-        match = re.search(r'#(\d+)', comment)
-        if not match:
+        issue = comment_to_issue(comment)
+        if not issue:
             continue
         day = datetime.date(start.year, start.month, start.day)
-        issue = match.group(1)
         duration = duration_to_float(duration)
         key = (issue, day)
         if key not in entries:
@@ -67,11 +74,9 @@ class RedmineTimelogUpdater(object):
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
 
     def update(self, window):
-        if not self.settings.redmine_url:
-            return
         self.login()
         for entry in timelog_to_issues(window):
-            if not self._entry_wanted(entry):
+            if not self._entry_wanted(entry.project):
                 continue
 
             try:
@@ -80,10 +85,9 @@ class RedmineTimelogUpdater(object):
                 raise RuntimeError(
                     '#%s %s: %s' % (entry.issue, entry.date, str(e)))
 
-    def _entry_wanted(self, entry):
-        update = False
-        for project in self.settings.redmine_projects:
-            if entry.project.lower().startswith(project.lower()):
+    def _entry_wanted(self, project):
+        for p in self.settings.redmine_projects:
+            if project.lower().startswith(p.lower()):
                 return True
         return False
 
@@ -95,7 +99,23 @@ class RedmineTimelogUpdater(object):
             ))
         self.open('/timelog/update_entry', params)
 
+    def get_subject(self, issue_id, project):
+        if not self._entry_wanted(project.match_string):
+            return
+        self.login()
+        url = self.settings.redmine_url + '/issues/show/' + issue_id
+        response = self.opener.open(url).read()
+
+        html = lxml.html.soupparser.fromstring(response)
+        if (html.xpath('//h2[contains(.,"404")]') or
+                html.xpath('//h2[contains(.,"403")]')):
+            return
+
+        return html.xpath('//div[contains(@class, "issue")]/h3')[0].text
+
     def login(self):
+        if not self.settings.redmine_url:
+            raise RuntimeError('No redmine URL was specified.')
         params = urllib.urlencode(dict(
             username=self.settings.redmine_username,
             password=self.settings.redmine_password))

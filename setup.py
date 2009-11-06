@@ -26,6 +26,8 @@ setup(
     include_package_data=True,
     install_requires=[
         'setuptools',
+        'BeautifulSoup',
+        'lxml',
         'gocept.collmex>=0.7',
     ],
     zip_safe=False,
