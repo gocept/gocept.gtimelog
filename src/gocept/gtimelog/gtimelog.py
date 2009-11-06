@@ -868,6 +868,7 @@ class TimelogStatusbar(object):
 
     def post_message(self, msg):
         """Writes a msg to the statusbar"""
+        print msg
         contextid = len(self.statusbarmsgids)
         msgid = self.statusbar.push(contextid, msg)
         self.statusbarmsgids.append(msgid)

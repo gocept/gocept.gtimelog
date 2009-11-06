@@ -4,6 +4,7 @@
 import datetime
 import gocept.collmex.collmex
 import gocept.collmex.model
+import gocept.gtimelog.redmine
 import logging
 import transaction
 
@@ -25,6 +26,7 @@ class Collmex(object):
 
     def report(self, entries):
         # Collmex needs the entries sorted by project, date and employee
+        redmine_subjects = {}
         entries = sorted(entries, key=lambda x:(x[3], x[0]))
 
         for start, stop, duration, entry in entries:
@@ -45,6 +47,17 @@ class Collmex(object):
             print '[%s] [%s] %s %s' % (project, task, duration, desc)
 
             assert start.date() == stop.date()
+
+            # Get subject from redmine
+            red = gocept.gtimelog.redmine.RedmineTimelogUpdater(self.settings)
+            issue = gocept.gtimelog.redmine.comment_to_issue(entry)
+            if issue:
+                subject = redmine_subjects.get(issue)
+                if not subject:
+                    subject = red.get_subject(issue, project)
+                    redmine_subjects[issue] = subject
+                if subject:
+                    desc = '%s (%s)' % (subject, desc)
 
             act = gocept.collmex.model.Activity()
             act['Projekt Nr'] = project.id
