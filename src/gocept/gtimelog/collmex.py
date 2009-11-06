@@ -24,6 +24,9 @@ class Collmex(object):
         self.projects = self.getProjectsAndTasks()
 
     def report(self, entries):
+        # Collmex needs the entries sorted by project, date and employee
+        entries = sorted(entries, key=lambda x:(x[3], x[0]))
+
         for start, stop, duration, entry in entries:
             if not duration:
                 continue
