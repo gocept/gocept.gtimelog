@@ -1,0 +1,12 @@
+CHANGELOG
+=========
+
+
+v0.1 (2009-11-06)
+-----------------
+
+- begin Changelog
+
+- added import of projects and tasks from Collmex
+
+- added export of activities to Collmex
