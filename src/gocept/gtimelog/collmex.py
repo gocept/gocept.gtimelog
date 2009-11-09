@@ -8,6 +8,7 @@ import gocept.gtimelog.redmine
 import logging
 import transaction
 
+log = logging.getLogger(__name__)
 
 def get_collmex(settings):
     return gocept.collmex.collmex.Collmex(
@@ -36,7 +37,6 @@ class Collmex(object):
                 continue
             if entry.endswith('$$$'): # we don't track holidays
                 continue
-            print "%s -> %s" % (start, stop),
             project, task, desc = self.mapEntry(entry)
 
             break_ = datetime.timedelta(0)
@@ -44,7 +44,8 @@ class Collmex(object):
                 # if task ends with /2 divide the duration by two
                 desc = desc[:-2]
                 break_ = duration / 2
-            print '[%s] [%s] %s %s' % (project, task, duration, desc)
+            log.debug("%s -> %s, [%s] [%s] %s %s" % (
+                start, stop, project, task, duration, desc))
 
             assert start.date() == stop.date()
 

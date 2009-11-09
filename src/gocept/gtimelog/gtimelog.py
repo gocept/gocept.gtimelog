@@ -12,6 +12,7 @@ import tempfile
 import sys
 import getopt
 import ConfigParser
+import logging
 
 import pygtk
 pygtk.require('2.0')
@@ -124,6 +125,16 @@ def uniq(l):
         if item != result[-1]:
             result.append(item)
     return result
+
+
+class LogWindowHandler(logging.Handler):
+
+    def __init__(self, main_window):
+        logging.Handler.__init__(self)
+        self.main_window = main_window
+
+    def emit(self, record):
+        self.main_window.w_debug(record)
 
 
 class TimeWindow(object):
@@ -672,6 +683,8 @@ class Settings(object):
     project_list_url = ''
     edit_task_list_cmd = ''
 
+    log_level = 'ERROR'
+
     collmex_customer_id = ''
     collmex_company_id = 1
     collmex_employee_id = ''
@@ -702,6 +715,7 @@ class Settings(object):
         config.set('gtimelog', 'virtual_midnight',
                    self.virtual_midnight.strftime('%H:%M'))
         config.set('gtimelog', 'edit_task_list_cmd', self.edit_task_list_cmd)
+        config.set('gtimelog', 'log_level', self.log_level)
 
         config.add_section('collmex')
         config.set('collmex', 'customer_id', self.collmex_customer_id)
@@ -739,6 +753,8 @@ class Settings(object):
         self.virtual_midnight = parse_time(config.get('gtimelog',
                                                       'virtual_midnight'))
         self.edit_task_list_cmd = config.get('gtimelog', 'edit_task_list_cmd')
+
+        self.log_level = getattr(logging, config.get('gtimelog', 'log_level'))
 
         self.collmex_customer_id = config.get('collmex', 'customer_id')
         self.collmex_company_id = config.get('collmex', 'company_id')
@@ -1006,6 +1022,8 @@ class MainWindow(object):
         self.main_window.connect("delete_event", self.delete_event)
         self.log_view = tree.get_widget("log_view")
         self.set_up_log_view_columns()
+        self.debug_view = tree.get_widget("debug_view")
+        self.debug_buffer = self.debug_view.get_buffer()
         tasks.loading_callback = self.task_list_loading
         tasks.loaded_callback = self.task_list_loaded
         tasks.error_callback = self.task_list_error
@@ -1057,6 +1075,11 @@ class MainWindow(object):
             buffer.insert_with_tags_by_name(buffer.get_end_iter(), text, tag)
         else:
             buffer.insert(buffer.get_end_iter(), text)
+
+    def w_debug(self, record):
+        """Write debug lines in the debug window."""
+        self.debug_buffer.insert(
+            self.debug_buffer.get_end_iter(), '%s\n' % record.getMessage())
 
     def populate_log(self):
         """Populate the log."""
@@ -1550,6 +1573,14 @@ def main(argv=None):
     else:
         tasks = TaskList(os.path.join(configdir, 'tasks.txt'))
     main_window = MainWindow(timelog, settings, tasks)
+
+    # Start logging
+    log_handler = LogWindowHandler(main_window)
+    logging.root.addHandler(log_handler)
+    logging.root.setLevel(settings.log_level)
+    print 'Logging is set to level %s' % settings.log_level
+
+
     # start gtimelog hidden to tray
     if "--start-hidden" in argv:
         main_window.on_hide_activate("")
