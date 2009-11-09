@@ -8,9 +8,12 @@ from datetime import timedelta
 from lxml import etree
 
 import gtimelog
+import logging
 
 
 import time
+
+log = logging.getLogger(__name__)
 
 class Memoize(object):
     """Memoize With Timeout"""
@@ -39,11 +42,9 @@ class Memoize(object):
             key = (args, tuple(kw))
             try:
                 v = self.cache[key]
-                print "cache"
                 if (time.time() - v[1]) > self.timeout:
                     raise KeyError
             except KeyError:
-                print "new"
                 v = self.cache[key] = f(*args,**kwargs),time.time()
             return v[0]
 
@@ -126,13 +127,13 @@ class HourTracker(object):
                 continue
             if entry.endswith('$$$'): # we don't track holidays
                 continue
-            print "%s -> %s" % (start, stop),
             project, task, desc = self.mapEntry(entry)
             if desc.endswith('/2'):
                 # if task ends with /2 divide the duration by two
                 duration /= 2
                 desc = desc[:-2]
-            print '[%s] [%s] %s %s' % (project, task, duration, desc)
+            log.debug("%s -> %s, [%s] [%s] %s %s" % (
+                start, stop, project, task, duration, desc))
             
             weekday = self.days[start.weekday()]
 
