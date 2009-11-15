@@ -5,7 +5,10 @@ CHANGELOG
 0.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added option ``log_level`` which sets the default log level (``DEBUG``,
+  ``ERROR``).
+- Added log window. Log messages with level ``DEBUG`` will show up here
+  instead of at the shell.
 
 
 0.1 (2009-11-06)
