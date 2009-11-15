@@ -14,7 +14,7 @@ name = 'gocept.gtimelog'
 
 setup(
     name=name,
-    version = '0.1.1',
+    version = '0.2dev',
     license='ZPL 2.1',
     description='gocept fork of gtimelog.',
     long_description = (read('README.txt')),
