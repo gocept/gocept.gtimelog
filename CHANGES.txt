@@ -2,8 +2,8 @@ CHANGELOG
 =========
 
 
-0.2 (unreleased)
-----------------
+0.1.1 (2009-11-15)
+------------------
 
 - Added option ``log_level`` which sets the default log level (``DEBUG``,
   ``ERROR``).
