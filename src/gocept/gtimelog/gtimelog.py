@@ -1217,15 +1217,14 @@ class MainWindow(object):
         if not self.have_completion:
             return
 
-        seen = set()
-        # Populate with existing choices
-        for choice in self.completion_choices:
-            seen.add(choice[0])
-
-        for entry in self.history:
-            if entry not in seen:
-                seen.add(entry)
-                self.completion_choices.append([entry])
+        rev_history = self.history[:]
+        rev_history.reverse()
+        history = []
+        for entry in rev_history:
+            if entry not in history:
+                history.insert(0, entry)
+        for entry in history:
+            self.completion_choices.append([entry])
 
     def set_up_completion(self):
         """Set up autocompletion."""
