@@ -2,8 +2,8 @@ CHANGELOG
 =========
 
 
-0.2 (unreleased)
-----------------
+0.1.2 (2009-11-23)
+------------------
 
 - Populate history with all previous entries, sort reverse-chronological.
 - Added 'delete last entry' command.
