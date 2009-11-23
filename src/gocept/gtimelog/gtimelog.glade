@@ -66,6 +66,17 @@
 		    </widget>
 		  </child>
 
+                  <child>
+                    <widget class="GtkImageMenuItem" id="reload">
+		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Delete last entry from timelog</property>
+		      <property name="label" translatable="yes">_Delete last</property>
+		      <property name="use_underline">True</property>
+		      <signal name="activate" handler="on_deletelast_activate" last_modification_time="Wed, 08 Sep 2004 17:49:28 GMT"/>
+		      <accelerator key="L" modifiers="GDK_CONTROL_MASK" signal="activate"/>
+                    </widget>
+                  </child>
+
 		  <child>
 		    <widget class="GtkImageMenuItem" id="edit_timelog">
 		      <property name="visible">True</property>
