@@ -1288,6 +1288,10 @@ class MainWindow(object):
         self.view = 'grouped'
         self.populate_log()
 
+    def on_weekly_activate(self, widget):
+        self.view = 'weekly'
+        self.populate_log()
+
     def on_daily_report_activate(self, widget):
         """File -> Daily Report"""
         window = self.timelog.window
