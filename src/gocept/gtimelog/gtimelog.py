@@ -34,6 +34,7 @@ def calc_duration(duration):
     """Calculates duration and returns tuple (h, m)"""
     return divmod((duration.days * 24 * 60 + duration.seconds // 60), 60)
 
+
 def format_duration(duration):
     """Format a datetime.timedelta with minute precision."""
     return '%d h %d min' % calc_duration(duration)
@@ -74,7 +75,8 @@ def parse_time(t):
 
 
 def strftime_emulate_percent_V(timestamp):
-    """M$ Windows does not know %V as strftime option, so we have to emulate it.
+    """M$ Windows does not know %V as strftime option, so we have to emulate
+       it.
 
     Manual of strftime:
      %V    is replaced by the week number of the year (Monday as the first day
@@ -97,6 +99,7 @@ def strftime_emulate_percent_V(timestamp):
     else:
         delta = 0
     return str(int(timestamp.strftime('%W')) + delta)
+
 
 def virtual_day(dt, virtual_midnight):
     """Return the "virtual day" of a timestamp.
@@ -252,7 +255,7 @@ class TimeWindow(object):
         Slacking entries are identified by finding two asterisks in the
         title.
         The holidays are indicated by '$$$'.
-        For entries ending with '/2' half is counted as work and other half is 
+        For entries ending with '/2' half is counted as work and other half is
         counted as slacking.
         Entry lists are sorted, and contain (start, entry, duration)
         tuples.
@@ -299,7 +302,7 @@ class TimeWindow(object):
         title. Holidays are identified by three $ symbols by the end of
         the entry.
 
-        For entries ending with '/2' is half of the time is counted as work 
+        For entries ending with '/2' is half of the time is counted as work
         and the other half is counted as slacking.
 
         Assuming that
@@ -339,7 +342,7 @@ class TimeWindow(object):
         try:
             import socket
             idhost = socket.getfqdn()
-        except: # can it actually ever fail?
+        except:  # can it actually ever fail?
             idhost = 'localhost'
         dtstamp = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
         for start, stop, duration, entry in self.all_entries():
@@ -424,7 +427,7 @@ class TimeWindow(object):
             work.sort()
             for entry, duration in work:
                 if not duration:
-                    continue # skip empty "arrival" entries
+                    continue  # skip empty "arrival" entries
                 entry = entry[:1].upper() + entry[1:]
                 if estimated_column:
                     print >> output, ("%-46s  %-14s  %s" %
@@ -458,14 +461,14 @@ class TimeLog(object):
         self.history = []
         self.window = TimeWindow(self.filename, min, max,
                                  self.virtual_midnight,
-                                 callback=self.history.append, 
+                                 callback=self.history.append,
                                  settings=self.settings)
         self.need_space = not self.window.items
 
     def window_for(self, min, max):
         """Return a TimeWindow for a specified time interval."""
         return TimeWindow(self.filename, min, max,
-                          self.virtual_midnight, 
+                          self.virtual_midnight,
                           settings=self.settings)
 
     def raw_append(self, line):
@@ -530,7 +533,8 @@ class TaskList(object):
             return False
 
     def get_mtime(self):
-        """Return the mtime of self.filename, or None if the file doesn't exist."""
+        """Return the mtime of self.filename, or None if the file doesn't
+        exist."""
         try:
             return os.stat(self.filename).st_mtime
         except OSError:
@@ -551,7 +555,7 @@ class TaskList(object):
                     group, task = self.other_title, line
                 groups.setdefault(group, []).append(task)
         except IOError:
-            pass # the file's not there, so what?
+            pass  # the file's not there, so what?
         self.groups = groups.items()
         self.groups.sort()
 
@@ -574,7 +578,7 @@ class RemoteTaskList(TaskList):
         self.first_time = True
 
         self.hours = hours.HourTracker(settings)
-        
+
     def check_reload(self):
         """Check whether the task list needs to be reloaded.
 
@@ -622,9 +626,10 @@ class RemoteTaskList(TaskList):
                 for task in  file(self.filename):
                     if not task or task.startswith('#'):
                         continue
-                    groups.setdefault(project, []).append(' '.join(task.split()[1:]))
+                    groups.setdefault(project, []).append(
+                        ' '.join(task.split()[1:]))
         except IOError:
-            pass # the file's not there, so what?
+            pass  # the file's not there, so what?
         self.groups = groups.items()
         self.groups.sort()
 
@@ -761,7 +766,7 @@ class Settings(object):
         self.collmex_employee_id = config.get('collmex', 'employee_id')
         self.collmex_username = config.get('collmex', 'username')
         self.collmex_password = config.get('collmex', 'password')
-        self.collmex_task_language= config.get('collmex', 'task_language')
+        self.collmex_task_language = config.get('collmex', 'task_language')
 
         self.hours_url = config.get('hours', 'url')
         self.hours_username = config.get('hours', 'username')
@@ -795,8 +800,8 @@ class TrayIcon(object):
         try:
             import egg.trayicon
         except ImportError:
-            return # nothing to do here, move along
-                   # or install python-gnome2-extras
+            return  # nothing to do here, move along
+                    # or install python-gnome2-extras
         self.tooltips = gtk.Tooltips()
         self.eventbox = gtk.EventBox()
         hbox = gtk.HBox()
@@ -837,9 +842,9 @@ class TrayIcon(object):
             return
         main_window = self.gtimelog_window.main_window
         if main_window.get_property("visible"):
-           main_window.hide()
+            main_window.hide()
         else:
-           main_window.present()
+            main_window.present()
 
     def entry_added(self, entry):
         """An entry has been added."""
@@ -848,20 +853,21 @@ class TrayIcon(object):
     def tick(self, force_update=False):
         """Tick every second."""
         now = datetime.datetime.now().replace(second=0, microsecond=0)
-        if now != self.last_tick or force_update: # Do not eat CPU too much
+        if now != self.last_tick or force_update:  # Do not eat CPU too much
             self.last_tick = now
             last_time = self.timelog.window.last_time()
             if last_time is None:
                 self.time_label.set_text(now.strftime("%H:%M"))
             else:
-                self.time_label.set_text(format_duration_short(now - last_time))
+                self.time_label.set_text(
+                    format_duration_short(now - last_time))
         self.tooltips.set_tip(self.trayicon, self.tip())
         return True
 
     def tip(self):
         """Compute tooltip text."""
         current_task = self.gtimelog_window.task_entry.get_text()
-        if not current_task: 
+        if not current_task:
             current_task = "nothing"
         tip = "GTimeLog: working on %s" % current_task
         total_work, total_slacking, total_holidays = (
@@ -945,7 +951,7 @@ class WorkProgressbar(object):
     def get_clicked_calendar_day(self):
         if self.calendar_dialog.run() == gtk.RESPONSE_OK:
             y, m1, d = self.calendar.get_date()
-            date = datetime.date(y, m1+1, d)
+            date = datetime.date(y, m1 + 1, d)
         else:
             date = None
         self.calendar_dialog.hide()
@@ -953,7 +959,7 @@ class WorkProgressbar(object):
 
     def get_timeframe(self):
         """Returns from dates and to dates used for calulating the
-           weekly time-window. Addtionally the number of weeks is 
+           weekly time-window. Addtionally the number of weeks is
            returned.
 
            Returns (min, max, weekcount)
@@ -1096,7 +1102,7 @@ class MainWindow(object):
         if self.chronological:
             for item in self.timelog.window.all_entries():
                 self.write_item(item)
-        else:
+        elif self.grouped:
             work, slack, hold = self.timelog.window.grouped_entries()
             for start, entry, duration in work + slack:
                 self.write_group(entry, duration)
@@ -1309,7 +1315,7 @@ class MainWindow(object):
         """
         if self.calendar_dialog.run() == gtk.RESPONSE_OK:
             y, m1, d = self.calendar.get_date()
-            day = datetime.date(y, m1+1, d)
+            day = datetime.date(y, m1 + 1, d)
         else:
             day = None
         self.calendar_dialog.hide()
@@ -1352,7 +1358,7 @@ class MainWindow(object):
         try:
             collmex = gocept.gtimelog.collmex.Collmex(self.settings)
             collmex.report(window.all_entries())
-        except Exception,err:
+        except Exception, err:
             message = "Collmex: %s" % err
         else:
             message = "Collmex: success "
@@ -1372,7 +1378,7 @@ class MainWindow(object):
             tracker.loadWeek(week, year)
             tracker.setHours(window.all_entries())
             tracker.saveWeek()
-        except Exception,err:
+        except Exception, err:
             message = "HT: %s" % err
         else:
             message = "HT: success "
@@ -1384,7 +1390,7 @@ class MainWindow(object):
             redupdate = redmine.RedmineTimelogUpdater(self.settings)
             redupdate.update(window)
             message = " Redmine: success"
-        except Exception,err:
+        except Exception, err:
             message = " Redmine: %s" % err
         return message
 
@@ -1398,7 +1404,7 @@ class MainWindow(object):
 
     def mail(self, write_draft):
         """Send an email."""
-        draftfn = tempfile.mktemp(suffix='gtimelog') # XXX unsafe!
+        draftfn = tempfile.mktemp(suffix='gtimelog')  # XXX unsafe!
         draft = open(draftfn, 'w')
         write_draft(draft, self.settings.email, self.settings.name)
         draft.close()
@@ -1564,7 +1570,7 @@ def main(argv=None):
         argv = sys.argv
     configdir = os.path.expanduser('~/.gtimelog')
     try:
-        os.makedirs(configdir) # create it if it doesn't exist
+        os.makedirs(configdir)  # create it if it doesn't exist
     except OSError:
         pass
     settings = Settings()
@@ -1593,7 +1599,6 @@ def main(argv=None):
     logging.root.setLevel(settings.log_level)
     print 'Logging is set to level %s' % settings.log_level
 
-
     # start gtimelog hidden to tray
     if "--start-hidden" in argv:
         main_window.on_hide_activate("")
@@ -1606,4 +1611,3 @@ def main(argv=None):
 
 if __name__ == '__main__':
     main()
-
