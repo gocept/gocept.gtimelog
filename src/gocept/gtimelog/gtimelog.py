@@ -1102,7 +1102,7 @@ class MainWindow(object):
         if self.chronological:
             for item in self.timelog.window.all_entries():
                 self.write_item(item)
-        elif self.grouped:
+        else:
             work, slack, hold = self.timelog.window.grouped_entries()
             for start, entry, duration in work + slack:
                 self.write_group(entry, duration)
