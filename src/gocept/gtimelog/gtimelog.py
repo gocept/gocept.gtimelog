@@ -1102,7 +1102,31 @@ class MainWindow(object):
         if self.view == 'chronological':
             for item in self.timelog.window.all_entries():
                 self.write_item(item)
-        else:
+        elif self.view == 'weekly':
+            window = self.weekly_window()
+            entries = iter(window.all_entries())
+            entries.next()  # ignore first
+            projects = {}
+            for start, stop, dur, entry in entries:
+                if '**' in entry:
+                    continue
+                project = entry.split(':')[0].lower()
+                duration = projects.setdefault(project, datetime.timedelta())
+                projects[project] = duration + dur
+            total = sum(projects.values(), datetime.timedelta())
+            total_seconds = (total.days * 24 * 60 * 60) + total.seconds
+            for project, duration in sorted(
+                    projects.items(), key=lambda x: x[1], reverse=True):
+                if duration == datetime.timedelta():
+                    continue
+                duration_seconds = float(duration.days * 24 * 60 * 60 +
+                                         duration.seconds)
+                self.w(format_duration(duration), 'duration')
+                self.w('\t')
+                self.w('%0.2i%%' % ((duration_seconds / total_seconds) * 100),
+                       'time')
+                self.w('\t%s\n' % project)
+        elif self.view == 'grouped':
             work, slack, hold = self.timelog.window.grouped_entries()
             for start, entry, duration in work + slack:
                 self.write_group(entry, duration)
@@ -1531,7 +1555,7 @@ class MainWindow(object):
             return
         self.add_history(entry)
         self.timelog.append(entry)
-        if self.chronological:
+        if self.view == 'chronological':
             self.delete_footer()
             self.write_item(self.timelog.window.last_entry())
             self.add_footer()
