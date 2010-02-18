@@ -996,7 +996,7 @@ class WorkProgressbar(object):
 class MainWindow(object):
     """Main application window."""
 
-    chronological = True
+    view = 'chronological'
     footer_mark = None
 
     # Try to prevent timer routines mucking with the buffer while we're
@@ -1099,7 +1099,7 @@ class MainWindow(object):
                             self.timelog.virtual_midnight)
         today = today.strftime('%A, %Y-%m-%d (week %V)')
         self.w(today + '\n\n', 'today')
-        if self.chronological:
+        if self.view == 'chronological':
             for item in self.timelog.window.all_entries():
                 self.write_item(item)
         else:
@@ -1281,13 +1281,11 @@ class MainWindow(object):
         self.about_dialog.show()
 
     def on_chronological_activate(self, widget):
-        """View -> Chronological"""
-        self.chronological = True
+        self.view = 'chronological'
         self.populate_log()
 
     def on_grouped_activate(self, widget):
-        """View -> Grouped"""
-        self.chronological = False
+        self.view = 'grouped'
         self.populate_log()
 
     def on_daily_report_activate(self, widget):
