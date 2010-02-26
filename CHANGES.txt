@@ -2,7 +2,7 @@ CHANGELOG
 =========
 
 
-0.1.5 (unreleased)
+0.1.5 (2010-02-26)
 ------------------
 
 - Avoid showing duplicate entries in auto-completion,
