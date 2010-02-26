@@ -1253,7 +1253,7 @@ class MainWindow(object):
         for entry in rev_history:
             if entry not in history:
                 history.insert(0, entry)
-        for entry in history:
+        for entry in set(history):
             self.completion_choices.append([entry])
 
     def set_up_completion(self):
