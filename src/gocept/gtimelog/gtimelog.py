@@ -1268,6 +1268,17 @@ class MainWindow(object):
         completion = gtk.EntryCompletion()
         completion.set_model(self.completion_choices)
         completion.set_text_column(0)
+
+        def match_func(completion, key, iter):
+            model = completion.get_model()
+            text = model.get_value(iter, 0)
+            for k in key.split():
+                if k not in text:
+                    break
+            else:
+                return True
+            return False
+        completion.set_match_func(match_func)
         self.task_entry.set_completion(completion)
 
     def add_history(self, entry):
