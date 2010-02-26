@@ -2,7 +2,7 @@ CHANGELOG
 =========
 
 
-0.1.4 (unreleased)
+0.1.4 (2010-02-26)
 ------------------
 
 - More relaxed, flexible auto completion.
