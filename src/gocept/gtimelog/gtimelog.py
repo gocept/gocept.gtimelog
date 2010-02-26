@@ -1253,7 +1253,18 @@ class MainWindow(object):
         for entry in rev_history:
             if entry not in history:
                 history.insert(0, entry)
-        for entry in set(history):
+        self.completion_source = set(history)
+        self._update_completion_choices()
+
+    def _update_completion_choices(self):
+        total = set()
+        for line in self.completion_source:
+            line = line.lower()
+            if line.endswith(' **'):
+                line = line.replace(' **', '**')
+            total.add(line)
+        self.completion_choices.clear()
+        for entry in sorted(total):
             self.completion_choices.append([entry])
 
     def set_up_completion(self):
@@ -1287,8 +1298,8 @@ class MainWindow(object):
         self.history_pos = 0
         if not self.have_completion:
             return
-        if entry not in [row[0] for row in self.completion_choices]:
-            self.completion_choices.append([entry])
+        self.completion_source.add(entry)
+        self._update_completion_choices()
 
     def delete_event(self, widget, data=None):
         """Try to close the window."""
