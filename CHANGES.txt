@@ -5,7 +5,8 @@ CHANGELOG
 0.1.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Avoid showing duplicate entries in auto-completion,
+  when loading auto completion from history at startup.
 
 
 0.1.4 (2010-02-26)
