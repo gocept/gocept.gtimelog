@@ -2,7 +2,7 @@ CHANGELOG
 =========
 
 
-0.1.6 (unreleased)
+0.1.6 (2010-03-29)
 ------------------
 
 - Support Redmine 0.9 with form ``authenticity_token``
