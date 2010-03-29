@@ -1,3 +1,4 @@
+import cookielib
 import datetime
 import lxml.html.soupparser
 import re
@@ -71,7 +72,8 @@ class RedmineTimelogUpdater(object):
 
     def __init__(self, settings):
         self.settings = settings
-        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
+        self.cj = cookielib.CookieJar()
+        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
 
     def update(self, window):
         self.login()
@@ -93,9 +95,10 @@ class RedmineTimelogUpdater(object):
 
     def update_entry(self, entry):
         params = urllib.urlencode(dict(
+            hours=entry.duration,
+            authenticity_token=self.token,
             issue_id=entry.issue,
             spent_on=entry.date,
-            hours=entry.duration
             ))
         self.open('/timelog/update_entry', params)
 
@@ -116,13 +119,23 @@ class RedmineTimelogUpdater(object):
     def login(self):
         if not self.settings.redmine_url:
             raise RuntimeError('No redmine URL was specified.')
+        body = self.open('/login')
+        html = lxml.html.soupparser.fromstring(body)
+        login_token = html.xpath('//input[@name="authenticity_token"]')[0].get('value')
         params = urllib.urlencode(dict(
+            authenticity_token=login_token,
+            password=self.settings.redmine_password,
             username=self.settings.redmine_username,
-            password=self.settings.redmine_password))
+        ))
         self.open('/login', params)
+        body = self.open('/my/account')
+        html = lxml.html.soupparser.fromstring(body)
+        self.token = html.xpath('//input[@name="authenticity_token"]')[0].get('value')
 
-    def open(self, path, params):
+    def open(self, path, params=None):
         response = self.opener.open(self.settings.redmine_url + path, params)
-        # XXX kludgy error handling
-        if 'Invalid user or password' in response.read():
+        body = response.read()
+        # XXX kludgy error handling 
+        if 'Invalid user or password' in body:
             raise RuntimeError('Invalid user or password')
+        return body
