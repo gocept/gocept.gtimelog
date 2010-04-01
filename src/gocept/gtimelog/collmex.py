@@ -28,8 +28,7 @@ class Collmex(object):
     def report(self, entries):
         # Collmex needs the entries sorted by project, date and employee
         redmine_subjects = {}
-        entries = sorted(entries, key=lambda x:(x[3], x[0]))
-
+        activities = []
         for start, stop, duration, entry in entries:
             if not duration:
                 continue
@@ -69,6 +68,10 @@ class Collmex(object):
             act['Von'] = start.time()
             act['Bis'] = stop.time()
             act['Pausen'] = break_
+            activities.append(act)
+
+        for act in sorted(activities,
+                          key=lambda x:(x['Projekt Nr'], x['Von'])):
             self.collmex.create(act)
 
         try:
