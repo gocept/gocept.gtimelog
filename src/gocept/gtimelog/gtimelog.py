@@ -1259,7 +1259,6 @@ class MainWindow(object):
     def _update_completion_choices(self):
         total = set()
         for line in self.completion_source:
-            line = line.lower()
             if line.endswith(' **'):
                 line = line.replace(' **', '**')
             total.add(line)
