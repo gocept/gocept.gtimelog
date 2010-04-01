@@ -5,7 +5,9 @@ CHANGELOG
 0.1.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Don't use lower-casing for autocompletion.
+
+- Fix Collmex upload: First normalise projects, then sort them.
 
 
 0.1.6 (2010-03-29)
