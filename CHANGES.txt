@@ -2,7 +2,7 @@ CHANGELOG
 =========
 
 
-0.1.7 (unreleased)
+0.1.7 (2010-04-01)
 ------------------
 
 - Don't use lower-casing for autocompletion.
