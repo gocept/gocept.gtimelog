@@ -2,7 +2,7 @@ CHANGELOG
 =========
 
 
-0.1.8 (unreleased)
+0.1.8 (2010-04-07)
 ------------------
 
 - Repair auto-completion that broke in 0.1.7.
