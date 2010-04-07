@@ -5,7 +5,7 @@ CHANGELOG
 0.1.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Repair auto-completion that broke in 0.1.7.
 
 
 0.1.7 (2010-04-01)
