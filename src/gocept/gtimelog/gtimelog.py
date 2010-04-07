@@ -1282,6 +1282,7 @@ class MainWindow(object):
         def match_func(completion, key, iter):
             model = completion.get_model()
             text = model.get_value(iter, 0)
+            text = text.lower()
             for k in key.split():
                 if k not in text:
                     break
