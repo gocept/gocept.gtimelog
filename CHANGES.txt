@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+0.1.9 (unreleased)
+------------------
+
+- Prevent an error with completion entries being None that occured on OS X.
+
 
 0.1.8 (2010-04-07)
 ------------------
