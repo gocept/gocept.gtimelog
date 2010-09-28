@@ -4,7 +4,7 @@ CHANGELOG
 0.1.10 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Use Rest-API to get issue subject.
 
 
 0.1.9 (2010-04-09)
