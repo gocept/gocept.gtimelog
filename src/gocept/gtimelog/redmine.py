@@ -1,6 +1,7 @@
 import cookielib
 import datetime
 import lxml.html.soupparser
+import lxml.objectify
 import re
 import urllib
 import urllib2
@@ -106,15 +107,10 @@ class RedmineTimelogUpdater(object):
         if not self._entry_wanted(project.match_string):
             return
         self.login()
-        url = self.settings.redmine_url + '/issues/show/' + issue_id
+        url = self.settings.redmine_url + '/issues/%s.xml' % issue_id
         response = self.opener.open(url).read()
-
-        html = lxml.html.soupparser.fromstring(response)
-        if (html.xpath('//h2[contains(.,"404")]') or
-                html.xpath('//h2[contains(.,"403")]')):
-            return
-
-        return html.xpath('//div[contains(@class, "issue")]/h3')[0].text
+        issue = lxml.objectify.fromstring(response)
+        return unicode(issue.subject)
 
     def login(self):
         if not self.settings.redmine_url:
