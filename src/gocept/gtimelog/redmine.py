@@ -27,7 +27,7 @@ class TimelogEntry(object):
 
 def duration_to_float(duration):
     result = duration.seconds / 3600.0
-    result = round(result * 4 ) / 4  # round to .25
+    result = round(result * 4) / 4  # round to .25
     return result
 
 
@@ -74,7 +74,8 @@ class RedmineTimelogUpdater(object):
     def __init__(self, settings):
         self.settings = settings
         self.cj = cookielib.CookieJar()
-        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
+        self.opener = urllib2.build_opener(
+            urllib2.HTTPCookieProcessor(self.cj))
 
     def update(self, window):
         self.login()
@@ -117,7 +118,8 @@ class RedmineTimelogUpdater(object):
             raise RuntimeError('No redmine URL was specified.')
         body = self.open('/login')
         html = lxml.html.soupparser.fromstring(body)
-        login_token = html.xpath('//input[@name="authenticity_token"]')[0].get('value')
+        login_token = html.xpath(
+            '//input[@name="authenticity_token"]')[0].get('value')
         params = urllib.urlencode(dict(
             authenticity_token=login_token,
             password=self.settings.redmine_password,
@@ -126,12 +128,13 @@ class RedmineTimelogUpdater(object):
         self.open('/login', params)
         body = self.open('/my/account')
         html = lxml.html.soupparser.fromstring(body)
-        self.token = html.xpath('//input[@name="authenticity_token"]')[0].get('value')
+        self.token = html.xpath(
+            '//input[@name="authenticity_token"]')[0].get('value')
 
     def open(self, path, params=None):
         response = self.opener.open(self.settings.redmine_url + path, params)
         body = response.read()
-        # XXX kludgy error handling 
+        # XXX kludgy error handling
         if 'Invalid user or password' in body:
             raise RuntimeError('Invalid user or password')
         return body
