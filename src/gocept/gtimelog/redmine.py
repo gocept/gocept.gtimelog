@@ -72,69 +72,143 @@ def timelog_to_issues(window):
 class RedmineTimelogUpdater(object):
 
     def __init__(self, settings):
-        self.settings = settings
-        self.cj = cookielib.CookieJar()
-        self.opener = urllib2.build_opener(
-            urllib2.HTTPCookieProcessor(self.cj))
+        self.connections = []
+        for config in settings.redmines:
+            redmine = RedmineConnection(
+                config['url'], config['username'], config['password'],
+                config['activity'])
+            redmine.projects = config['projects']
+            self.connections.append(redmine)
+
+    def find_connection(self, project):
+        for redmine in self.connections:
+            for p in redmine.projects:
+                if project.lower().startswith(p.lower()):
+                    return redmine
+        return None
 
     def update(self, window):
-        self.login()
         for entry in timelog_to_issues(window):
-            if not self._entry_wanted(entry.project):
+            redmine = self.find_connection(entry.project)
+            if not redmine:
                 continue
 
             try:
-                self.update_entry(entry)
+                redmine.update_entry(entry)
             except urllib2.HTTPError, e:
                 raise RuntimeError(
                     '#%s %s: %s' % (entry.issue, entry.date, str(e)))
 
-    def _entry_wanted(self, project):
-        for p in self.settings.redmine_projects:
-            if project.lower().startswith(p.lower()):
-                return True
-        return False
+    def get_subject(self, issue_id, project):
+        redmine = self.find_connection(project.match_string)
+        return redmine and redmine.get_subject(issue_id, project)
+
+
+class RedmineConnection(object):
+
+    def __init__(self, url, username, password, activity):
+        self.url = url
+        self.username = username
+        self.password = password
+        self.activity = activity
+
+        self.cj = cookielib.CookieJar()
+        self.opener = urllib2.build_opener(
+            urllib2.HTTPCookieProcessor(self.cj))
+        self.token = None
+        self.activity_id = {}
 
     def update_entry(self, entry):
-        params = urllib.urlencode(dict(
-            hours=entry.duration,
-            authenticity_token=self.token,
-            issue_id=entry.issue,
-            spent_on=entry.date,
-            ))
-        self.open('/timelog/update_entry', params)
+        self.login()
+        self.populate_activity_ids(entry)
+
+        body = self.open('/issues/%s/time_entries' % entry.issue)
+        html = lxml.html.soupparser.fromstring(body)
+
+        self.delete_existing_entry(html, entry.date)
+
+        params = {
+            'authenticity_token': self.token,
+            'time_entry[hours]': entry.duration,
+            'time_entry[issue_id]': entry.issue,
+            'time_entry[spent_on]': entry.date,
+            'time_entry[activity_id]': self.activity_id[self.activity]
+        }
+        project_url = html.xpath(
+            '//*[@id="main-menu"]//a[@class="overview"]')[0].get('href')
+        project_url = '/'.join(project_url.split('/')[-2:])
+        self.open('/%s/timelog/edit' % project_url, **params)
+
+    def delete_existing_entry(self, html, date):
+        row = None
+        for entry_row in html.xpath(
+            '//td[@class="spent_on" and text() = "%s"]/..'
+            % date.strftime('%Y-%m-%d')):
+            user = entry_row.xpath(
+                '//td[@class="user" and text() = "%s"]/..' % self.user_name)
+            if user:
+                row = entry_row
+                break
+
+        if row is not None:
+            delete_url = row.xpath('//a[contains(@href, "/destroy")]')
+            if not len(delete_url):
+                raise urllib2.HTTPError(
+                    None, '403', 'No permission to delete time entry',
+                    None, None)
+            delete_url = delete_url[0].get('href')
+            id = delete_url.split('/')[-2]
+            self.open(
+                '/time_entries/%s/destroy' % id, authenticity_token=self.token)
+
+    def populate_activity_ids(self, entry):
+        # unfortunately, the "create time entry" form is only available on an
+        # issue, not globally
+        if self.activity_id:
+            return
+        body = self.open('/issues/%s/time_entries/new' % entry.issue)
+        html = lxml.html.soupparser.fromstring(body)
+        for option in html.xpath(
+            '//select[@id="time_entry_activity_id"]/option[@value != ""]'):
+            self.activity_id[option.text] = option.get('value')
 
     def get_subject(self, issue_id, project):
-        if not self._entry_wanted(project.match_string):
-            return
         self.login()
-        url = self.settings.redmine_url + '/issues/%s.xml' % issue_id
+        url = self.url + '/issues/%s.xml' % issue_id
         response = self.opener.open(url).read()
         issue = lxml.objectify.fromstring(response)
         return unicode(issue.subject)
 
     def login(self):
-        if not self.settings.redmine_url:
-            raise RuntimeError('No redmine URL was specified.')
+        if self.token:
+            return
         body = self.open('/login')
         html = lxml.html.soupparser.fromstring(body)
         login_token = html.xpath(
             '//input[@name="authenticity_token"]')[0].get('value')
-        params = urllib.urlencode(dict(
-            authenticity_token=login_token,
-            password=self.settings.redmine_password,
-            username=self.settings.redmine_username,
-        ))
-        self.open('/login', params)
+        self.open('/login',
+                  authenticity_token=login_token,
+                  password=self.password,
+                  username=self.username)
         body = self.open('/my/account')
         html = lxml.html.soupparser.fromstring(body)
         self.token = html.xpath(
             '//input[@name="authenticity_token"]')[0].get('value')
 
-    def open(self, path, params=None):
-        response = self.opener.open(self.settings.redmine_url + path, params)
+        # we need the full name to parse the time entries table
+        firstname = html.xpath('//input[@id="user_firstname"]')[0].get('value')
+        lastname = html.xpath('//input[@id="user_lastname"]')[0].get('value')
+        self.user_name = '%s %s' % (firstname, lastname)
+
+    def open(self, path, **params):
+        if not params:
+            params = None
+        else:
+            params = urllib.urlencode(params)
+        response = self.opener.open(self.url + path, params)
         body = response.read()
         # XXX kludgy error handling
         if 'Invalid user or password' in body:
-            raise RuntimeError('Invalid user or password')
+            raise urllib2.HTTPError(
+                None, '403', 'Invalid user or password', None, None)
         return body
