@@ -21,8 +21,8 @@ import gtk
 import gtk.glade
 import pango
 
-import hours
-import redmine
+import gocept.gtimelog.hours
+import gocept.gtimelog.redmine
 import gocept.gtimelog.collmex
 
 resource_dir = os.path.dirname(os.path.realpath(__file__))
@@ -1412,7 +1412,7 @@ class MainWindow(object):
         day = self.choose_date()
         if not day:
             return
-        tracker = hours.HourTracker(self.settings)
+        tracker = gocept.gtimelog.hours.HourTracker(self.settings)
         window = self.weekly_window(day=day)
         week = int(strftime_emulate_percent_V(window.min_timestamp))
         year = int(window.min_timestamp.strftime('%Y'))
@@ -1429,7 +1429,8 @@ class MainWindow(object):
 
     def fill_redmine(self, window):
         try:
-            redupdate = redmine.RedmineTimelogUpdater(self.settings)
+            redupdate = gocept.gtimelog.redmine.RedmineTimelogUpdater(
+                self.settings)
             redupdate.update(window)
             message = " Redmine: success"
         except Exception, err:
