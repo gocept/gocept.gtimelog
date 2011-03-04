@@ -191,19 +191,22 @@ Use the File > Fill Hour Tracker menuitem to upload your hours.
 Redmine
 -------
 
-If you're using the Redmine issue tracker with the plugin from
-<http://svn.gocept.com/repos/gocept/redmine_timelog_update/trunk> installed,
-you can upload the gtimelog data there, too. This will happen automatically with
-the 'Fill Hour Tracker' command if the following configuration is provided:
+If you're using the Redmine issue tracker, you can upload the gtimelog data
+there, too. This will happen automatically with the 'Fill Hour Tracker' command
+if the following configuration is provided:
 
     [redmine]
     url=https://www.my-redmine.com/
     username=user
     password=secret
+    activity=Development
     projects = My_Project1
                My_Project2
 
 Only tasks that belong to the projects listed there will be uploaded to Redmine.
+
+You can provide multiple [redmine] sections, but take care to give them unique
+names (e. g. [redmine1], [redmine2], [redmine-foo], [redmine-bar]).
 
 
 Holidays
