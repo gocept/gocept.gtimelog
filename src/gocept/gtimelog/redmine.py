@@ -122,10 +122,16 @@ class RedmineConnection(object):
         self.login()
         self.populate_activity_ids(entry)
 
-        body = self.open('/issues/%s/time_entries' % entry.issue)
+        # we do two things with one request here: delete existing entries and
+        # retrieve the link we need to create the new entry. This is ugly from
+        # the code perspective (too high coupling), but good from a performance
+        # perspective (as few HTTP requests as possible)
+        body = self.open('/issues/%s/time_entries?%s' % (
+            entry.issue, urllib.urlencode({
+                'from': entry.date, 'to': entry.date})))
         html = lxml.html.soupparser.fromstring(body)
 
-        self.delete_existing_entry(html, entry.date)
+        self.delete_existing_entries(html)
 
         params = {
             'authenticity_token': self.token,
@@ -139,18 +145,10 @@ class RedmineConnection(object):
         project_url = '/'.join(project_url.split('/')[-2:])
         self.open('/%s/timelog/edit' % project_url, **params)
 
-    def delete_existing_entry(self, html, date):
+    def delete_existing_entries(self, html):
         row = None
-        for entry_row in html.xpath(
-            '//td[@class="spent_on" and text() = "%s"]/..'
-            % date.strftime('%Y-%m-%d')):
-            user = entry_row.xpath(
-                '//td[@class="user" and text() = "%s"]/..' % self.user_name)
-            if user:
-                row = entry_row
-                break
-
-        if row is not None:
+        for row in html.xpath(
+            '//td[@class="user" and text() = "%s"]/..' % self.full_name):
             delete_url = row.xpath('//a[contains(@href, "/destroy")]')
             if not len(delete_url):
                 raise urllib2.HTTPError(
@@ -198,7 +196,7 @@ class RedmineConnection(object):
         # we need the full name to parse the time entries table
         firstname = html.xpath('//input[@id="user_firstname"]')[0].get('value')
         lastname = html.xpath('//input[@id="user_lastname"]')[0].get('value')
-        self.user_name = '%s %s' % (firstname, lastname)
+        self.full_name = '%s %s' % (firstname, lastname)
 
     def open(self, path, **params):
         if not params:
