@@ -1,8 +1,9 @@
 from gocept.gtimelog.redmine import timelog_to_issues as convert
 import datetime
 import gocept.gtimelog.gtimelog
-import tempfile
+import gocept.gtimelog.redmine
 import unittest
+
 
 class TestWindow(gocept.gtimelog.gtimelog.TimeWindow):
 
@@ -11,7 +12,8 @@ class TestWindow(gocept.gtimelog.gtimelog.TimeWindow):
         self.virtual_midnight = datetime.time(2, 0)
 
     def add(self, timestamp, entry):
-        self.items.append((gocept.gtimelog.gtimelog.parse_datetime(timestamp), entry))
+        self.items.append(
+            (gocept.gtimelog.gtimelog.parse_datetime(timestamp), entry))
         self.min_timestamp = self.items[0][0]
         self.max_timestamp = self.items[-1][0]
 
@@ -47,8 +49,7 @@ class ConvertTimelogTest(unittest.TestCase):
         entries = convert(window)
         self.assertEqual(2, len(entries))
         self.assertEqual(2.25, entries[0].duration)
-        self.assertEqual('Operations: Programming: #123: foo, #123: foo',
-                         entries[0].comment)
+        self.assertEqual('foo, #123: foo', entries[0].comment)
         self.assertEqual(1, entries[1].duration)
 
     def test_extract_project_from_comment(self):
@@ -62,3 +63,27 @@ class ConvertTimelogTest(unittest.TestCase):
         self.assertEqual('Operations', entries[0].project)
         self.assertEqual(None, entries[1].project)
         self.assertEqual(None, entries[2].project)
+
+
+class ParseCommentTest(unittest.TestCase):
+
+    def setUp(self):
+        self.entry = gocept.gtimelog.redmine.TimelogEntry(None, None, None, '')
+
+    def test_project_activity_issue_comment(self):
+        self.entry.add_comment('Operations: Programming: #123: foo bar')
+        self.assertEqual('foo bar', self.entry.comment)
+        self.entry.add_comment('Operations: Programming: #123: baz qux')
+        self.assertEqual('foo bar, baz qux', self.entry.comment)
+
+    def test_no_project(self):
+        self.entry.add_comment('#123: foo')
+        self.assertEqual('#123: foo', self.entry.comment)
+        self.entry.add_comment('#123: bar')
+        self.assertEqual('#123: foo, #123: bar', self.entry.comment)
+
+    def test_no_issue(self):
+        self.entry.add_comment('Operations: Programming: foo')
+        self.assertEqual('foo', self.entry.comment)
+        self.entry.add_comment('Operations: Programming: bar')
+        self.assertEqual('foo, bar', self.entry.comment)
