@@ -9,20 +9,33 @@ import urllib2
 
 class TimelogEntry(object):
 
-    def __init__(self, date, duration, issue, comment=None):
+    def __init__(self, date, duration, issue, comment):
         self.date = date
         self.duration = duration
         self.issue = issue
-        self.comment = comment
+        self.project = self.parse_project(comment)
+        self.comment = ''
+        self.add_comment(comment)
 
-        self.project = None
-        parts = self.comment.split(':')
+    def parse_project(self, comment):
+        parts = comment.split(':')
+        # Project: Activity: Comment
+        if len(parts) >= 3:
+            return parts[0]
+
+    def add_comment(self, comment):
+        parts = re.split('\s*:\s*', comment)
         try:
-            first = parts[0]
-            if '#' not in first:
-                self.project = first
+            if parts[2].startswith('#'):
+                comment = parts[3:]
+            else:
+                comment = parts[2:]
+            comment = ': '.join(comment)
         except IndexError:
             pass
+        if self.comment:
+            comment = ', ' + comment
+        self.comment += comment
 
 
 def duration_to_float(duration):
@@ -59,7 +72,7 @@ def timelog_to_issues(window):
             order.append(key)
         else:
             entries[key].duration += duration
-            entries[key].comment += ', %s' % comment
+            entries[key].add_comment(comment)
 
     # XXX I'd much rather use a StableDict here, but we can't really afford
     # dependencies until gtimelog is eggified
@@ -138,6 +151,7 @@ class RedmineConnection(object):
             'time_entry[hours]': entry.duration,
             'time_entry[issue_id]': entry.issue,
             'time_entry[spent_on]': entry.date,
+            'time_entry[comments]': entry.comment,
             'time_entry[activity_id]': self.activity_id[self.activity]
         }
         project_url = html.xpath(
