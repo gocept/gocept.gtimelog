@@ -4,7 +4,9 @@ CHANGELOG
 0.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Change Redmine integration so it does not require a plugin on the Redmine
+  server. Users upgrading need to configure the name of the activity to use.
+- Multiple Redmine servers are now supported (see README.txt).
 
 
 0.2.0 (2010-09-28)
