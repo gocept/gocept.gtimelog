@@ -187,8 +187,7 @@ class RedmineConnection(object):
 
     def get_subject(self, issue_id, project):
         self.login()
-        url = self.url + '/issues/%s.xml' % issue_id
-        response = self.opener.open(url).read()
+        response = self.open('/issues/%s.xml' % issue_id)
         issue = lxml.objectify.fromstring(response)
         return unicode(issue.subject)
 
