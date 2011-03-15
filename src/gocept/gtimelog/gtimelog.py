@@ -30,6 +30,9 @@ ui_file = os.path.join(resource_dir, "gtimelog.glade")
 icon_file = os.path.join(resource_dir, "gtimelog-small.png")
 
 
+log = logging.getLogger(__name__)
+
+
 def calc_duration(duration):
     """Calculates duration and returns tuple (h, m)"""
     return divmod((duration.days * 24 * 60 + duration.seconds // 60), 60)
@@ -1401,6 +1404,7 @@ class MainWindow(object):
             collmex = gocept.gtimelog.collmex.Collmex(self.settings)
             collmex.report(window.all_entries())
         except Exception, err:
+            log.error('Error filling collmex', exc_info=True)
             message = "Collmex: %s" % err
         else:
             message = "Collmex: success "
@@ -1639,8 +1643,12 @@ def main(argv=None):
     # Start logging
     log_handler = LogWindowHandler(main_window)
     logging.root.addHandler(log_handler)
+    stdout = logging.StreamHandler(sys.stdout)
+    stdout.setFormatter(logging.Formatter(
+        '%(asctime)s %(name)s %(levelname)s: %(message)s'))
+    logging.root.addHandler(stdout)
     logging.root.setLevel(settings.log_level)
-    print 'Logging is set to level %s' % settings.log_level
+    log.debug('Logging is set to level %s' % settings.log_level)
 
     # start gtimelog hidden to tray
     if "--start-hidden" in argv:
