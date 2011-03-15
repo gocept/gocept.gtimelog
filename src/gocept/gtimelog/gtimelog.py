@@ -1645,7 +1645,7 @@ def main(argv=None):
     logging.root.addHandler(log_handler)
     stdout = logging.StreamHandler(sys.stdout)
     stdout.setFormatter(logging.Formatter(
-        '%(asctime)s %(name)s %(levelname)s: %(message)s'))
+        '%(asctime)s %(levelname)s %(name)s: %(message)s'))
     logging.root.addHandler(stdout)
     logging.root.setLevel(settings.log_level)
     log.debug('Logging is set to level %s' % settings.log_level)
