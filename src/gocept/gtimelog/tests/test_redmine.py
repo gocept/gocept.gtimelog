@@ -49,7 +49,7 @@ class ConvertTimelogTest(unittest.TestCase):
         entries = convert(window)
         self.assertEqual(2, len(entries))
         self.assertEqual(2.25, entries[0].duration)
-        self.assertEqual('foo, #123: foo', entries[0].comment)
+        self.assertEqual('#123: foo, #123: foo', entries[0].comment)
         self.assertEqual(1, entries[1].duration)
 
     def test_extract_project_from_comment(self):
@@ -72,9 +72,15 @@ class ParseCommentTest(unittest.TestCase):
 
     def test_project_activity_issue_comment(self):
         self.entry.add_comment('Operations: Programming: #123: foo bar')
-        self.assertEqual('foo bar', self.entry.comment)
+        self.assertEqual('#123: foo bar', self.entry.comment)
         self.entry.add_comment('Operations: Programming: #123: baz qux')
-        self.assertEqual('foo bar, baz qux', self.entry.comment)
+        self.assertEqual('#123: foo bar, #123: baz qux', self.entry.comment)
+
+    def test_project_activity_issue_no_colon_comment(self):
+        self.entry.add_comment('Operations: Programming: #123 foo bar')
+        self.assertEqual('#123 foo bar', self.entry.comment)
+        self.entry.add_comment('Operations: Programming: #123 baz qux')
+        self.assertEqual('#123 foo bar, #123 baz qux', self.entry.comment)
 
     def test_no_project(self):
         self.entry.add_comment('#123: foo')

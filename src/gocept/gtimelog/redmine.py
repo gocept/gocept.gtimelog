@@ -25,16 +25,10 @@ class TimelogEntry(object):
 
     def add_comment(self, comment):
         parts = re.split('\s*:\s*', comment)
-        try:
-            if parts[2].startswith('#'):
-                comment = parts[3:]
-            else:
-                comment = parts[2:]
-            comment = ': '.join(comment)
-        except IndexError:
-            pass
+        if len(parts) > 2:
+            comment = ': '.join(parts[2:])
         if self.comment:
-            comment = ', ' + comment
+            self.comment += ', '
         self.comment += comment
 
 
