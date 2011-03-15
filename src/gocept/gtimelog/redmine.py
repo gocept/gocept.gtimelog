@@ -1,10 +1,14 @@
 import cookielib
 import datetime
+import logging
 import lxml.html.soupparser
 import lxml.objectify
 import re
 import urllib
 import urllib2
+
+
+log = logging.getLogger(__name__)
 
 
 class TimelogEntry(object):
@@ -103,6 +107,9 @@ class RedmineTimelogUpdater(object):
             try:
                 redmine.update_entry(entry)
             except urllib2.HTTPError, e:
+                log.error(
+                    'Error updating #%s (%s)' % (entry.issue, entry.date),
+                    exc_info=True)
                 raise RuntimeError(
                     '#%s %s: %s' % (entry.issue, entry.date, str(e)))
 
