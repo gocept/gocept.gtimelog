@@ -189,7 +189,7 @@ class RedmineConnection(object):
         self.login()
         body = self.open('/issues/%s' % issue_id)
         html = lxml.html.soupparser.fromstring(body)
-        subject = html.xpath('//*[@class="subject"]//h3')
+        subject = html.xpath('//*[contains(@class, "issue")]//h3')
         return unicode(subject[0].text)
 
     def login(self):
