@@ -187,9 +187,10 @@ class RedmineConnection(object):
 
     def get_subject(self, issue_id, project):
         self.login()
-        response = self.open('/issues/%s.xml' % issue_id)
-        issue = lxml.objectify.fromstring(response)
-        return unicode(issue.subject)
+        body = self.open('/issues/%s' % issue_id)
+        html = lxml.html.soupparser.fromstring(body)
+        subject = html.xpath('//*[@class="subject"]//h3')
+        return unicode(subject[0].text)
 
     def login(self):
         if self.token:
