@@ -1408,7 +1408,6 @@ class MainWindow(object):
             message = "Collmex: %s" % err
         else:
             message = "Collmex: success "
-            message += self.fill_redmine(window)
         self.statusbar.post_message(message)
 
     def on_fill_hour_tracker_activate(self, widget):
@@ -1425,21 +1424,26 @@ class MainWindow(object):
             tracker.setHours(window.all_entries())
             tracker.saveWeek()
         except Exception, err:
+            log.error('Error filling HT', exc_info=True)
             message = "HT: %s" % err
         else:
             message = "HT: success "
-            message += self.fill_redmine(window)
         self.statusbar.post_message(message)
 
-    def fill_redmine(self, window):
+    def on_fill_redmine_activate(self, widget):
+        day = self.choose_date()
+        if not day:
+            return
+        window = self.weekly_window(day=day)
         try:
             redupdate = gocept.gtimelog.redmine.RedmineTimelogUpdater(
                 self.settings)
             redupdate.update(window)
-            message = " Redmine: success"
+            message = "Redmine: success"
         except Exception, err:
-            message = " Redmine: %s" % err
-        return message
+            log.error('Error filling Redmine', exc_info=True)
+            message = "Redmine: %s" % err
+        self.statusbar.post_message(message)
 
     def on_edit_timelog_activate(self, widget):
         """File -> Edit timelog.txt"""

@@ -7,6 +7,8 @@ CHANGELOG
 - Change Redmine integration so it does not require a plugin on the Redmine
   server. Users upgrading need to configure the name of the activity to use.
 - Multiple Redmine servers are now supported (see README.txt).
+- Filling Redmine has been extracted into its own command and is no longer done
+  automatically along with HT or Collmex (#8884).
 
 
 0.2.0 (2010-09-28)
