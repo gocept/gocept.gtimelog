@@ -1396,7 +1396,10 @@ class MainWindow(object):
         day = self.choose_date()
         if not day:
             return
-        window = self.weekly_window(day=day)
+        min = datetime.datetime.combine(
+            day, self.timelog.virtual_midnight)
+        max = min + datetime.timedelta(days=1)
+        window = self.timelog.window_for(min, max)
         try:
             collmex = gocept.gtimelog.collmex.Collmex(self.settings)
             collmex.report(window.all_entries())

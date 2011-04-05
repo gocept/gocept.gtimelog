@@ -9,7 +9,6 @@ CHANGELOG
 - Multiple Redmine servers are now supported (see README.txt).
 - Filling Redmine has been extracted into its own command and is no longer done
   automatically along with HT or Collmex (#8884).
-- Collmex upload includes the whole week, not just a single day (#8808).
 - Fix encoding problem with HT (#6474).
 
 
