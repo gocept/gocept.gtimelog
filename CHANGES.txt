@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-0.3.1 (unreleased)
+0.3.1 (2011-04-06)
 ------------------
 
 - Update URLs for Redmine 1.1
