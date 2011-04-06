@@ -70,8 +70,8 @@ class Collmex(object):
             act['Pausen'] = break_
             activities.append(act)
 
-        for act in sorted(activities,
-                          key=lambda x:(x['Projekt Nr'], x['Von'])):
+        for act in sorted(
+            activities, key=lambda x: (x['Projekt Nr'], x['Datum'], x['Von'])):
             self.collmex.create(act)
 
         try:
