@@ -5,6 +5,7 @@ CHANGELOG
 ------------------
 
 - Collmex uploads the whole week (#8808).
+- Fix bug with umlauts in Collmex (#6474).
 
 
 0.3.1 (2011-04-06)

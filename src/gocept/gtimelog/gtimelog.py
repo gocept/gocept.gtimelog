@@ -188,7 +188,7 @@ class TimeWindow(object):
             except ValueError:
                 continue
             else:
-                entry = entry.strip()
+                entry = unicode(entry.strip(), 'utf-8')
                 if callback:
                     callback(entry)
                 if self.min_timestamp <= time < self.max_timestamp:
@@ -490,7 +490,7 @@ class TimeLog(object):
         if last and different_days(now, last, self.virtual_midnight):
             # next day: reset self.window
             self.reread()
-        self.window.items.append((now, entry))
+        self.window.items.append((now, unicode(entry, 'utf-8')))
         line = '%s: %s' % (now.strftime("%Y-%m-%d %H:%M"), entry)
         self.raw_append(line)
 
