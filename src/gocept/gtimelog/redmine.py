@@ -158,21 +158,22 @@ class RedmineConnection(object):
         project_url = html.xpath(
             '//*[@id="main-menu"]//a[@class="overview"]')[0].get('href')
         project_url = '/'.join(project_url.split('/')[-2:])
-        self.open('/%s/timelog/edit' % project_url, **params)
+        self.open('/%s/timelog/create' % project_url, **params)
 
     def delete_existing_entries(self, html):
         row = None
         for row in html.xpath(
             '//td[@class="user" and text() = "%s"]/..' % self.full_name):
-            delete_url = row.xpath('//a[contains(@href, "/destroy")]')
-            if not len(delete_url):
+            edit_url = row.xpath('//a[contains(@href, "/edit")]')
+            if not len(edit_url):
                 raise urllib2.HTTPError(
                     None, '403', 'No permission to delete time entry',
                     None, None)
-            delete_url = delete_url[0].get('href')
-            id = delete_url.split('/')[-2]
+            edit_url = edit_url[0].get('href')
+            id = edit_url.split('/')[-2]
             self.open(
-                '/time_entries/%s/destroy' % id, authenticity_token=self.token)
+                '/time_entries/%s' % id, _method='delete',
+                authenticity_token=self.token)
 
     def populate_activity_ids(self, entry):
         # unfortunately, the "create time entry" form is only available on an
