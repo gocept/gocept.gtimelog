@@ -110,7 +110,7 @@ class RedmineTimelogUpdater(object):
 
     def get_subject(self, issue_id, project):
         redmine = self.find_connection(project.match_string)
-        return redmine and redmine.get_subject(issue_id, project)
+        return redmine and redmine.get_subject(issue_id)
 
 
 class ApiKeyResource(ActiveResource):
