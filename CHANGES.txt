@@ -4,6 +4,7 @@ CHANGELOG
 0.3.2 (unreleased)
 ------------------
 
+- Change Redmine integration to use the REST API (#8901).
 - Collmex uploads the whole week (#8808).
 - Fix bug with umlauts in Collmex (#6474).
 

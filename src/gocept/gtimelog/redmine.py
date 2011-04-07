@@ -1,11 +1,7 @@
-import cookielib
+from pyactiveresource.activeresource import ActiveResource
 import datetime
 import logging
-import lxml.html.soupparser
-import lxml.objectify
 import re
-import urllib
-import urllib2
 
 
 log = logging.getLogger(__name__)
@@ -14,7 +10,7 @@ log = logging.getLogger(__name__)
 class TimelogEntry(object):
 
     def __init__(self, date, duration, issue, comment):
-        self.date = date
+        self.date = date.strftime('%Y-%m-%d')
         self.duration = duration
         self.issue = issue
         self.project = self.parse_project(comment)
@@ -106,7 +102,7 @@ class RedmineTimelogUpdater(object):
 
             try:
                 redmine.update_entry(entry)
-            except urllib2.HTTPError, e:
+            except Exception, e:
                 log.error(
                     'Error updating #%s (%s)' % (entry.issue, entry.date),
                     exc_info=True)
@@ -126,103 +122,30 @@ class RedmineConnection(object):
         self.password = password
         self.activity = activity
 
-        self.cj = cookielib.CookieJar()
-        self.opener = urllib2.build_opener(
-            urllib2.HTTPCookieProcessor(self.cj))
-        self.token = None
-        self.activity_id = {}
+    def api(self, type_):
+        return type(type_, (ActiveResource,), {
+            '_site': self.url,
+            '_user': self.username,
+            '_password': self.password})
 
     def update_entry(self, entry):
-        self.login()
-        self.populate_activity_ids(entry)
+        self._delete_existing_entries(entry)
+        self.api('TimeEntry').create(dict(
+            hours=entry.duration,
+            issue_id=entry.issue,
+            spent_on=entry.date,
+            comments=entry.comment,
+            activity_id=self.activity))
 
-        # we do two things with one request here: delete existing entries and
-        # retrieve the link we need to create the new entry. This is ugly from
-        # the code perspective (too high coupling), but good from a performance
-        # perspective (as few HTTP requests as possible)
-        body = self.open('/issues/%s/time_entries?%s' % (
-            entry.issue, urllib.urlencode({
-                'from': entry.date, 'to': entry.date})))
-        html = lxml.html.soupparser.fromstring(body)
+    def get_subject(self, issue_id):
+        return self.api('Issue').find(issue_id).subject
 
-        self.delete_existing_entries(html)
-
-        params = {
-            'authenticity_token': self.token,
-            'time_entry[hours]': entry.duration,
-            'time_entry[issue_id]': entry.issue,
-            'time_entry[spent_on]': entry.date,
-            'time_entry[comments]': entry.comment,
-            'time_entry[activity_id]': self.activity_id[self.activity]
-        }
-        project_url = html.xpath(
-            '//*[@id="main-menu"]//a[@class="overview"]')[0].get('href')
-        project_url = '/'.join(project_url.split('/')[-2:])
-        self.open('/%s/timelog/create' % project_url, **params)
-
-    def delete_existing_entries(self, html):
-        row = None
-        for row in html.xpath(
-            '//td[@class="user" and text() = "%s"]/..' % self.full_name):
-            edit_url = row.xpath('//a[contains(@href, "/edit")]')
-            if not len(edit_url):
-                raise urllib2.HTTPError(
-                    None, '403', 'No permission to delete time entry',
-                    None, None)
-            edit_url = edit_url[0].get('href')
-            id = edit_url.split('/')[-2]
-            self.open(
-                '/time_entries/%s' % id, _method='delete',
-                authenticity_token=self.token)
-
-    def populate_activity_ids(self, entry):
-        # unfortunately, the "create time entry" form is only available on an
-        # issue, not globally
-        if self.activity_id:
-            return
-        body = self.open('/issues/%s/time_entries/new' % entry.issue)
-        html = lxml.html.soupparser.fromstring(body)
-        for option in html.xpath(
-            '//select[@id="time_entry_activity_id"]/option[@value != ""]'):
-            self.activity_id[option.text] = option.get('value')
-
-    def get_subject(self, issue_id, project):
-        self.login()
-        body = self.open('/issues/%s' % issue_id)
-        html = lxml.html.soupparser.fromstring(body)
-        subject = html.xpath('//*[contains(@class, "issue")]//h3')
-        return unicode(subject[0].text)
-
-    def login(self):
-        if self.token:
-            return
-        body = self.open('/login')
-        html = lxml.html.soupparser.fromstring(body)
-        login_token = html.xpath(
-            '//input[@name="authenticity_token"]')[0].get('value')
-        self.open('/login',
-                  authenticity_token=login_token,
-                  password=self.password,
-                  username=self.username)
-        body = self.open('/my/account')
-        html = lxml.html.soupparser.fromstring(body)
-        self.token = html.xpath(
-            '//input[@name="authenticity_token"]')[0].get('value')
-
-        # we need the full name to parse the time entries table
-        firstname = html.xpath('//input[@id="user_firstname"]')[0].get('value')
-        lastname = html.xpath('//input[@id="user_lastname"]')[0].get('value')
-        self.full_name = '%s %s' % (firstname, lastname)
-
-    def open(self, path, **params):
-        if not params:
-            params = None
-        else:
-            params = urllib.urlencode(params)
-        response = self.opener.open(self.url + path, params)
-        body = response.read()
-        # XXX kludgy error handling
-        if 'Invalid user or password' in body:
-            raise urllib2.HTTPError(
-                None, '403', 'Invalid user or password', None, None)
-        return body
+    def _delete_existing_entries(self, timelog_entry):
+        user = self.api('User').get('current')
+        entries = self.api('TimeEntry').find(issue_id=timelog_entry.issue)
+        for entry in entries:
+            if entry.user.id != user['id']:
+                continue
+            if entry.spent_on != timelog_entry.date:
+                continue
+            entry.destroy()
