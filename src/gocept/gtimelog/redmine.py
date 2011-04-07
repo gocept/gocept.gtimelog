@@ -82,8 +82,7 @@ class RedmineTimelogUpdater(object):
         self.connections = []
         for config in settings.redmines:
             redmine = RedmineConnection(
-                config['url'], config['username'], config['password'],
-                config['activity'])
+                config['url'], config['api_key'], config['activity'])
             redmine.projects = config['projects']
             self.connections.append(redmine)
 
@@ -116,17 +115,16 @@ class RedmineTimelogUpdater(object):
 
 class RedmineConnection(object):
 
-    def __init__(self, url, username, password, activity):
+    def __init__(self, url, api_key, activity):
         self.url = url
-        self.username = username
-        self.password = password
+        self.api_key
         self.activity = activity
 
     def api(self, type_):
         return type(type_, (ActiveResource,), {
             '_site': self.url,
-            '_user': self.username,
-            '_password': self.password})
+            '_user': self.api_key,
+            '_password': ''})
 
     def update_entry(self, entry):
         self._delete_existing_entries(entry)
