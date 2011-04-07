@@ -10,6 +10,7 @@ import transaction
 
 log = logging.getLogger(__name__)
 
+
 def get_collmex(settings):
     return gocept.collmex.collmex.Collmex(
         settings.collmex_customer_id,
