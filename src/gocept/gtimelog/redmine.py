@@ -113,15 +113,26 @@ class RedmineTimelogUpdater(object):
         return redmine and redmine.get_subject(issue_id, project)
 
 
+class ApiKeyResource(ActiveResource):
+    """Some Redmine installations have trouble with Basic Auth, so we pass the
+    API key along with every request instead."""
+
+    @classmethod
+    def _query_string(cls, query_options):
+        if query_options is not None:
+            query_options['key'] = cls._user
+        return super(ApiKeyResource, cls)._query_string(query_options)
+
+
 class RedmineConnection(object):
 
     def __init__(self, url, api_key, activity):
         self.url = url
-        self.api_key
+        self.api_key = api_key
         self.activity = activity
 
     def api(self, type_):
-        return type(type_, (ActiveResource,), {
+        return type(type_, (ApiKeyResource,), {
             '_site': self.url,
             '_user': self.api_key,
             '_password': ''})
