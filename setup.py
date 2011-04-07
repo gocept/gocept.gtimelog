@@ -30,6 +30,7 @@ setup(
         'BeautifulSoup',
         'lxml',
         'gocept.collmex>=0.7',
+        'pyactiveresource==1.2dev-r77',
     ],
     zip_safe=False,
     entry_points="""
