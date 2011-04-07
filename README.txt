@@ -197,8 +197,7 @@ if the following configuration is provided:
 
     [redmine]
     url=https://www.my-redmine.com/
-    username=user
-    password=secret
+    api_key=123deadbeef
     activity=9
     projects = My_Project1
                My_Project2
@@ -207,6 +206,8 @@ Only tasks that belong to the projects listed there will be uploaded to Redmine.
 
 You can provide multiple [redmine] sections, but take care to give them unique
 names (e. g. [redmine1], [redmine2], [redmine-foo], [redmine-bar]).
+
+The api_key is available on the "My account" page.
 
 Unfortunately, the Redmine activity can't be retrieved currently, so the ID to
 use needs to be given in the configuration. You can look it up in the HTML
