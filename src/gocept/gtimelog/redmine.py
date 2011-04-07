@@ -119,8 +119,9 @@ class ApiKeyResource(ActiveResource):
 
     @classmethod
     def _query_string(cls, query_options):
-        if query_options is not None:
-            query_options['key'] = cls._user
+        if query_options is None:
+            query_options = {}
+        query_options['key'] = cls._user
         return super(ApiKeyResource, cls)._query_string(query_options)
 
 
