@@ -4,7 +4,7 @@ CHANGELOG
 0.4.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix bug that too many Redmine time entries were deleted (#8909).
 
 
 0.4.0 (2011-04-07)

@@ -156,6 +156,10 @@ class RedmineConnection(object):
         for entry in entries:
             if entry.user.id != user['id']:
                 continue
+            # Redmine returns time entries of subtasks, too, so we need to
+            # filter those
+            if entry.issue != timelog_entry.issue:
+                continue
             if entry.spent_on != timelog_entry.date:
                 continue
             entry.destroy()
