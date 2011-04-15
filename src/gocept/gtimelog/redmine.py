@@ -1,4 +1,5 @@
 from pyactiveresource.activeresource import ActiveResource
+from zope.cachedescriptors.property import Lazy as cachedproperty
 import datetime
 import logging
 import re
@@ -138,6 +139,10 @@ class RedmineConnection(object):
             '_user': self.api_key,
             '_password': ''})
 
+    @cachedproperty
+    def user(self):
+        return self.api('User').get('current')
+
     def update_entry(self, entry):
         self._delete_existing_entries(entry)
         self.api('TimeEntry').create(dict(
@@ -151,10 +156,9 @@ class RedmineConnection(object):
         return self.api('Issue').find(issue_id).subject
 
     def _delete_existing_entries(self, timelog_entry):
-        user = self.api('User').get('current')
         entries = self.api('TimeEntry').find(issue_id=timelog_entry.issue)
         for entry in entries:
-            if entry.user.id != user['id']:
+            if entry.user.id != self.user['id']:
                 continue
             # Redmine returns time entries of subtasks, too, so we need to
             # filter those
