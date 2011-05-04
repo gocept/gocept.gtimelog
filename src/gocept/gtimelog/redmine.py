@@ -15,6 +15,7 @@ class TimelogEntry(object):
         self.duration = duration
         self.issue = issue
         self.project = self.parse_project(comment)
+        self.comments = []
         self.comment = ''
         self.add_comment(comment)
 
@@ -25,12 +26,12 @@ class TimelogEntry(object):
             return parts[0]
 
     def add_comment(self, comment):
-        parts = re.split('\s*:\s*', comment)
-        if len(parts) > 2:
-            comment = ': '.join(parts[2:])
-        if self.comment:
-            self.comment += ', '
-        self.comment += comment
+        if comment.count(':') >= 2:
+            comment = comment.split(':', 2)[-1]
+        comment = comment.strip()
+        if comment and comment not in self.comments:
+            self.comments.append(comment)
+            self.comment = ', '.join(self.comments)
 
 
 def duration_to_float(duration):

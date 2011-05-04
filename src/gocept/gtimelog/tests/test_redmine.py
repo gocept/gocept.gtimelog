@@ -49,7 +49,7 @@ class ConvertTimelogTest(unittest.TestCase):
         entries = convert(window)
         self.assertEqual(2, len(entries))
         self.assertEqual(2.25, entries[0].duration)
-        self.assertEqual('#123: foo, #123: foo', entries[0].comment)
+        self.assertEqual('#123: foo', entries[0].comment)
         self.assertEqual(1, entries[1].duration)
 
     def test_extract_project_from_comment(self):
@@ -90,6 +90,14 @@ class ParseCommentTest(unittest.TestCase):
         self.assertEqual('#123: foo, #123: bar', self.entry.comment)
 
     def test_no_issue(self):
+        self.entry.add_comment('Operations: Programming: foo')
+        self.assertEqual('foo', self.entry.comment)
+        self.entry.add_comment('Operations: Programming: bar')
+        self.assertEqual('foo, bar', self.entry.comment)
+
+    def test_no_duplicate_comments(self):
+        self.entry.add_comment('Operations: Programming: foo')
+        self.assertEqual('foo', self.entry.comment)
         self.entry.add_comment('Operations: Programming: foo')
         self.assertEqual('foo', self.entry.comment)
         self.entry.add_comment('Operations: Programming: bar')
