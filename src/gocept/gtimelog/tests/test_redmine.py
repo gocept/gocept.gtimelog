@@ -68,7 +68,8 @@ class ConvertTimelogTest(unittest.TestCase):
 class ParseCommentTest(unittest.TestCase):
 
     def setUp(self):
-        self.entry = gocept.gtimelog.redmine.TimelogEntry(None, None, None, '')
+        self.entry = gocept.gtimelog.redmine.TimelogEntry(
+            datetime.datetime(2011, 5, 4, 3, 2), None, None, '')
 
     def test_project_activity_issue_comment(self):
         self.entry.add_comment('Operations: Programming: #123: foo bar')
