@@ -102,3 +102,9 @@ class ParseCommentTest(unittest.TestCase):
         self.assertEqual('foo', self.entry.comment)
         self.entry.add_comment('Operations: Programming: bar')
         self.assertEqual('foo, bar', self.entry.comment)
+
+    def test_comments_max_length(self):
+        self.entry.add_comment('foo')
+        self.assertEqual('foo', self.entry.comment)
+        self.entry.add_comment(256*'x')
+        self.assertEqual('foo, '+250*'x', self.entry.comment)

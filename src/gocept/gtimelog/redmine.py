@@ -8,6 +8,11 @@ import re
 log = logging.getLogger(__name__)
 
 
+# The following value was determined by experimentation with gocept's redmine
+# instance on May 5, 2011.
+COMMENT_MAX_LENGTH = 255
+
+
 class TimelogEntry(object):
 
     def __init__(self, date, duration, issue, comment):
@@ -31,7 +36,7 @@ class TimelogEntry(object):
         comment = comment.strip()
         if comment and comment not in self.comments:
             self.comments.append(comment)
-            self.comment = ', '.join(self.comments)
+            self.comment = ', '.join(self.comments)[:COMMENT_MAX_LENGTH]
 
 
 def duration_to_float(duration):
