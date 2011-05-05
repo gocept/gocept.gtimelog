@@ -4,7 +4,8 @@ CHANGELOG
 0.4.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Make sure timelog comments uploaded to Redmine are at most 255 characters
+  long, avoid including duplicate comments in the same time entry (#9016).
 
 
 0.4.1 (2011-04-11)
