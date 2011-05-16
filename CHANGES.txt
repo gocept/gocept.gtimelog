@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-0.4.2 (unreleased)
+0.4.2 (2011-05-16)
 ------------------
 
 - Make sure timelog comments uploaded to Redmine are at most 255 characters
