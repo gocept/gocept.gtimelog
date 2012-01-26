@@ -4,6 +4,7 @@
 import datetime
 import gocept.collmex.collmex
 import gocept.collmex.model
+import gocept.gtimelog.core
 import gocept.gtimelog.redmine
 import logging
 import transaction
@@ -158,3 +159,33 @@ def match(match_string, matchables):
     if candidates:
         return candidates[0]
     raise ValueError("Couldn't match %r" % match_string)
+
+
+class TaskList(gocept.gtimelog.core.TaskList):
+
+    def __init__(self, filename, settings):
+        self.settings = settings
+        super(TaskList, self).__init__(filename)
+
+    def download(self):
+        collmex = gocept.gtimelog.collmex.get_collmex(self.settings)
+        projects = collmex.get_projects()
+        products = dict((p['Produktnummer'], p) for p in
+                        collmex.get_products())
+        lang = self.settings.collmex_task_language
+        tasks = open(self.filename, 'w')
+        for project in projects:
+            product = products.get(project['Produktnummer'])
+
+            if project['Abgeschlossen'] != u'0':
+                continue
+            if lang != 'de' and product and product['Bezeichnung Eng']:
+                task_desc = product['Bezeichnung Eng']
+            else:
+                task_desc = project['Satz Bezeichnung']
+            tasks.write('%s: %s\n' % (project['Bezeichnung'], task_desc))
+        tasks.close()
+
+    def reload(self):
+        self.download()
+        self.load()

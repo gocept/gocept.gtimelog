@@ -1,10 +1,10 @@
-CHANGELOG
+Changelog
 =========
 
 0.4.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Introduce command-line upload utility ``gtimelog-cli`` (#10105).
 
 
 0.4.2 (2011-05-16)

@@ -1,26 +1,22 @@
-# Copyright (c) 2009 gocept gmbh & co. kg
+# Copyright (c) 2009-2012 gocept gmbh & co. kg
 # See also LICENSE.txt
-"""Setup for gocept.gtimelog package"""
-
-import sys
-import os.path
 
 from setuptools import setup, find_packages
+import os.path
 
 
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-name = 'gocept.gtimelog'
 
 setup(
-    name=name,
+    name='gocept.gtimelog',
     version='0.4.3dev',
     license='ZPL 2.1',
     description='gocept fork of gtimelog.',
     long_description=read('README.txt'),
     author='gocept gmbh & co. kg',
-    author_email='sw@gocept.com',
+    author_email='mail@gocept.com',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=['gocept'],
@@ -31,10 +27,12 @@ setup(
         'lxml',
         'gocept.collmex>=0.7',
         'pyactiveresource==1.2dev-r77',
+        'transaction',
         'zope.cachedescriptors',
     ],
     zip_safe=False,
     entry_points="""
         [console_scripts]
         gtimelog = gocept.gtimelog.gtimelog:main
+        gtimelog-cli = gocept.gtimelog.cli:main
     """)

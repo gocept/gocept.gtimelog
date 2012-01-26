@@ -1,26 +1,24 @@
-import pkg_resources
-pkg_resources.require('lxml')
+# Copyright (c) 2012 gocept gmbh & co. kg
+# See also LICENSE.txt
 
+from datetime import timedelta
+from lxml import etree
+import gocept.gtimelog.core
+import logging
+import os.path
+import time
 import urllib
 import urllib2
-from datetime import timedelta
-
-from lxml import etree
-
-import gtimelog
-import logging
-
-
-import time
 
 log = logging.getLogger(__name__)
+
 
 class Memoize(object):
     """Memoize With Timeout"""
     _caches = {}
     _timeouts = {}
 
-    def __init__(self,timeout=2):
+    def __init__(self, timeout=2):
         self.timeout = timeout
 
     def collect(self):
@@ -28,7 +26,8 @@ class Memoize(object):
         for func in self._caches:
             cache = {}
             for key in self._caches[func]:
-                if (time.time() - self._caches[func][key][1]) < self._timeouts[func]:
+                if ((time.time() - self._caches[func][key][1])
+                    < self._timeouts[func]):
                     cache[key] = self._caches[func][key]
             self._caches[func] = cache
 
@@ -45,7 +44,7 @@ class Memoize(object):
                 if (time.time() - v[1]) > self.timeout:
                     raise KeyError
             except KeyError:
-                v = self.cache[key] = f(*args,**kwargs),time.time()
+                v = self.cache[key] = f(*args, **kwargs), time.time()
             return v[0]
 
         return func
@@ -117,7 +116,7 @@ class HourTracker(object):
         self.tasks = tasks = {}
         for task in tree.xpath('//select[@name="t1"]/option'):
             tasks[task.text.lower().strip()] = task.get('value')
-            
+
     def setHours(self, hour_tuples):
         self.hours = {}
         for start, stop, duration, entry in hour_tuples:
@@ -134,7 +133,7 @@ class HourTracker(object):
                 desc = desc[:-2]
             log.debug("%s -> %s, [%s] [%s] %s %s" % (
                 start, stop, project, task, duration, desc))
-            
+
             weekday = self.days[start.weekday()]
 
             self.hours.setdefault(project, {}). \
@@ -156,7 +155,7 @@ class HourTracker(object):
         # read the contents of result, otherwise python2.5 will not do the
         # request
         result.readlines()
-    
+
     def _get_empty_form(self):
         form = {}
         for name in self.tree.xpath('(//select|//input)/@name'):
@@ -175,7 +174,7 @@ class HourTracker(object):
                 for day, entries in days.items():
                     time = sum((e[0] for e in entries), timedelta(0))
                     time = time.seconds / 3600.0
-                    time = round(time * 4 ) / 4  # round to .25
+                    time = round(time * 4) / 4  # round to .25
                     data['%s%d' % (day, row)] = time
 
                     day_comments = (e[1].strip() for e in entries)
@@ -240,13 +239,82 @@ class HourTracker(object):
         if match is None:
             raise KeyError("Could not match task %r" % task)
         return match
-    
+
     @classmethod
     def _transform_project(cls, project):
         project = project.split('-')[0]
         return project.strip().lower().replace('_', ' ')
 
 
-if __name__ == '__main__':
-    hour = HourTracker()
-    hour.loadWeek(10, 2006)
+class TaskList(gocept.gtimelog.core.TaskList):
+    """Task list stored on a remote server.
+
+    Keeps a cached copy of the list in a local file, so you can use it offline.
+    """
+
+    def __init__(self, settings, projects_filename, tasks_filename):
+        self.project_url = settings.project_list_url
+        self.task_url = settings.task_list_url
+        self.projects_file = projects_filename
+        super(TaskList, self).__init__(tasks_filename)
+        self.first_time = True
+
+        self.hours = HourTracker(settings)
+
+    def check_reload(self):
+        """Check whether the task list needs to be reloaded.
+
+        Download the task list if this is the first time, and a cached copy is
+        not found.
+
+        Returns True if the file was reloaded.
+        """
+        if self.first_time:
+            self.first_time = False
+            if not os.path.exists(self.filename) or not os.path.exists(
+                self.projects_file):
+                self.download()
+                return True
+        return super(TaskList, self).check_reload()
+
+    def download(self):
+        """Download the task list from the server."""
+        if self.loading_callback:
+            self.loading_callback()
+        try:
+            f = file(self.filename, 'w')
+            f.write(self.hours.getPage(self.task_url))
+            f.close()
+
+            f = file(self.projects_file, 'w')
+            f.write(self.hours.getPage(self.project_url))
+            f.close()
+        except IOError:
+            if self.error_callback:
+                self.error_callback()
+        self.load()
+        if self.loaded_callback:
+            self.loaded_callback()
+
+    def load(self):
+        """Load task list from a file named self.filename."""
+        groups = {}
+        self.last_mtime = self.get_mtime()
+        try:
+            for project in file(self.projects_file):
+                project = project.strip()
+                if not project or project.startswith('#'):
+                    continue
+                for task in  file(self.filename):
+                    if not task or task.startswith('#'):
+                        continue
+                    groups.setdefault(project, []).append(
+                        ' '.join(task.split()[1:]))
+        except IOError:
+            pass  # the file's not there, so what?
+        self.groups = groups.items()
+        self.groups.sort()
+
+    def reload(self):
+        """Reload the task list."""
+        self.download()
