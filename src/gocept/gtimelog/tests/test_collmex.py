@@ -5,6 +5,7 @@
 from gocept.gtimelog.collmex import match, MatchableObject
 import gocept.collmex.collmex
 import gocept.collmex.model
+import gocept.gtimelog.core
 import unittest
 
 
@@ -83,7 +84,7 @@ class CollmexTest(unittest.TestCase):
 
     def test_import_projects_and_tasks(self):
         collmex = gocept.gtimelog.collmex.Collmex(
-            gocept.gtimelog.gtimelog.Settings())
+            gocept.gtimelog.core.Settings())
         projects = collmex.projects
         self.assertEquals(2, len(projects))
         zodbi = projects[0]
@@ -99,7 +100,7 @@ class CollmexTest(unittest.TestCase):
 
     def test_split_timelog_entry(self):
         collmex = gocept.gtimelog.collmex.Collmex(
-            gocept.gtimelog.gtimelog.Settings())
+            gocept.gtimelog.core.Settings())
 
         entry = 'I_ZODB: Research: Testing the timelog split'
         r = collmex.mapEntry(entry)

@@ -1,11 +1,15 @@
+# Copyright (c) 2011 gocept gmbh & co. kg
+# See also LICENSE.txt
+
 from gocept.gtimelog.redmine import timelog_to_issues as convert
 import datetime
-import gocept.gtimelog.gtimelog
+import gocept.gtimelog.core
 import gocept.gtimelog.redmine
+import gocept.gtimelog.util
 import unittest
 
 
-class TestWindow(gocept.gtimelog.gtimelog.TimeWindow):
+class TestWindow(gocept.gtimelog.core.TimeWindow):
 
     def __init__(self):
         self.items = []
@@ -13,7 +17,7 @@ class TestWindow(gocept.gtimelog.gtimelog.TimeWindow):
 
     def add(self, timestamp, entry):
         self.items.append(
-            (gocept.gtimelog.gtimelog.parse_datetime(timestamp), entry))
+            (gocept.gtimelog.util.parse_datetime(timestamp), entry))
         self.min_timestamp = self.items[0][0]
         self.max_timestamp = self.items[-1][0]
 
