@@ -1,8 +1,8 @@
 Changelog
 =========
 
-0.4.3 (unreleased)
-------------------
+0.5 (2012-01-26)
+----------------
 
 - Introduce command-line upload utility ``gtimelog-cli`` (#10105).
 
