@@ -27,15 +27,15 @@ You can click on those to save typing.  Or you can specify a URL in
 There are three broad categories of activities: ones that count as work (coding,
 planning, writing proposals or reports, answering work-related email), ones
 that don't (browsing the web for fun, reading personal email, chatting with
-a friend on the phone for two hours, going out for a lunch break) and ones 
-which count as "half-work" (This are activities where only half of the time 
-spent for is counted as work. Depending on your employer, time spend in train 
+a friend on the phone for two hours, going out for a lunch break) and ones
+which count as "half-work" (This are activities where only half of the time
+spent for is counted as work. Depending on your employer, time spend in train
 or plane when you do not work as described above, may count as "half-work".)
 
-To indicate which activities are not work related add two asterisks to the 
+To indicate which activities are not work related add two asterisks to the
 activity name. To indicate that an activity is "half-work" add '/2' at the end
-of the activity name. 
-Look at the following examples:
+of the activity name.
+Look at the following examples::
 
   lunch **
   browsing slashdot **
@@ -45,19 +45,19 @@ Look at the following examples:
 GTimeLog displays all the things you've done today, and calculates the total
 time you spent working, and the total time you spent "slacking".  It also
 advises you how much time you still have to work today to get 8 hours of work
-done (the number of hours in a day is configurable in ~/.gtimelog/gtimelogrc).
+done (the number of hours in a day is configurable in ``~/.gtimelog/gtimelogrc``).
 There are two basic views: one shows all the activities in chronological order,
 with starting and ending times; while another groups all entries with the same
 into one activity and just shows the total duration.
 
 At the end of the day you can send off a daily report by choosing File -> Daily
 Report.  A mail program (Mutt in a terminal, unless you have changed it in
-~/.gtimelog/gtimelogrc) will be started with all the activities listed in it.
+``~/.gtimelog/gtimelogrc``) will be started with all the activities listed in it.
 My Mutt configuration lets me edit the report before sending it.
 
 If you make a mistake and type in the wrong activity name, or just forget to
 enter an activity, don't worry.  GTimeLog stores the time log in a simple plain
-text file ~/.gtimelog/timelog.txt.  Every line contains a timestamp and the
+text file ``~/.gtimelog/timelog.txt``.  Every line contains a timestamp and the
 name of the activity that was finished at the time.  All other lines are
 ignored, so you can add comments if you want to -- just make sure no comment
 begins with a timestamp.  You do not have to worry about GTimeLog overwriting
@@ -107,7 +107,7 @@ These tools were designed for easy interoperability.  There are two data
 formats: one is used for timelog.txt, another is used for daily reports.
 They are both human and machine readable, easy to edit, easy to parse.
 
-Timelog.txt is already described above.  Here is a more formal grammar:
+Timelog.txt is already described above.  Here is a more formal grammar::
 
   file ::= (entry|comment)*
 
@@ -120,7 +120,7 @@ Timelog.txt is already described above.  Here is a more formal grammar:
   timestamp is 'YYYY-MM-DD HH:MM' with a single space between the date and
   time.
 
-Daily reports look like this:
+Daily reports look like this::
 
   random text
   random text
@@ -131,7 +131,7 @@ Daily reports look like this:
   Entry title                Duration
   random text
 
-Formal grammar:
+Formal grammar::
 
   report ::= (entry|comment)*
 
@@ -163,7 +163,7 @@ be grouped.  If there is no colon on a line, the task will be grouped under
 Hourtracker
 -----------
 If you're using the hourtracker version from gocept, add a new section
-to your configuration file:
+to your configuration file::
 
     [hours]
     url = http://www.myhourtracker.com/
@@ -172,7 +172,7 @@ to your configuration file:
     tasks = http://www.myhourtracker.com/tasks
     projects = http://www.myhourtracker.com/projects
 
-Specify the projects and tasks like the following example:
+Specify the projects and tasks like the following example::
 
     2006-07-25 09:37: operations: General activities: Morgen meeting
     date       time   project     task                description
@@ -193,7 +193,7 @@ Redmine
 
 If you're using the Redmine issue tracker, you can upload the gtimelog data
 there, too. This will happen automatically with the 'Fill Hour Tracker' command
-if the following configuration is provided:
+if the following configuration is provided::
 
     [redmine]
     url=https://www.my-redmine.com/
@@ -220,7 +220,7 @@ Holidays
 Holidays are indicated by ending a line in '$$$'. Holidays are
 substracted from required work time, so it's necessary to have two
 entries for a holiday those duration is the time you would work when
-you are notin holiday.
+you are not in holiday.
 
 CAUTION: Only use this feature, if you do _not_ want to save your
 holiday times in hourtracker.
