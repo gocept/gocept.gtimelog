@@ -4,7 +4,8 @@ Changelog
 0.6 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Fixed daily and weekly report functions which were broken since version
+  0.5.
 
 
 0.5 (2012-01-26)
