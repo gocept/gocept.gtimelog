@@ -1,6 +1,7 @@
 syntax: glob
 *.pyc
 *.egg-info
+dist
 include
 lib
 eggs
