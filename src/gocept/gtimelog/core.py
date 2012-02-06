@@ -235,7 +235,7 @@ class TimeWindow(object):
         # would give us translated names
         weekday_names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         weekday = weekday_names[self.min_timestamp.weekday()]
-        week = self.min_timestamp.stftime('%V')
+        week = self.min_timestamp.strftime('%V')
         print >> output, "To: %(email)s" % {'email': email}
         print >> output, ("Subject: %(date)s report for %(who)s"
                           " (%(weekday)s, week %(week)s)"
@@ -275,7 +275,7 @@ class TimeWindow(object):
 
         Writes a weekly report template in RFC-822 format to output.
         """
-        week = self.min_timestamp.stftime('%V')
+        week = self.min_timestamp.strftime('%V')
         print >> output, "To: %(email)s" % {'email': email}
         print >> output, "Subject: Weekly report for %s (week %s)" % (who,
                                                                       week)
