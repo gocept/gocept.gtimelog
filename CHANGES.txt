@@ -4,7 +4,7 @@ Changelog
 0.6.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fixed brown-bag release.
 
 
 0.6.0 (2012-02-21)
