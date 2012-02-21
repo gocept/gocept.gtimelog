@@ -25,7 +25,7 @@ setup(
         'setuptools',
         'BeautifulSoup',
         'lxml',
-        'gocept.collmex>=0.7',
+        'gocept.collmex>=1.2',
         'pyactiveresource==1.2dev-r77',
         'transaction',
         'zope.cachedescriptors',
