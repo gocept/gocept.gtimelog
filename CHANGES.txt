@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.6.1 (unreleased)
+0.6.1 (2012-02-21)
 ------------------
 
 - Fixed brown-bag release.
