@@ -2,9 +2,11 @@
 # See also LICENSE.txt
 
 import unittest
+import StringIO
 from gocept.gtimelog.util import (
     format_duration, format_duration_short, format_duration_long,
     parse_datetime, parse_time, virtual_day, different_days, uniq)
+from gocept.gtimelog.core import TimeWindow
 from datetime import timedelta, datetime, date, time
 
 
@@ -70,3 +72,12 @@ class UtilityFunctions(unittest.TestCase):
                 uniq(['a', 'b', 'b', 'c', 'd', 'b', 'd']))
             self.assertEqual(['a'], uniq(['a']))
             self.assertEqual([], uniq([]))
+
+    def test_weekly_report(self):
+        timewindow = TimeWindow("", datetime(2005, 2, 3, 1, 15),
+                                datetime(2005, 2, 3, 2, 15), time(2, 0))
+        output = StringIO.StringIO()
+        timewindow.weekly_report(output,
+                                    "somebody@example.com",
+                                    "Somebody")
+        self.assertIn("No work done this week.", output.getvalue())
