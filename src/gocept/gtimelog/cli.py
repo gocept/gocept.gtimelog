@@ -65,7 +65,7 @@ def main():
     except Exception:
         log.error('Error filling collmex', exc_info=True)
     else:
-        log.info('Collmex: succes')
+        log.info('Collmex: success')
 
     # 2. hourtracker
     tracker = gocept.gtimelog.hours.HourTracker(settings)
