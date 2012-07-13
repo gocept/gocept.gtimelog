@@ -27,11 +27,13 @@ def main():
     # Argument parsing
     parser = argparse.ArgumentParser(
         description=u'Upload timelog data for a week to all backends '
-            '(Redmine, Collmex, Hourtracker)')
+                    u'(Redmine, Collmex, Hourtracker)')
     parser.add_argument(
-        'day',
+        '--day',
         metavar='YYYY-MM-DD',
-        help='A day of the week that should be uploaded.')
+        default=datetime.today().strftime('%Y-%m-%d'),
+        help='Day of the week that should be uploaded. '
+             '(default: today)')
     args = parser.parse_args()
 
     # Load config
