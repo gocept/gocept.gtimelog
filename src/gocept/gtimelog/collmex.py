@@ -89,7 +89,7 @@ class Collmex(object):
         for result in self.collmex.get_projects():
             if result['Abgeschlossen'] != u'0':
                 continue
-            if result['Inaktiv'] != u'0':
+            if result.get('Inaktiv', u'0') != u'0':
                 continue
             pid = result['Projektnummer']
             project = projects.get(pid)
