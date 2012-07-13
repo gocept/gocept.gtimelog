@@ -4,7 +4,7 @@ Changelog
 0.6.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Day parameter of cli is now optional (default: today).
 
 
 0.6.1 (2012-02-21)
