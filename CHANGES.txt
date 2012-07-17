@@ -4,6 +4,9 @@ Changelog
 0.6.2 (unreleased)
 ------------------
 
+
+- Assert that no entries with start after end are uploaded to collmex.
+
 - Day parameter of cli is now optional (default: today).
 
 
