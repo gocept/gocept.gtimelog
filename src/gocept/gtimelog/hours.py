@@ -184,7 +184,7 @@ class HourTracker(object):
                 data['opm%d' % row] = u'; '.join(
                     set(comments)).encode('latin1', 'replace')
 
-        print '%d rows' % row
+        log.debug("%d rows" % row)
         return data
 
     def mapEntry(self, entry):
