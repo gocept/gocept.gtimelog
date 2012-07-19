@@ -15,7 +15,7 @@ import gtk
 import gtk.glade
 import pango
 
-from gocept.gtimelog.util import calc_duration, virtual_day
+from gocept.gtimelog.util import calc_duration, virtual_day, calc_progress
 from gocept.gtimelog.util import format_duration, format_duration_short
 from gocept.gtimelog.util import uniq
 import gocept.gtimelog.hours
@@ -154,6 +154,7 @@ class WorkProgressbar(object):
         self.week_hours = settings.week_hours
         self.visibility_state = True
         self.timelog = timelog
+        self.settings = settings
         self.from_week = timelog.day
 
         self.progressbar = tree.get_widget("workprogress")
@@ -172,14 +173,9 @@ class WorkProgressbar(object):
         week_window = timedelta of the current week
         """
         min, max, weeks = self.get_timeframe()
-        weekly_window = self.week_window(min, max)
-        week_total_work, week_total_slacking, week_total_holidays = (
-            weekly_window.totals())
 
-        week_done = calc_duration(week_total_work)[0]
-        week_exp = ((self.week_hours * weeks) -
-                    calc_duration(week_total_holidays)[0])
-        week_todo = int(week_exp) - week_done
+        week_done, week_exp, week_todo = calc_progress(
+            self.settings, self.timelog, (min, max))
 
         if week_exp == 0:
             percent = 0.0

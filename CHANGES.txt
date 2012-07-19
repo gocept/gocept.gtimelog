@@ -4,7 +4,8 @@ Changelog
 0.7.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Introduce command-line utility ``progress`` which calculates the work-done
+  progress of a given (or the current by default) week.
 
 
 0.7.0 (2012-07-17)

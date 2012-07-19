@@ -35,4 +35,5 @@ setup(
         [console_scripts]
         gtimelog = gocept.gtimelog.gtimelog:main
         gtimelog-cli = gocept.gtimelog.cli:main
+        progress = gocept.gtimelog.progress:main
     """)
