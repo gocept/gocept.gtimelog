@@ -10,6 +10,22 @@ def calc_duration(duration):
     return divmod((duration.days * 24 * 60 + duration.seconds // 60), 60)
 
 
+def calc_progress(settings, timelog, week_window):
+    """Calculate the progress of a given week window."""
+    min, max = week_window
+    weeks = (max - min).days / 7
+    weekly_window = timelog.window_for(min, max)
+    week_total_work, week_total_slacking, week_total_holidays = (
+        weekly_window.totals())
+
+    week_done = calc_duration(week_total_work)[0]
+    week_exp = ((settings.week_hours * weeks) -
+                calc_duration(week_total_holidays)[0])
+    week_todo = int(week_exp) - week_done
+
+    return week_done, week_exp, week_todo
+
+
 def format_duration(duration):
     """Format a datetime.timedelta with minute precision."""
     return '%d h %d min' % calc_duration(duration)
