@@ -60,4 +60,17 @@ def main():
     week_done, week_exp, week_todo = gocept.gtimelog.util.calc_progress(
         settings, timelog, (monday, sunday))
 
-    print "%s (%s)" % (float(week_done), week_exp)
+    seperator = '#'.join(['' for x in range(80)])
+
+    print "\nTotal work done in week %s: \033[1m%s\033[0mh of "\
+          "\033[1m%s\033[0mh" % (today.strftime("%W"),
+                                 float(week_done),
+                                 week_exp)
+    print "\n%s\n" % seperator
+
+    today_window = timelog.window_for(today, today + timedelta(1))
+    today_window.daily_report(sys.stdout, settings.email, settings.name)
+    print "\n%s\n" % seperator
+
+    week_window = timelog.window_for(monday, sunday)
+    week_window.weekly_report(sys.stdout, settings.email, settings.name)
