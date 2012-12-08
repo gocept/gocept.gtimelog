@@ -713,22 +713,18 @@ class MainWindow(object):
     def on_reread_activate(self, widget):
         """File -> Reread"""
         self.timelog.reread()
+        self.reread()
+
+    def reread(self):
         self.set_up_history()
         self.populate_log()
         self.tick(True)
 
     def on_deletelast_activate(self, widget):
         """File -> Delete last Entry"""
-        # XXX: wosc: dirty hack, but the API is too convoluted to grok easily
-        last = self.history[-1]
-        f = open(self.timelog.filename, 'r')
-        lines = f.readlines()
-        f.close()
-        f = open(self.timelog.filename, 'w')
-        f.writelines(lines[:-1])
-        f.close()
-        self.on_reread_activate(widget)
-        self.task_entry.set_text(last)
+        last = self.timelog.pop()
+        self.reread()
+        self.task_entry.set_text(last[1])
         self.task_entry.set_position(-1)
 
     def task_list_row_activated(self, treeview, path, view_column):
