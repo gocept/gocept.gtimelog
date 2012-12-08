@@ -357,8 +357,11 @@ class TimeLog(object):
         if last and different_days(now, last, self.virtual_midnight):
             # next day: reset self.window
             self.reread()
-        self.window.items.append((now, unicode(entry, 'utf-8')))
-        line = '%s: %s' % (now.strftime("%Y-%m-%d %H:%M"), entry)
+        self._append(now, unicode(entry, 'utf-8'))
+
+    def _append(self, time, text):
+        self.window.items.append((time, text))
+        line = '%s: %s' % (time.strftime("%Y-%m-%d %H:%M"), text)
         self.raw_append(line)
 
     def weekly_window(self, day=None):
@@ -368,6 +371,17 @@ class TimeLog(object):
         min = datetime.datetime.combine(monday, self.virtual_midnight)
         max = min + datetime.timedelta(7)
         return self.window_for(min, max)
+
+    def pop(self):
+        last = self.window.items[-1]
+        f = open(self.filename, 'r')
+        lines = f.readlines()
+        f.close()
+        f = open(self.filename, 'w')
+        f.writelines(lines[:-1])
+        f.close()
+        self.reread()
+        return last
 
 
 class TaskList(object):
