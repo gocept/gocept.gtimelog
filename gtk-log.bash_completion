@@ -1,0 +1,21 @@
+#  This is a bash completion script to be used with gtk-log. It auto completes
+#  tasks and project names.
+#
+#  How to install:
+#
+#   * Copy script to your bash_completion.d folter (e.g. /etc/bash_completion.d).
+#   * Modify the path to your taskfile (see taskfile variable above).
+#   * Rename this script to `gtl-log`.
+#
+
+_gtl-log()
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    taskfile=/Users/sweh/.gtimelog/tasks-collmex.txt
+
+    COMPREPLY=( $(compgen -W '$( cat $taskfile )' -- ${cur}) )
+}
+complete -F _gtl-log gtl-log
