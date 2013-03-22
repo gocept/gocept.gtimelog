@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 import argparse
 import gocept.gtimelog.core
 import gocept.gtimelog.util
+import gocept.gtimelog.cli
 import logging
-import os.path
 import sys
 
 
@@ -34,23 +34,7 @@ def main():
     args = parser.parse_args()
 
     # Load config
-    configdir = os.path.expanduser('~/.gtimelog')
-    try:
-        os.makedirs(configdir)  # create it if it doesn't exist
-    except OSError:
-        pass
-    settings = gocept.gtimelog.core.Settings()
-    settings_file = os.path.join(configdir, 'gtimelogrc')
-    if not os.path.exists(settings_file):
-        settings.save(settings_file)
-    else:
-        settings.load(settings_file)
-    logging.root.setLevel(settings.log_level)
-    log.debug('Logging is set to level %s' % settings.log_level)
-
-    # Initialize data structures
-    timelog = gocept.gtimelog.core.TimeLog(
-        os.path.join(configdir, 'timelog.txt'), settings)
+    settings, timelog = gocept.gtimelog.cli.load_config_and_timelog()
 
     # Calculate the progress
     today = datetime.strptime(args.day, '%Y-%m-%d')
