@@ -357,7 +357,7 @@ class TimeLog(object):
         if last and different_days(now, last, self.virtual_midnight):
             # next day: reset self.window
             self.reread()
-        self._append(now, unicode(entry, 'utf-8'))
+        self._append(now, entry)
 
     def _append(self, time, text):
         self.window.items.append((time, text))

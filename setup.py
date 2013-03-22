@@ -36,4 +36,6 @@ setup(
         gtimelog = gocept.gtimelog.gtimelog:main
         gtl-upload = gocept.gtimelog.cli:main
         gtl-progress = gocept.gtimelog.progress:main
+        gtl-log = gocept.gtimelog.log:log
+        gtl-updatetasks = gocept.gtimelog.log:download
     """)
