@@ -34,6 +34,6 @@ setup(
     entry_points="""
         [console_scripts]
         gtimelog = gocept.gtimelog.gtimelog:main
-        gtimelog-cli = gocept.gtimelog.cli:main
-        progress = gocept.gtimelog.progress:main
+        gtl-upload = gocept.gtimelog.cli:main
+        gtl-progress = gocept.gtimelog.progress:main
     """)
