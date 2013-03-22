@@ -4,8 +4,12 @@ Changelog
 0.7.1 (unreleased)
 ------------------
 
-- Introduce command-line utility ``progress`` which calculates the work-done
+- Introduce command-line utility ``gtl-progress`` which calculates the work-done
   progress of a given (or the current by default) week.
+
+- Introduce command-line utility ``gtl-log`` which can be used to add timeloig
+  entries from the command-line. A bash completion script is shipped to auto
+  complete projects and tasks.
 
 
 0.7.0 (2012-07-17)
