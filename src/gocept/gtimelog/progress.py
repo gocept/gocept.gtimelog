@@ -7,20 +7,11 @@ import argparse
 import gocept.gtimelog.core
 import gocept.gtimelog.util
 import gocept.gtimelog.cli
-import logging
 import sys
-
-
-log = logging.getLogger(__name__)
 
 
 def main():
     """Run the program."""
-    # Start logging
-    stdout = logging.StreamHandler(sys.stdout)
-    stdout.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s %(name)s: %(message)s'))
-    logging.root.addHandler(stdout)
 
     # Argument parsing
     parser = argparse.ArgumentParser(
