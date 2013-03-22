@@ -1,9 +1,9 @@
-#  This is a bash completion script to be used with gtk-log. It auto completes
+#  This is a bash completion script to be used with gtl-log. It autocompletes
 #  tasks and project names.
 #
 #  How to install:
 #
-#   * Copy script to your bash_completion.d folter (e.g. /etc/bash_completion.d).
+#   * Copy script to your bash_completion.d folder (e.g. /etc/bash_completion.d).
 #   * Modify the path to your taskfile (see taskfile variable above).
 #   * Rename this script to `gtl-log`.
 #
