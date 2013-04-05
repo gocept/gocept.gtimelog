@@ -13,27 +13,30 @@ from datetime import timedelta, datetime, date, time
 class UtilityFunctions(unittest.TestCase):
 
     def test_format_duration(self):
-        self.assertEqual('0 h 0 min', format_duration(timedelta(0)))
-        self.assertEqual('0 h 1 min', format_duration(timedelta(minutes=1)))
-        self.assertEqual('1 h 0 min', format_duration(timedelta(minutes=60)))
+        self.assertEqual(' 0 h  0 min', format_duration(timedelta(0)))
+        self.assertEqual(' 0 h  1 min', format_duration(timedelta(minutes=1)))
+        self.assertEqual(' 1 h  0 min', format_duration(timedelta(minutes=60)))
 
     def test_format_short(self):
-        self.assertEqual('0:00', format_duration_short(timedelta(0)))
-        self.assertEqual('0:01', format_duration_short(timedelta(minutes=1)))
-        self.assertEqual('0:59', format_duration_short(timedelta(minutes=59)))
-        self.assertEqual('1:00', format_duration_short(timedelta(minutes=60)))
+        self.assertEqual(' 0:00', format_duration_short(timedelta(0)))
+        self.assertEqual(' 0:01', format_duration_short(timedelta(minutes=1)))
+        self.assertEqual(' 0:59', format_duration_short(timedelta(minutes=59)))
+        self.assertEqual(' 1:00', format_duration_short(timedelta(minutes=60)))
         self.assertEqual('26:03', format_duration_short(
-                timedelta(days=1, hours=2, minutes=3)))
+            timedelta(days=1, hours=2, minutes=3)))
 
     def test_format_duration_long(self):
-        self.assertEqual('0 min', format_duration_long(timedelta(0)))
-        self.assertEqual('1 min', format_duration_long(timedelta(minutes=1)))
-        self.assertEqual('1 hour', format_duration_long(timedelta(minutes=60)))
-        self.assertEqual('1 hour 5 min', format_duration_long(
-                timedelta(minutes=65)))
-        self.assertEqual('2 hours', format_duration_long(timedelta(hours=2)))
-        self.assertEqual('2 hours 1 min', format_duration_long(
-                timedelta(hours=2, minutes=1)))
+        self.assertEqual(' 0 min', format_duration_long(timedelta(0)))
+        self.assertEqual(' 1 min', format_duration_long(timedelta(minutes=1)))
+        self.assertEqual(' 1 hour', format_duration_long(
+            timedelta(minutes=60)))
+        self.assertEqual(' 1 hour  5 min', format_duration_long(
+            timedelta(minutes=65)))
+        self.assertEqual(' 2 hours', format_duration_long(timedelta(hours=2)))
+        self.assertEqual(' 2 hours  1 min', format_duration_long(
+            timedelta(hours=2, minutes=1)))
+        self.assertEqual('12 hours 32 min', format_duration_long(
+            timedelta(hours=12, minutes=32)))
 
     def test_parse_datetime(self):
             self.assertEqual(datetime(2005, 2, 3, 2, 13),

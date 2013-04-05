@@ -28,23 +28,23 @@ def calc_progress(settings, timelog, week_window):
 
 def format_duration(duration):
     """Format a datetime.timedelta with minute precision."""
-    return '%d h %d min' % calc_duration(duration)
+    return '%2d h %2d min' % calc_duration(duration)
 
 
 def format_duration_short(duration):
     """Format a datetime.timedelta with minute precision."""
-    return '%d:%02d' % calc_duration(duration)
+    return '%2d:%02d' % calc_duration(duration)
 
 
 def format_duration_long(duration):
     """Format a datetime.timedelta with minute precision, long format."""
     h, m = calc_duration(duration)
     if h and m:
-        return '%d hour%s %d min' % (h, h != 1 and "s" or "", m)
+        return '%2d hour%s %2d min' % (h, h != 1 and "s" or "", m)
     elif h:
-        return '%d hour%s' % (h, h != 1 and "s" or "")
+        return '%2d hour%s' % (h, h != 1 and "s" or "")
     else:
-        return '%d min' % m
+        return '%2d min' % m
 
 
 def uniq(l):

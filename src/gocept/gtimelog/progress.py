@@ -43,6 +43,6 @@ def main():
     total_work, total_slacking, total_holidays = timelog.window_for(
         monday, sunday).totals()
 
-    print "\nTotal work done this week: \033[1m%s\033[0m of "\
+    print "Total work done this week: \033[1m%s\033[0m of "\
           "\033[1m%s hours\033[0m" % (format_duration_long(total_work),
                                       int(week_exp))
