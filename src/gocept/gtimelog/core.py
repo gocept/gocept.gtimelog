@@ -287,19 +287,18 @@ class TimeWindow(object):
             print >> output, "No work done today."
             return
         for start, stop, duration, entry in items[1:]:
-            print >> output, "%s - %s (%s): %s" % (
+            print >> output, "%s - %s (%3s): %s" % (
                 start.strftime('%H:%M'), stop.strftime('%H:%M'),
-                "{0:{1}d}".format(duration.seconds / 60, 3),
-                entry.encode('utf-8'))
+                duration.seconds / 60, entry.encode('utf-8'))
         now = datetime.datetime.now()
         if stop.date() == now.date():
-            print >> output, "%s - %s (%s): **current task**" % (
+            print >> output, "%s - %s (%3d): **current task**" % (
                 stop.strftime('%H:%M'), now.strftime('%H:%M'),
-                "{0:{1}d}".format((now - stop).seconds / 60, 3))
+                (now - stop).seconds / 60)
         print >> output
         work, slack, hold = self.grouped_entries()
         total_work, total_slacking, total_holidays = self.totals()
-        print >> output, ("Total work done today: %s" %
+        print >> output, ("Total work done today:     %s" %
                           format_duration_long(total_work))
 
     def weekly_report(self, output, email, who, estimated_column=False):
