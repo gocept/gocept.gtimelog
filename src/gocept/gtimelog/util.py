@@ -40,9 +40,9 @@ def format_duration_long(duration):
     """Format a datetime.timedelta with minute precision, long format."""
     h, m = calc_duration(duration)
     if h and m:
-        return '%2d hour%s %2d min' % (h, h != 1 and "s" or "", m)
+        return '%2d hour%1s %2d min' % (h, h != 1 and "s" or "", m)
     elif h:
-        return '%2d hour%s' % (h, h != 1 and "s" or "")
+        return '%2d hour%1s' % (h, h != 1 and "s" or "")
     else:
         return '%2d min' % m
 
