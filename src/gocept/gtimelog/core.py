@@ -270,6 +270,38 @@ class TimeWindow(object):
         print >> output, ("Time spent slacking: %s" %
                           format_duration_long(total_slacking))
 
+    def daily_report_timeline(self, output, email, who):
+        """Format a daily report with your timeline entries."""
+        # Locale is set as a side effect of 'import gtk', so strftime('%a')
+        # would give us translated names
+        weekday_names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        weekday = weekday_names[self.min_timestamp.weekday()]
+        week = self.min_timestamp.strftime('%V')
+        print >> output, ("%(date)s report for %(who)s"
+                          " (%(weekday)s, week %(week)s)"
+                          % {'date': self.min_timestamp.strftime('%Y-%m-%d'),
+                             'weekday': weekday, 'week': week, 'who': who})
+        print >> output
+        items = list(self.all_entries())
+        if not items:
+            print >> output, "No work done today."
+            return
+        for start, stop, duration, entry in items[1:]:
+            print >> output, "%s - %s (%s): %s" % (
+                start.strftime('%H:%M'), stop.strftime('%H:%M'),
+                "{0: {1}d}".format(duration.seconds / 60, 3),
+                entry.encode('utf-8'))
+        now = datetime.datetime.now()
+        if stop.date() == now.date():
+            print >> output, "%s - %s (%s): **current task**" % (
+                stop.strftime('%H:%M'), now.strftime('%H:%M'),
+                "{0: {1}d}".format((now - stop).seconds / 60, 3))
+        print >> output
+        work, slack, hold = self.grouped_entries()
+        total_work, total_slacking, total_holidays = self.totals()
+        print >> output, ("Total work done today: %s" %
+                          format_duration_long(total_work))
+
     def weekly_report(self, output, email, who, estimated_column=False):
         """Format a weekly report.
 

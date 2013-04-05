@@ -3,6 +3,7 @@
 # See also LICENSE.txt
 
 from datetime import datetime, timedelta
+from gocept.gtimelog.util import format_duration_long
 import argparse
 import gocept.gtimelog.core
 import gocept.gtimelog.util
@@ -35,17 +36,13 @@ def main():
     week_done, week_exp, week_todo = gocept.gtimelog.util.calc_progress(
         settings, timelog, (monday, sunday))
 
-    seperator = '#'.join(['' for x in range(80)])
-
-    print "\nTotal work done in week %s: \033[1m%s\033[0mh of "\
-          "\033[1m%s\033[0mh" % (today.strftime("%W"),
-                                 float(week_done),
-                                 week_exp)
-    print "\n%s\n" % seperator
-
     today_window = timelog.window_for(today, today + timedelta(1))
-    today_window.daily_report(sys.stdout, settings.email, settings.name)
-    print "\n%s\n" % seperator
+    today_window.daily_report_timeline(
+        sys.stdout, settings.email, settings.name)
 
-    week_window = timelog.window_for(monday, sunday)
-    week_window.weekly_report(sys.stdout, settings.email, settings.name)
+    total_work, total_slacking, total_holidays = timelog.window_for(
+        monday, sunday).totals()
+
+    print "\nTotal work done this week: \033[1m%s\033[0m of "\
+          "\033[1m%s hours\033[0m" % (format_duration_long(total_work),
+                                      int(week_exp))
