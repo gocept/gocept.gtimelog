@@ -286,6 +286,7 @@ class TimeWindow(object):
         if not items:
             print >> output, "No work done today."
             return
+        start, stop, duration, entry = items[0]
         for start, stop, duration, entry in items[1:]:
             print >> output, "%s - %s (%3s): %s" % (
                 start.strftime('%H:%M'), stop.strftime('%H:%M'),
