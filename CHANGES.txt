@@ -11,6 +11,8 @@ Changelog
   entries from the command-line. A bash completion script is shipped to auto
   complete projects and tasks.
 
+- Remove HT upload from upload script.
+
 
 0.7.0 (2012-07-17)
 ------------------
