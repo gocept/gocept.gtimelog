@@ -73,20 +73,7 @@ def main():
     else:
         log.info('Collmex: success')
 
-    # 2. hourtracker
-    # tracker = gocept.gtimelog.hours.HourTracker(settings)
-    # week = int(window.min_timestamp.strftime('%V'))
-    # year = int(window.min_timestamp.strftime('%Y'))
-    # try:
-    #     tracker.loadWeek(week, year)
-    #     tracker.setHours(window.all_entries())
-    #     tracker.saveWeek()
-    # except Exception:
-    #     log.error('Error filling HT', exc_info=True)
-    # else:
-    #     log.info('Hourtracker: success')
-
-    # 3. redmine
+    # 2. redmine
     try:
         redupdate = gocept.gtimelog.redmine.RedmineTimelogUpdater(
             settings)
