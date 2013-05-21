@@ -46,3 +46,9 @@ def main():
     print "Total work done this week: \033[1m%s\033[0m of "\
           "\033[1m%s hours\033[0m" % (format_duration_long(total_work),
                                       int(week_exp))
+
+    d_hours = timedelta(hours=today_window.settings.week_hours / 5.0)
+    time_left = d_hours - today_window.totals()[0]
+    clock_off = today_window.items[0][0] + d_hours + today_window.totals()[1]
+    print "Time left at work:         \033[1m%s\033[0m (until %s)" % (
+        format_duration_long(time_left), clock_off.strftime('%H:%M'))
