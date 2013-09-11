@@ -38,15 +38,23 @@ def load_config_and_timelog():
     return settings, timelog
 
 
-def main():
-    """Run the program."""
+def configure_logging(debug=False):
     # Start logging
     stdout = logging.StreamHandler(sys.stdout)
     stdout.setFormatter(logging.Formatter(
         '%(asctime)s %(levelname)s %(name)s: %(message)s'))
+    if debug:
+        stdout.setLevel(logging.DEBUG)
+    else:
+        stdout.setLevel(logging.INFO)
+        logging.getLogger('pyactiveresource.connection').setLevel(
+            logging.WARNING)
     logging.root.addHandler(stdout)
 
-    # Argument parsing
+
+def main():
+    """Run the program."""
+        # Argument parsing
     parser = argparse.ArgumentParser(
         description=u'Upload timelog data for a week to all backends '
                     u'(Redmine, Collmex, Hourtracker)')
@@ -56,7 +64,13 @@ def main():
         default=datetime.today().strftime('%Y-%m-%d'),
         help='Day of the week that should be uploaded. '
              '(default: today)')
+    parser.add_argument(
+        '-d', '--debug',
+        help='Enable debug logging',
+        action='store')
     args = parser.parse_args()
+
+    configure_logging(debug=args.debug)
 
     # Load config
     settings, timelog = load_config_and_timelog()
