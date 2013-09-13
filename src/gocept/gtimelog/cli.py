@@ -67,7 +67,8 @@ def main():
     parser.add_argument(
         '-d', '--debug',
         help='Enable debug logging',
-        action='store')
+        action='store_const',
+        const=True)
     args = parser.parse_args()
 
     configure_logging(debug=args.debug)
