@@ -64,7 +64,7 @@ class Bugtrackers(object):
 
     @staticmethod
     def extract_issue(comment):
-        match = re.search(r'#(\d+)', comment)
+        match = re.search(r'#([-A-Z0-9]+)', comment)
         if not match:
             return
         return match.group(1)
