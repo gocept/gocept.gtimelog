@@ -19,7 +19,7 @@ from gocept.gtimelog.util import calc_duration, virtual_day, calc_progress
 from gocept.gtimelog.util import format_duration, format_duration_short
 from gocept.gtimelog.util import uniq
 import gocept.gtimelog.hours
-import gocept.gtimelog.redmine
+import gocept.gtimelog.bugtracker
 import gocept.gtimelog.collmex
 import gocept.gtimelog.core
 
@@ -675,9 +675,8 @@ class MainWindow(object):
             return
         window = self.weekly_window(day=day)
         try:
-            redupdate = gocept.gtimelog.redmine.RedmineTimelogUpdater(
-                self.settings)
-            redupdate.update(window)
+            trackers = gocept.gtimelog.bugtracker.Bugtrackers(self.settings)
+            trackers.update(window)
             message = "Redmine: success"
         except Exception, err:
             log.error('Error filling Redmine', exc_info=True)

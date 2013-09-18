@@ -1,10 +1,9 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-from gocept.gtimelog.redmine import timelog_to_issues as convert
 import datetime
+import gocept.gtimelog.bugtracker
 import gocept.gtimelog.core
-import gocept.gtimelog.redmine
 import gocept.gtimelog.util
 import unittest
 
@@ -24,11 +23,17 @@ class TestWindow(gocept.gtimelog.core.TimeWindow):
 
 class ConvertTimelogTest(unittest.TestCase):
 
+    def convert(self, window):
+        settings = type('Dummy', (object,), {})()
+        settings.redmines = []
+        trackers = gocept.gtimelog.bugtracker.Bugtrackers(settings)
+        return trackers._timelog_to_issues(window)
+
     def test_no_issue_referenced_should_not_show(self):
         window = TestWindow()
         window.add('2009-08-01 08:00', 'arrived')
         window.add('2009-08-01 10:00', 'Operations: General activities: Email')
-        entries = convert(window)
+        entries = self.convert(window)
         self.assertEqual([], entries)
 
     def test_issue_reference_should_be_found_anywhere(self):
@@ -37,7 +42,7 @@ class ConvertTimelogTest(unittest.TestCase):
         window.add('2009-08-01 10:00', 'Operations: Programming: #123: foo')
         window.add('2009-08-01 10:15', '#2: foo')
         window.add('2009-08-01 10:45', 'foo bar (#34)')
-        entries = convert(window)
+        entries = self.convert(window)
         self.assertEqual(3, len(entries))
         self.assertEqual('123', entries[0].issue)
         self.assertEqual(0.25, entries[1].duration)
@@ -50,7 +55,7 @@ class ConvertTimelogTest(unittest.TestCase):
         window.add('2009-08-01 10:15', '#123: foo')
         window.add('2009-08-02 08:00', 'arrived')
         window.add('2009-08-02 09:00', '#123: bar')
-        entries = convert(window)
+        entries = self.convert(window)
         self.assertEqual(2, len(entries))
         self.assertEqual(2.25, entries[0].duration)
         self.assertEqual('#123: foo', entries[0].comment)
@@ -62,7 +67,7 @@ class ConvertTimelogTest(unittest.TestCase):
         window.add('2009-08-01 10:00', 'Operations: Programming: #123: foo')
         window.add('2009-08-01 10:15', '#2: foo')
         window.add('2009-08-01 10:45', 'foo bar (#34)')
-        entries = convert(window)
+        entries = self.convert(window)
         self.assertEqual(3, len(entries))
         self.assertEqual('Operations', entries[0].project)
         self.assertEqual(None, entries[1].project)
@@ -72,7 +77,7 @@ class ConvertTimelogTest(unittest.TestCase):
 class ParseCommentTest(unittest.TestCase):
 
     def setUp(self):
-        self.entry = gocept.gtimelog.redmine.TimelogEntry(
+        self.entry = gocept.gtimelog.bugtracker.TimelogEntry(
             datetime.datetime(2011, 5, 4, 3, 2), None, None, '')
 
     def test_project_activity_issue_comment(self):
