@@ -42,11 +42,13 @@ class ConvertTimelogTest(unittest.TestCase):
         window.add('2009-08-01 10:00', 'Operations: Programming: #123: foo')
         window.add('2009-08-01 10:15', '#2: foo')
         window.add('2009-08-01 10:45', 'foo bar (#34)')
+        window.add('2009-08-01 10:45', 'foo bar (#JIRA-123)')
         entries = self.convert(window)
-        self.assertEqual(3, len(entries))
+        self.assertEqual(4, len(entries))
         self.assertEqual('123', entries[0].issue)
         self.assertEqual(0.25, entries[1].duration)
         self.assertEqual('foo bar (#34)', entries[2].comment)
+        self.assertEqual('JIRA-123', entries[3].issue)
 
     def test_multiple_entries_same_issue_should_be_combined(self):
         window = TestWindow()
