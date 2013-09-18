@@ -1,5 +1,6 @@
 from pyactiveresource.activeresource import ActiveResource
 from zope.cachedescriptors.property import Lazy as cachedproperty
+import collections
 import datetime
 import logging
 import re
@@ -59,8 +60,7 @@ def timelog_to_issues(window):
     TimelogEntry.
     """
 
-    entries = {}
-    order = []
+    entries = collections.OrderedDict()
     for start, stop, duration, comment in window.all_entries():
         issue = comment_to_issue(comment)
         if not issue:
@@ -70,17 +70,10 @@ def timelog_to_issues(window):
         key = (issue, day)
         if key not in entries:
             entries[key] = TimelogEntry(day, duration, issue, comment)
-            order.append(key)
         else:
             entries[key].duration += duration
             entries[key].add_comment(comment)
-
-    # XXX I'd much rather use a StableDict here, but we can't really afford
-    # dependencies until gtimelog is eggified
-    result = []
-    for key in order:
-        result.append(entries[key])
-    return result
+    return entries.values()
 
 
 class RedmineTimelogUpdater(object):
