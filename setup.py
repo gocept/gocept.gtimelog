@@ -22,11 +22,11 @@ setup(
     namespace_packages=['gocept'],
     include_package_data=True,
     install_requires=[
-        'setuptools',
         'BeautifulSoup',
-        'lxml',
         'gocept.collmex>=1.2',
+        'lxml',
         'pyactiveresource==1.2dev-r77',
+        'setuptools',
         'transaction',
         'zope.cachedescriptors',
     ],
