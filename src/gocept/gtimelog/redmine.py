@@ -1,116 +1,5 @@
 from pyactiveresource.activeresource import ActiveResource
 from zope.cachedescriptors.property import Lazy as cachedproperty
-import collections
-import datetime
-import logging
-import re
-
-
-log = logging.getLogger(__name__)
-
-
-# The following value was determined by experimentation with gocept's redmine
-# instance on May 5, 2011.
-COMMENT_MAX_LENGTH = 255
-
-
-class TimelogEntry(object):
-
-    def __init__(self, date, duration, issue, comment):
-        self.date = date.strftime('%Y-%m-%d')
-        self.duration = duration
-        self.issue = issue
-        self.project = self.parse_project(comment)
-        self.comments = []
-        self.comment = ''
-        self.add_comment(comment)
-
-    def parse_project(self, comment):
-        parts = comment.split(':')
-        # Project: Activity: Comment
-        if len(parts) >= 3:
-            return parts[0]
-
-    def add_comment(self, comment):
-        if comment.count(':') >= 2:
-            comment = comment.split(':', 2)[-1]
-        comment = comment.strip()
-        if comment and comment not in self.comments:
-            self.comments.append(comment)
-            self.comment = ', '.join(self.comments)[:COMMENT_MAX_LENGTH]
-
-
-def duration_to_float(duration):
-    result = duration.seconds / 3600.0
-    result = round(result * 4) / 4  # round to .25
-    return result
-
-
-def comment_to_issue(comment):
-    match = re.search(r'#(\d+)', comment)
-    if not match:
-        return
-    return match.group(1)
-
-
-def timelog_to_issues(window):
-    """converts a gtimelog window into a list of TimelogEntries.
-
-    Multiple entries for the same issue per day are consolidated into one
-    TimelogEntry.
-    """
-
-    entries = collections.OrderedDict()
-    for start, stop, duration, comment in window.all_entries():
-        issue = comment_to_issue(comment)
-        if not issue:
-            continue
-        day = datetime.date(start.year, start.month, start.day)
-        duration = duration_to_float(duration)
-        key = (issue, day)
-        if key not in entries:
-            entries[key] = TimelogEntry(day, duration, issue, comment)
-        else:
-            entries[key].duration += duration
-            entries[key].add_comment(comment)
-    return entries.values()
-
-
-class RedmineTimelogUpdater(object):
-
-    def __init__(self, settings):
-        self.connections = []
-        for config in settings.redmines:
-            redmine = RedmineConnection(
-                config['url'], config['api_key'], config['activity'])
-            redmine.projects = config['projects']
-            self.connections.append(redmine)
-
-    def find_connection(self, project):
-        for redmine in self.connections:
-            for p in redmine.projects:
-                if project.lower().startswith(p.lower()):
-                    return redmine
-        return None
-
-    def update(self, window):
-        for entry in timelog_to_issues(window):
-            redmine = self.find_connection(entry.project)
-            if not redmine:
-                continue
-
-            try:
-                redmine.update_entry(entry)
-            except Exception, e:
-                log.error(
-                    'Error updating #%s (%s)' % (entry.issue, entry.date),
-                    exc_info=True)
-                raise RuntimeError(
-                    '#%s %s: %s' % (entry.issue, entry.date, str(e)))
-
-    def get_subject(self, issue_id, project):
-        redmine = self.find_connection(project.match_string)
-        return redmine and redmine.get_subject(issue_id)
 
 
 class ApiKeyResource(ActiveResource):
@@ -125,12 +14,13 @@ class ApiKeyResource(ActiveResource):
         return super(ApiKeyResource, cls)._query_string(query_options)
 
 
-class RedmineConnection(object):
+class Redmine(object):
 
-    def __init__(self, url, api_key, activity):
+    def __init__(self, url, api_key, activity, projects):
         self.url = url
         self.api_key = api_key
         self.activity = activity
+        self.projects = projects
 
     def api(self, type_):
         return type(type_, (ApiKeyResource,), {
