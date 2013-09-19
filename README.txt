@@ -214,6 +214,26 @@ use needs to be given in the configuration. You can look it up in the HTML
 source of /issues/123/time_entries/new.
 
 
+Jira
+----
+
+If you're using the Jira issue tracker, you can upload the gtimelog data
+there, too. This will happen automatically with the 'Fill Collmex' command
+if the following configuration is provided::
+
+    [jira]
+    url=https://www.my-jira.com/
+    username=myuser
+    password=secret
+    projects = My_Project1
+               My_Project2
+
+Only tasks that belong to the projects listed there will be uploaded to Jira.
+
+You can provide multiple [jira] sections, but take care to give them unique
+names (e. g. [jira1], [jira2], [jira-foo], [jira-bar]).
+
+
 Holidays
 --------
 
