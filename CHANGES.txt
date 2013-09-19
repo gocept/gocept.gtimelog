@@ -13,6 +13,9 @@ Changelog
 
 - Remove HT upload from upload script.
 
+- Add JIRA bugtracker: supports uploading time logs and getting issue subject
+  for Collmex reporting (#12846).
+
 
 0.7.0 (2012-07-17)
 ------------------
