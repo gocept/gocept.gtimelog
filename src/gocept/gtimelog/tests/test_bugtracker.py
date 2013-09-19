@@ -26,6 +26,7 @@ class ConvertTimelogTest(unittest.TestCase):
     def convert(self, window):
         settings = type('Dummy', (object,), {})()
         settings.redmines = []
+        settings.jiras = []
         trackers = gocept.gtimelog.bugtracker.Bugtrackers(settings)
         return trackers._timelog_to_issues(window)
 
