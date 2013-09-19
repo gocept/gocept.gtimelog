@@ -669,7 +669,7 @@ class MainWindow(object):
             message = "HT: success "
         self.statusbar.post_message(message)
 
-    def on_fill_redmine_activate(self, widget):
+    def on_fill_bugtrackers_activate(self, widget):
         day = self.choose_date()
         if not day:
             return
@@ -677,10 +677,10 @@ class MainWindow(object):
         try:
             trackers = gocept.gtimelog.bugtracker.Bugtrackers(self.settings)
             trackers.update(window)
-            message = "Redmine: success"
+            message = "Bugtrackers: success"
         except Exception, err:
-            log.error('Error filling Redmine', exc_info=True)
-            message = "Redmine: %s" % err
+            log.error('Error filling Bugtrackers', exc_info=True)
+            message = "Bugtrackers: %s" % err
         self.statusbar.post_message(message)
 
     def on_edit_timelog_activate(self, widget):
