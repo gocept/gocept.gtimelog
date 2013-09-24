@@ -112,8 +112,12 @@ class Collmex(object):
         if len(parts) < 2:
             raise ValueError("Couldn't split %r correctly" % entry)
 
-        project = match(parts[0].strip(), self.projects)
-        task = match(parts[1].strip(), project.references)
+        try:
+            project = match(parts[0].strip(), self.projects)
+            task = match(parts[1].strip(), project.references)
+        except ValueError, e:
+            message = e.args[0]
+            raise ValueError("While mapping '%s': %s" % (entry, message))
         desc = ':'.join(parts[2:]).strip()
 
         return project, task, desc
@@ -157,11 +161,11 @@ def match(match_string, matchables):
                   if m.match_transformed.startswith(trans_m)]
 
     if len(candidates) > 1:
-        raise ValueError("Ambigous matchable %r, found %r" % (
+        raise ValueError("Ambigous matchable '%s', found '%s'" % (
             match_string, [c.match_string for c in candidates]))
     if candidates:
         return candidates[0]
-    raise ValueError("Couldn't match %r" % match_string)
+    raise ValueError("Couldn't match '%s'" % match_string)
 
 
 class TaskList(gocept.gtimelog.core.TaskList):

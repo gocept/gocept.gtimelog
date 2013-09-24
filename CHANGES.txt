@@ -4,6 +4,8 @@ Changelog
 0.8.2 (unreleased)
 ------------------
 
+- Improve reporting of entries which cannot be matched.
+
 - Fix commandline upload (broken after jira/redmine refactoring).
 
 
