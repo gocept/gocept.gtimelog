@@ -1,8 +1,8 @@
 Changelog
 =========
 
-0.9 (unreleased)
-----------------
+0.8.1 (2013-09-24)
+------------------
 
 - Work around jira-python bug #60 that makes multiple connections to different
   servers impossible.
