@@ -88,12 +88,12 @@ def main():
     else:
         log.info('Collmex: success')
 
-    # 2. redmine
+    # 2. Bugtracker
     try:
-        redupdate = gocept.gtimelog.redmine.RedmineTimelogUpdater(
+        redupdate = gocept.gtimelog.bugtracker.Bugtrackers(
             settings)
         redupdate.update(window)
     except Exception:
-        log.error('Error filling Redmine', exc_info=True)
+        log.error('Error filling Bugtracker', exc_info=True)
     else:
-        log.info('Redmine: success')
+        log.info('Bugtracker: success')

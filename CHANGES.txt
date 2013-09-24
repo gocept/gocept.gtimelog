@@ -4,7 +4,7 @@ Changelog
 0.8.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix commandline upload (broken after jira/redmine refactoring).
 
 
 0.8.1 (2013-09-24)
