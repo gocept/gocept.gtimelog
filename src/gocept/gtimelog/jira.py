@@ -29,3 +29,16 @@ class Jira(object):
                     timelog_entry.date):
                 continue
             entry.delete()
+
+
+# XXX workaround for <https://bitbucket.org/bspeakmon/jira-python/issue/60>
+
+def set_options(self, value):
+    self._real_options = {}
+    self._real_options.update(value)
+
+
+def get_options(self):
+    return self._real_options
+
+jira.client.JIRA._options = property(get_options, set_options)
