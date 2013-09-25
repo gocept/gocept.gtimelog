@@ -26,6 +26,7 @@ class Collmex(object):
         self.settings = settings
         self.collmex = get_collmex(self.settings)
         self.projects = self.getProjectsAndTasks()
+        self.trackers = gocept.gtimelog.bugtracker.Bugtrackers(self.settings)
 
     def report(self, entries):
         # Collmex needs the entries sorted by project, date and employee
@@ -52,12 +53,12 @@ class Collmex(object):
 
             assert start.date() == stop.date()
 
-            trackers = gocept.gtimelog.bugtracker.Bugtrackers(self.settings)
-            issue = trackers.extract_issue(entry)
+
+            issue = self.trackers.extract_issue(entry)
             if issue:
                 subject = subjects.get(issue)
                 if not subject:
-                    subject = trackers.get_subject(issue, project)
+                    subject = self.trackers.get_subject(issue, project)
                     subjects[issue] = subject
                 if subject:
                     desc = '%s (%s)' % (subject, desc)
