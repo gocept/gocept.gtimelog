@@ -14,9 +14,16 @@ class Jira(object):
     def update_entry(self, entry):
         issue = self.api.issue(entry.issue)
         self._delete_existing_entries(entry, issue)
-        worklog = self.api.add_worklog(issue, timeSpent='%sh' % entry.duration)
-        # unfortunately, Jira does not allow setting ``created`` or ``updated``
-        worklog.update(comment='%s: %s' % (entry.date, entry.comment))
+        # Kludgy Jira-API: does not understand fractions of hours, ('0.75h'
+        # yields '1 week and change'), does not allow timeSpentSeconds on
+        # create, but still requires timeSpent. *sigh*
+        worklog = self.api.add_worklog(issue, timeSpent='1h')
+        worklog.update(
+            timeSpentSeconds=entry.duration * 60 * 60,
+            # unfortunately, Jira does not allow setting ``created`` or
+            # ``updated``, so we abuse/enrich ``comment`` with the day, so we
+            # can find our entry later
+            comment='%s: %s' % (entry.date, entry.comment))
 
     def get_subject(self, issue_id):
         return self.api.issue(issue_id).fields.summary
