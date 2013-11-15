@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import jira.client
+import jira.exceptions
 
 
 class Jira(object):
@@ -49,3 +50,13 @@ def get_options(self):
     return self._real_options
 
 jira.client.JIRA._options = property(get_options, set_options)
+
+
+# XXX workaround for <https://bitbucket.org/bspeakmon/jira-python/issue/72>
+
+def utf8_safe_init(self, status_code=None, text=None, url=None):
+    self.status_code = status_code
+    self.text = text.encode('utf-8')
+    self.url = url
+
+jira.exceptions.JIRAError.__init__ = utf8_safe_init
