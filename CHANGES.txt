@@ -6,6 +6,8 @@ Changelog
 
 - Work around jira-python bug #72 with non-ASCII server error messages.
 
+- Removed traces of Hour tracker, including dependency on lxml.
+
 
 0.8.2 (2013-09-25)
 ------------------

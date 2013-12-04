@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright (c) 2011 gocept gmbh & co. kg
+# Copyright (c) 2011-2013 gocept gmbh & co. kg
 # See also LICENSE.txt
 
 import os
@@ -18,7 +18,6 @@ import pango
 from gocept.gtimelog.util import calc_duration, virtual_day, calc_progress
 from gocept.gtimelog.util import format_duration, format_duration_short
 from gocept.gtimelog.util import uniq
-import gocept.gtimelog.hours
 import gocept.gtimelog.bugtracker
 import gocept.gtimelog.collmex
 import gocept.gtimelog.core
@@ -649,26 +648,6 @@ class MainWindow(object):
             message = "Collmex: success "
         self.statusbar.post_message(message)
 
-    def on_fill_hour_tracker_activate(self, widget):
-        """File -> Fill our tracker"""
-        day = self.choose_date()
-        if not day:
-            return
-        tracker = gocept.gtimelog.hours.HourTracker(self.settings)
-        window = self.weekly_window(day=day)
-        week = int(window.min_timestamp.strftime('%V'))
-        year = int(window.min_timestamp.strftime('%Y'))
-        try:
-            tracker.loadWeek(week, year)
-            tracker.setHours(window.all_entries())
-            tracker.saveWeek()
-        except Exception, err:
-            log.error('Error filling HT', exc_info=True)
-            message = "HT: %s" % err
-        else:
-            message = "HT: success "
-        self.statusbar.post_message(message)
-
     def on_fill_bugtrackers_activate(self, widget):
         day = self.choose_date()
         if not day:
@@ -866,12 +845,7 @@ def main(argv=None):
         settings.load(settings_file)
     timelog = gocept.gtimelog.core.TimeLog(
         os.path.join(configdir, 'timelog.txt'), settings)
-    if settings.task_list_url:
-        tasks = gocept.gtimelog.hours.TaskList(
-            settings,
-            os.path.join(configdir, 'projects'),
-            os.path.join(configdir, 'tasks'))
-    elif settings.collmex_customer_id:
+    if settings.collmex_customer_id:
         tasks = gocept.gtimelog.collmex.TaskList(
             os.path.join(configdir, 'tasks-collmex.txt'), settings)
     else:
