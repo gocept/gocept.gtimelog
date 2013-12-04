@@ -8,6 +8,9 @@ Changelog
 
 - Removed traces of Hour tracker, including dependency on lxml.
 
+- Obfuscate plain-text passwords in .gtimelogrc to at least make them less
+  readily readable by someone happening to see you open the file.
+
 
 0.8.2 (2013-09-25)
 ------------------
