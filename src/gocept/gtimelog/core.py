@@ -539,7 +539,8 @@ class Settings(object):
         config.set('collmex', 'company_id', self.collmex_company_id)
         config.set('collmex', 'employee_id', self.collmex_employee_id)
         config.set('collmex', 'username', self.collmex_username)
-        config.set('collmex', 'password', self.collmex_password)
+        config.set('collmex', 'password',
+                   self.collmex_password.encode('base64'))
         config.set('collmex', 'task_language', self.collmex_task_language)
 
         return config
@@ -565,7 +566,8 @@ class Settings(object):
         self.collmex_company_id = config.get('collmex', 'company_id')
         self.collmex_employee_id = config.get('collmex', 'employee_id')
         self.collmex_username = config.get('collmex', 'username')
-        self.collmex_password = config.get('collmex', 'password')
+        self.collmex_password = config.get(
+            'collmex', 'password').decode('base64')
         self.collmex_task_language = config.get('collmex', 'task_language')
 
         for section in config.sections():
@@ -582,6 +584,7 @@ class Settings(object):
                 continue
             jira = dict(config.items(section))
             jira['projects'] = jira['projects'].split()
+            jira['password'] = jira['password'].decode('base64')
             self.jiras.append(jira)
 
     def save(self, filename):
