@@ -1,4 +1,4 @@
-# Copyright (c) 2012 gocept gmbh & co. kg
+# Copyright (c) 2012-2013 gocept gmbh & co. kg
 # See also LICENSE.txt
 
 from gocept.gtimelog.util import different_days, format_duration_long
@@ -504,8 +504,6 @@ class Settings(object):
     week_hours = 40
     virtual_midnight = datetime.time(2, 0)
 
-    task_list_url = ''
-    project_list_url = ''
     edit_task_list_cmd = ''
 
     log_level = 'ERROR'
@@ -516,10 +514,6 @@ class Settings(object):
     collmex_username = ''
     collmex_password = ''
     collmex_task_language = 'en'
-
-    hours_url = 'http://cosmos.infrae.com/uren/'
-    hours_username = ''
-    hours_password = ''
 
     redmines = []
     jiras = []
@@ -548,13 +542,6 @@ class Settings(object):
         config.set('collmex', 'password', self.collmex_password)
         config.set('collmex', 'task_language', self.collmex_task_language)
 
-        config.add_section('hours')
-        config.set('hours', 'url', self.hours_url)
-        config.set('hours', 'username', self.hours_username)
-        config.set('hours', 'password', self.hours_password)
-        config.set('hours', 'tasks', self.task_list_url)
-        config.set('hours', 'projects', self.project_list_url)
-
         return config
 
     def load(self, filename):
@@ -580,12 +567,6 @@ class Settings(object):
         self.collmex_username = config.get('collmex', 'username')
         self.collmex_password = config.get('collmex', 'password')
         self.collmex_task_language = config.get('collmex', 'task_language')
-
-        self.hours_url = config.get('hours', 'url')
-        self.hours_username = config.get('hours', 'username')
-        self.hours_password = config.get('hours', 'password')
-        self.task_list_url = config.get('hours', 'tasks')
-        self.project_list_url = config.get('hours', 'projects')
 
         for section in config.sections():
             if not section.startswith('redmine'):

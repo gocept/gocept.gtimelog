@@ -1,11 +1,10 @@
-# Copyright (c) 2012 gocept gmbh & co. kg
+# Copyright (c) 2012-2013 gocept gmbh & co. kg
 # See also LICENSE.txt
 
 from datetime import datetime
 import argparse
 import gocept.gtimelog.collmex
 import gocept.gtimelog.core
-import gocept.gtimelog.hours
 import gocept.gtimelog.redmine
 import logging
 import os
@@ -57,7 +56,7 @@ def main():
         # Argument parsing
     parser = argparse.ArgumentParser(
         description=u'Upload timelog data for a week to all backends '
-                    u'(Redmine, Collmex, Hourtracker)')
+                    u'(Redmine, Collmex)')
     parser.add_argument(
         '--day',
         metavar='YYYY-MM-DD',
