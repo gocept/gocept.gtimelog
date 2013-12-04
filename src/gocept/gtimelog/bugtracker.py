@@ -62,11 +62,13 @@ class Bugtrackers(object):
             self.trackers.append(jira)
 
     def find_tracker(self, project):
+        match_len, found = 0, None
         for tracker in self.trackers:
             for p in tracker.projects:
                 if project.lower().startswith(p.lower()):
-                    return tracker
-        return None
+                    match_len, found = max(
+                        (match_len, found), (len(p), tracker))
+        return found
 
     @staticmethod
     def extract_issue(comment):

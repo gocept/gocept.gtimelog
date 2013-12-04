@@ -11,6 +11,9 @@ Changelog
 - Obfuscate plain-text passwords in .gtimelogrc to at least make them less
   readily readable by someone happening to see you open the file.
 
+- Find the tracker for a project by longest prefix match, independent of the
+  order of trackers in gtimelogrc.
+
 
 0.8.2 (2013-09-25)
 ------------------
