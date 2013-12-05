@@ -594,7 +594,7 @@ class Settings(object):
                 continue
             jira = dict(config.items(section))
             jira['projects'] = jira['projects'].split()
-            jira['password'] = jira['password'].decode('base64')
+            jira['password'] = decode_password(jira['password'])
             self.jiras.append(jira)
 
     def save(self, filename):
