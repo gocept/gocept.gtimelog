@@ -9,7 +9,9 @@ Changelog
 - Removed traces of Hour tracker, including dependency on lxml.
 
 - Obfuscate plain-text passwords in .gtimelogrc to at least make them less
-  readily readable by someone happening to see you open the file.
+  readily readable by someone happening to see you open the file; off by
+  default. Encode your passwords with base64 and set
+  ``gtimelog:decode_passwords = base64`` to use obfuscation.
 
 - Find the tracker for a project by longest prefix match, independent of the
   order of trackers in gtimelogrc.
