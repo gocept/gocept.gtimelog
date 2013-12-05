@@ -4,7 +4,7 @@ Changelog
 0.8.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fixed recent fix: actually use the encoding opt-in in the other place, too.
 
 
 0.8.4 (2013-12-05)
