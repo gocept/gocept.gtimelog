@@ -507,6 +507,7 @@ class Settings(object):
     edit_task_list_cmd = ''
 
     log_level = 'ERROR'
+    decode_passwords = ''
 
     collmex_customer_id = ''
     collmex_company_id = 1
@@ -533,14 +534,14 @@ class Settings(object):
                    self.virtual_midnight.strftime('%H:%M'))
         config.set('gtimelog', 'edit_task_list_cmd', self.edit_task_list_cmd)
         config.set('gtimelog', 'log_level', self.log_level)
+        config.set('gtimelog', 'decode_passwords', self.decode_passwords)
 
         config.add_section('collmex')
         config.set('collmex', 'customer_id', self.collmex_customer_id)
         config.set('collmex', 'company_id', self.collmex_company_id)
         config.set('collmex', 'employee_id', self.collmex_employee_id)
         config.set('collmex', 'username', self.collmex_username)
-        config.set('collmex', 'password',
-                   self.collmex_password.encode('base64'))
+        config.set('collmex', 'password', self.collmex_password)
         config.set('collmex', 'task_language', self.collmex_task_language)
 
         return config
@@ -561,6 +562,15 @@ class Settings(object):
         self.edit_task_list_cmd = config.get('gtimelog', 'edit_task_list_cmd')
 
         self.log_level = getattr(logging, config.get('gtimelog', 'log_level'))
+        self.decode_passwords = config.get('gtimelog', 'decode_passwords')
+
+        def decode_password(password):
+            if self.decode_passwords == 'base64':
+                return password.decode('base64')
+            elif not self.decode_password:
+                return password
+            raise ValueError(
+                'Unknown password encoding %r.' % self.decode_password)
 
         self.collmex_customer_id = config.get('collmex', 'customer_id')
         self.collmex_company_id = config.get('collmex', 'company_id')
