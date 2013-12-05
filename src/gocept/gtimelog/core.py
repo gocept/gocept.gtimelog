@@ -567,17 +567,17 @@ class Settings(object):
         def decode_password(password):
             if self.decode_passwords == 'base64':
                 return password.decode('base64')
-            elif not self.decode_password:
+            elif not self.decode_passwords:
                 return password
             raise ValueError(
-                'Unknown password encoding %r.' % self.decode_password)
+                'Unknown password encoding %r.' % self.decode_passwords)
 
         self.collmex_customer_id = config.get('collmex', 'customer_id')
         self.collmex_company_id = config.get('collmex', 'company_id')
         self.collmex_employee_id = config.get('collmex', 'employee_id')
         self.collmex_username = config.get('collmex', 'username')
-        self.collmex_password = config.get(
-            'collmex', 'password').decode('base64')
+        self.collmex_password = decode_password(config.get(
+            'collmex', 'password'))
         self.collmex_task_language = config.get('collmex', 'task_language')
 
         for section in config.sections():
