@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.8.6 (unreleased)
+0.8.6 (2013-12-06)
 ------------------
 
 - Fix `decode_passwords` feature to again allow umlauts in task
