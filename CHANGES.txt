@@ -4,7 +4,8 @@ Changelog
 0.8.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix `decode_passwords` feature to again allow umlauts in task
+  descriptions.
 
 
 0.8.5 (2013-12-05)

@@ -566,7 +566,7 @@ class Settings(object):
 
         def decode_password(password):
             if self.decode_passwords == 'base64':
-                return password.decode('base64')
+                return password.decode('base64').encode('utf-8')
             elif not self.decode_passwords:
                 return password
             raise ValueError(
