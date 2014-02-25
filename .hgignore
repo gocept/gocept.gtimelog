@@ -9,3 +9,4 @@ develop-eggs
 bin
 parts
 .installed.cfg
+.Python
