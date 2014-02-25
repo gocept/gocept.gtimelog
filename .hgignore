@@ -1,12 +1,12 @@
 syntax: glob
-*.pyc
 *.egg-info
+*.pyc
+.Python
+.installed.cfg
+bin
+develop-eggs
 dist
+eggs
 include
 lib
-eggs
-develop-eggs
-bin
 parts
-.installed.cfg
-.Python
