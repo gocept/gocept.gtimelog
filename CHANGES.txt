@@ -4,7 +4,8 @@ Changelog
 0.8.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Uploading via ``bin/gtl-upload`` defaults to the last seven days when given
+  no explicit date to upload.
 
 
 0.8.6 (2013-12-06)

@@ -1,8 +1,8 @@
 # Copyright (c) 2012-2013 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-from datetime import datetime
 import argparse
+import datetime
 import gocept.gtimelog.collmex
 import gocept.gtimelog.core
 import gocept.gtimelog.redmine
@@ -60,9 +60,9 @@ def main():
     parser.add_argument(
         '--day',
         metavar='YYYY-MM-DD',
-        default=datetime.today().strftime('%Y-%m-%d'),
+        default=None,
         help='Day of the week that should be uploaded. '
-             '(default: today)')
+             '(default: last 7 days, including today)')
     parser.add_argument(
         '-d', '--debug',
         help='Enable debug logging',
@@ -75,9 +75,19 @@ def main():
     # Load config
     settings, timelog = load_config_and_timelog()
 
-    day = datetime.strptime(args.day, '%Y-%m-%d').date()
-    log.info('Uploading for week of %s' % day)
-    window = timelog.weekly_window(day=day)
+    if args.day:
+        day = datetime.datetime.strptime(args.day, '%Y-%m-%d').date()
+        window = timelog.weekly_window(day=day)
+    else:
+        begin = datetime.datetime.combine(
+            datetime.date.today() - datetime.timedelta(days=7),
+            timelog.virtual_midnight)
+        end = datetime.datetime.combine(
+            datetime.date.today() + datetime.timedelta(days=1),
+            timelog.virtual_midnight)
+        window = timelog.window_for(begin, end)
+    log.info('Uploading %s to %s', window.min_timestamp, window.max_timestamp)
+
     # 1. collmex
     try:
         collmex = gocept.gtimelog.collmex.Collmex(settings)
