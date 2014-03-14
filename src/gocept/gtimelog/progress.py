@@ -6,15 +6,33 @@ from __future__ import print_function
 from datetime import datetime, timedelta
 from gocept.gtimelog.util import format_duration_long
 import argparse
+import curses
+import gocept.gtimelog.cli
 import gocept.gtimelog.core
 import gocept.gtimelog.util
-import gocept.gtimelog.cli
 import sys
 
 
+class Colors(object):
+
+    RED = '\033[1m'
+    BLACK = '\033[0m'
+
+
+class NoColors(object):
+
+    RED = ''
+    BLACK = ''
+
+
 def main():
+    global Colors
     """Run the program."""
 
+    try:
+        curses.setupterm()
+    except curses.error:
+        Colors = NoColors
     # Argument parsing
     parser = argparse.ArgumentParser(
         description=u'Show the progress of the current week')
@@ -44,12 +62,17 @@ def main():
     total_work, total_slacking, total_holidays = timelog.window_for(
         monday, sunday).totals()
 
-    print("Total work done this week: \033[1m%s\033[0m of "
-          "\033[1m%s hours\033[0m" % (format_duration_long(total_work),
-                                      int(week_exp)))
+    print("Total work done this week: {colors.RED}{total_work}{colors.BLACK}"
+          " of {colors.RED}{expected} hours{colors.BLACK}".format(
+              colors=Colors,
+              total_work=format_duration_long(total_work),
+              expected=int(week_exp)))
 
     d_hours = timedelta(hours=today_window.settings.week_hours / 5.0)
     time_left = d_hours - today_window.totals()[0]
     clock_off = today_window.items[0][0] + d_hours + today_window.totals()[1]
-    print("Time left at work:         \033[1m%s\033[0m (until %s)" % (
-          format_duration_long(time_left), clock_off.strftime('%H:%M')))
+    print("Time left at work:         {colors.RED}{time_left}{colors.BLACK}"
+          " (until {until})".format(
+              colors=Colors,
+              time_left=format_duration_long(time_left),
+              until=clock_off.strftime('%H:%M')))
