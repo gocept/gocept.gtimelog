@@ -2,6 +2,7 @@
 # Copyright (c) 2012 gocept gmbh & co. kg
 # See also LICENSE.txt
 
+from __future__ import print_function
 from datetime import datetime, timedelta
 from gocept.gtimelog.util import format_duration_long
 import argparse
@@ -43,12 +44,12 @@ def main():
     total_work, total_slacking, total_holidays = timelog.window_for(
         monday, sunday).totals()
 
-    print "Total work done this week: \033[1m%s\033[0m of "\
+    print("Total work done this week: \033[1m%s\033[0m of "
           "\033[1m%s hours\033[0m" % (format_duration_long(total_work),
-                                      int(week_exp))
+                                      int(week_exp)))
 
     d_hours = timedelta(hours=today_window.settings.week_hours / 5.0)
     time_left = d_hours - today_window.totals()[0]
     clock_off = today_window.items[0][0] + d_hours + today_window.totals()[1]
-    print "Time left at work:         \033[1m%s\033[0m (until %s)" % (
-        format_duration_long(time_left), clock_off.strftime('%H:%M'))
+    print("Time left at work:         \033[1m%s\033[0m (until %s)" % (
+          format_duration_long(time_left), clock_off.strftime('%H:%M')))
