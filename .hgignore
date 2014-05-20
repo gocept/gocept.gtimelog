@@ -6,7 +6,9 @@ syntax: glob
 bin
 develop-eggs
 dist
+downloads
 eggs
 include
 lib
+local
 parts
