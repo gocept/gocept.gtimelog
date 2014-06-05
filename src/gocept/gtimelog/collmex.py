@@ -40,7 +40,8 @@ class Collmex(object):
             if entry.endswith('$$$'): # we don't track holidays
                 continue
             if start > stop:
-                raise ValueError("End before begin in %s" % (entry,))
+                raise ValueError("End before begin in %s (%s to %s)" % (
+                                 entry, start, stop))
             project, task, desc = self.mapEntry(entry)
 
             break_ = datetime.timedelta(0)

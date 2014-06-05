@@ -4,6 +4,8 @@ Changelog
 0.9.1 (unreleased)
 ------------------
 
+- Improve error reporting when timelog entries are out of order (i.e. end before begin)
+
 - Don't put out colors in ``gtl-progress`` when terminal doesn't support it.
 
 
