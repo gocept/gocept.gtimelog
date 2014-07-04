@@ -52,8 +52,10 @@ class Collmex(object):
             log.debug("%s -> %s, [%s] [%s] %s %s" % (
                 start, stop, project, task, duration, desc))
 
-            assert start.date() == stop.date()
-
+            # Collmex requires the end time to be at the same day as the
+            # beginning:
+            assert start.date() == stop.date(), "%s != %s" % (
+                start.date(), stop.date())
 
             issue = self.trackers.extract_issue(entry)
             if issue:
