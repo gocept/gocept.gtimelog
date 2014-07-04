@@ -37,7 +37,7 @@ class Collmex(object):
                 continue
             if entry.endswith('**'):
                 continue
-            if entry.endswith('$$$'): # we don't track holidays
+            if entry.endswith('$$$'):  # we don't track holidays
                 continue
             if start > stop:
                 raise ValueError("End before begin in %s (%s to %s)" % (
