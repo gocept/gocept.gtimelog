@@ -53,7 +53,7 @@ def configure_logging(debug=False):
 
 def main():
     """Run the program."""
-        # Argument parsing
+    # Argument parsing
     parser = argparse.ArgumentParser(
         description=u'Upload timelog data for a week to all backends '
                     u'(Redmine, Collmex)')
