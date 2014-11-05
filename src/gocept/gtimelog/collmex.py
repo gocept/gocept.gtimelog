@@ -40,7 +40,10 @@ class Collmex(object):
                 continue
             if start > stop:
                 raise ValueError("End before begin in %s" % (entry,))
-            project, task, desc = self.mapEntry(entry)
+            try:
+                project, task, desc = self.mapEntry(entry)
+            except ValueError:
+                raise ValueError("Could not split entry: %s: %s" % (start, entry))
 
             break_ = datetime.timedelta(0)
             if desc.endswith('/2'):
@@ -114,7 +117,10 @@ class Collmex(object):
             raise ValueError("Couldn't split %r correctly" % entry)
 
         project = match(parts[0].strip(), self.projects)
-        task = match(parts[1].strip(), project.references)
+        try:
+            task = match(parts[1].strip(), project.references)
+        except ValueError, e:
+            raise ValueError('could not match task from %r' % entry)
         desc = ':'.join(parts[2:]).strip()
 
         return project, task, desc
