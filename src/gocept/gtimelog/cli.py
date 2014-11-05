@@ -10,6 +10,7 @@ import gocept.gtimelog.redmine
 import logging
 import os
 import os.path
+import StringIO
 import sys
 
 
@@ -18,6 +19,7 @@ log = logging.getLogger(__name__)
 
 def main():
     """Run the program."""
+
     # Start logging
     stdout = logging.StreamHandler(sys.stdout)
     stdout.setFormatter(logging.Formatter(
@@ -28,6 +30,11 @@ def main():
     parser = argparse.ArgumentParser(
         description=u'Upload timelog data for a week to all backends '
                     u'(Redmine, Collmex, Hourtracker)')
+    parser.add_argument(
+        '--preview',
+        default=False,
+        action='store_true',
+        help='Only show week report, do not upload.')
     parser.add_argument(
         '--day',
         metavar='YYYY-MM-DD',
@@ -51,6 +58,7 @@ def main():
     logging.root.setLevel(settings.log_level)
     log.debug('Logging is set to level %s' % settings.log_level)
 
+
     # Initialize data structures
     timelog = gocept.gtimelog.core.TimeLog(
         os.path.join(configdir, 'timelog.txt'), settings)
@@ -59,6 +67,17 @@ def main():
 
     day = datetime.strptime(args.day, '%Y-%m-%d').date()
     log.info('Uploading for week of %s' % day)
+
+    window = timelog.weekly_window(day=day)
+
+    window.weekly_report(sys.stdout, 'manager@example.com', 'Myself')
+
+    for window in timelog.weekly_window_by_day(day=day):
+        window.daily_report(sys.stdout, 'manager@example.com', 'Myself')
+
+    if args.preview:
+        return
+
     window = timelog.weekly_window(day=day)
     # 1. collmex
     try:
@@ -70,17 +89,18 @@ def main():
         log.info('Collmex: success')
 
     # 2. hourtracker
-    tracker = gocept.gtimelog.hours.HourTracker(settings)
-    week = int(window.min_timestamp.strftime('%V'))
-    year = int(window.min_timestamp.strftime('%Y'))
-    try:
-        tracker.loadWeek(week, year)
-        tracker.setHours(window.all_entries())
-        tracker.saveWeek()
-    except Exception:
-        log.error('Error filling HT', exc_info=True)
-    else:
-        log.info('Hourtracker: success')
+    if settings.hours_username:
+        tracker = gocept.gtimelog.hours.HourTracker(settings)
+        week = int(window.min_timestamp.strftime('%V'))
+        year = int(window.min_timestamp.strftime('%Y'))
+        try:
+            tracker.loadWeek(week, year)
+            tracker.setHours(window.all_entries())
+            tracker.saveWeek()
+        except Exception:
+            log.error('Error filling HT', exc_info=True)
+        else:
+            log.info('Hourtracker: success')
 
     # 3. redmine
     try:

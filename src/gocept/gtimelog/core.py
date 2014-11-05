@@ -236,39 +236,10 @@ class TimeWindow(object):
         weekday_names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         weekday = weekday_names[self.min_timestamp.weekday()]
         week = self.min_timestamp.strftime('%V')
-        print >> output, "To: %(email)s" % {'email': email}
-        print >> output, ("Subject: %(date)s report for %(who)s"
-                          " (%(weekday)s, week %(week)s)"
-                          % {'date': self.min_timestamp.strftime('%Y-%m-%d'),
-                             'weekday': weekday, 'week': week, 'who': who})
-        print >> output
-        items = list(self.all_entries())
-        if not items:
-            print >> output, "No work done today."
-            return
-        start, stop, duration, entry = items[0]
-        entry = entry[:1].upper() + entry[1:]
-        print >> output, "%s at %s" % (entry, start.strftime('%H:%M'))
-        print >> output
-        work, slack, hold = self.grouped_entries()
         total_work, total_slacking, total_holidays = self.totals()
-        if work:
-            for start, entry, duration in work:
-                entry = entry[:1].upper() + entry[1:]
-                print >> output, "%-62s  %s" % (entry,
-                                                format_duration_long(duration))
-            print >> output
-        print >> output, ("Total work done: %s" %
-                          format_duration_long(total_work))
-        print >> output
-        if slack:
-            for start, entry, duration in slack:
-                entry = entry[:1].upper() + entry[1:]
-                print >> output, "%-62s  %s" % (entry,
-                                                format_duration_long(duration))
-            print >> output
-        print >> output, ("Time spent slacking: %s" %
-                          format_duration_long(total_slacking))
+        print >> output, ("%(weekday)s\t%(total)s"
+                          % {'weekday': weekday,
+                             'total': format_duration_long(total_work)})
 
     def weekly_report(self, output, email, who, estimated_column=False):
         """Format a weekly report.
@@ -276,9 +247,7 @@ class TimeWindow(object):
         Writes a weekly report template in RFC-822 format to output.
         """
         week = self.min_timestamp.strftime('%V')
-        print >> output, "To: %(email)s" % {'email': email}
-        print >> output, "Subject: Weekly report for %s (week %s)" % (who,
-                                                                      week)
+        print >> output, "Weekly report for week %s " % week
         print >> output
         items = list(self.all_entries())
         if not items:
@@ -368,6 +337,17 @@ class TimeLog(object):
         min = datetime.datetime.combine(monday, self.virtual_midnight)
         max = min + datetime.timedelta(7)
         return self.window_for(min, max)
+
+    def weekly_window_by_day(self, day=None):
+        windows = []
+        if not day:
+            day = self.day
+        monday = day - datetime.timedelta(day.weekday())
+        min = datetime.datetime.combine(monday, self.virtual_midnight)
+        for x in range(7):
+            max = min + datetime.timedelta(1)
+            yield self.window_for(min, max)
+            min = max
 
 
 class TaskList(object):
