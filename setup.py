@@ -25,7 +25,7 @@ setup(
         'BeautifulSoup',
         'gocept.collmex>=1.2',
         'jira-python',
-        'pyactiveresource==1.2dev-r77',
+        'pyactiveresource',
         'setuptools',
         'transaction',
         'zope.cachedescriptors',
