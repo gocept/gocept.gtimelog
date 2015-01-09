@@ -6,7 +6,6 @@ from __future__ import print_function
 from datetime import datetime, timedelta
 from gocept.gtimelog.util import format_duration_long
 import argparse
-import curses
 import gocept.gtimelog.cli
 import gocept.gtimelog.core
 import gocept.gtimelog.util
@@ -28,10 +27,8 @@ class NoColors(object):
 def main():
     global Colors
     """Run the program."""
-
-    try:
-        curses.setupterm()
-    except curses.error:
+    is_a_tty = hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
+    if not is_a_tty:
         Colors = NoColors
     # Argument parsing
     parser = argparse.ArgumentParser(
