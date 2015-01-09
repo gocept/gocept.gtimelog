@@ -87,7 +87,9 @@ class Bugtrackers(object):
         for entry in self._timelog_to_issues(window):
             tracker = self.find_tracker(entry.project)
             if not tracker:
-                continue
+                raise ValueError(
+                    "Found ticket {} but no associated tracker for project {}."
+                    .format(entry.issue, entry.project))
 
             try:
                 tracker.update_entry(entry)
