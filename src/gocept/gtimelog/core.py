@@ -207,6 +207,8 @@ class TimeWindow(object):
             else:
                 if not split_intern_customer:
                     total_work += duration
+                elif entry.startswith('url'):
+                    continue
                 elif entry[0:2] in ['op', 'I_']:
                     total_intern += duration
                 else:
@@ -311,7 +313,7 @@ class TimeWindow(object):
         print >> output
         work, slack, hold = self.grouped_entries()
         total_work, total_slacking, total_holidays = self.totals()
-        print >> output, ("Total work done today:         %s" %
+        print >> output, ("Total work done today:       %s" %
                           format_duration_long(total_work))
 
     def weekly_report(self, output, email, who, estimated_column=False):
