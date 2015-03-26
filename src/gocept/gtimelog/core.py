@@ -162,7 +162,7 @@ class TimeWindow(object):
         hold.sort()
         return work, slack, hold
 
-    def totals(self):
+    def totals(self, split_intern_customer=False):
         """Calculate total time of work and slacking entries.
 
         Returns (total_work, total_slacking, total_holiday) tuple.
@@ -186,8 +186,13 @@ class TimeWindow(object):
                                   for start, entry, duration in slacking])
 
         (that is, it would be true if sum could operate on timedeltas).
+
+        If `split_intern_customer` is set to True, instead of total_work return
+        total_customer and total_intern, which means work on customer projects
+        and work on interal projects.
         """
         total_work = total_slacking = total_holiday = datetime.timedelta(0)
+        total_customer = total_intern = datetime.timedelta(0)
         for start, stop, duration, entry in self.all_entries():
             if entry.endswith('/2'):
                 duration /= 2
@@ -200,8 +205,15 @@ class TimeWindow(object):
             if '**' in entry:
                 total_slacking += duration
             else:
-                total_work += duration
-        return total_work, total_slacking, total_holiday
+                if not split_intern_customer:
+                    total_work += duration
+                elif entry[0:2] in ['op', 'I_']:
+                    total_intern += duration
+                else:
+                    total_customer += duration
+        if not split_intern_customer:
+            return total_work, total_slacking, total_holiday
+        return total_customer, total_intern, total_slacking, total_holiday
 
     def icalendar(self, output):
         """Create an iCalendar file with activities."""
@@ -299,7 +311,7 @@ class TimeWindow(object):
         print >> output
         work, slack, hold = self.grouped_entries()
         total_work, total_slacking, total_holidays = self.totals()
-        print >> output, ("Total work done today:     %s" %
+        print >> output, ("Total work done today:         %s" %
                           format_duration_long(total_work))
 
     def weekly_report(self, output, email, who, estimated_column=False):
