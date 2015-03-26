@@ -62,7 +62,7 @@ def main():
     total_work, total_slacking, total_holidays = (
         timelog.window_for(monday, sunday).totals())
 
-    print("Total work done this week:     {colors.RED}{total_work}{colors.BLACK}"
+    print("Total work done this week:   {colors.RED}{total_work}{colors.BLACK}"
           " of {colors.RED}{expected} hours{colors.BLACK}".format(
               colors=Colors,
               total_work=format_duration_long(total_work),
@@ -71,7 +71,7 @@ def main():
     d_hours = timedelta(hours=today_window.settings.week_hours / 5.0)
     time_left = d_hours - today_window.totals()[0]
     clock_off = today_window.items[0][0] + d_hours + today_window.totals()[1]
-    print("Time left at work:             {colors.RED}{time_left}{colors.BLACK}"
+    print("Time left at work:           {colors.RED}{time_left}{colors.BLACK}"
           " (until {until})".format(
               colors=Colors,
               time_left=format_duration_long(time_left),
@@ -87,8 +87,8 @@ def main():
     total_percent = (total_customer.total_seconds() * 100.0 /
                      total_work.total_seconds())
 
-    print("Ratio customer projects {month}: {colors.RED}{total_percent} %"
-          "{colors.BLACK}".format(
+    print("Total work done this month: {colors.RED}{total_work} "
+          "({total_percent} %){colors.BLACK}".format(
               colors=Colors,
-              month=today.strftime('%m/%y'),
+              total_work=format_duration_long(total_work),
               total_percent=round(total_percent, 1)))
