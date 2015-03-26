@@ -77,14 +77,16 @@ def main():
 
     total_percent = (total_customer.total_seconds() * 100.0 /
                      total_work.total_seconds())
-    engagement = settings.engagement[today.month - 1]
-
+    expected = 0
+    engagement = settings.engagement
+    if engagement:
+        expected = engagement[today.month - 1]
 
     print("Total work done this month: {colors.RED}{total_work} "
           "({total_percent} %){colors.BLACK} of  {colors.RED}{expected} "
           "hours{colors.BLACK}".format(
               colors=Colors,
-              expected=engagement,
+              expected=expected,
               total_work=format_duration_long(total_work),
               total_percent=round(total_percent, 1)))
 
