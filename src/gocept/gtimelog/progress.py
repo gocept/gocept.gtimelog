@@ -68,15 +68,6 @@ def main():
               total_work=format_duration_long(total_work),
               expected=int(week_exp)))
 
-    d_hours = timedelta(hours=today_window.settings.week_hours / 5.0)
-    time_left = d_hours - today_window.totals()[0]
-    clock_off = today_window.items[0][0] + d_hours + today_window.totals()[1]
-    print("Time left at work:           {colors.RED}{time_left}{colors.BLACK}"
-          " (until {until})".format(
-              colors=Colors,
-              time_left=format_duration_long(time_left),
-              until=clock_off.strftime('%H:%M')))
-
     first_of_month = datetime(today.year, today.month, 1)
     next_month = today.replace(day=28) + timedelta(days=4)
     last_of_month = next_month - timedelta(days=next_month.day)
@@ -86,9 +77,42 @@ def main():
 
     total_percent = (total_customer.total_seconds() * 100.0 /
                      total_work.total_seconds())
+    engagement = settings.engagement[today.month - 1]
+
 
     print("Total work done this month: {colors.RED}{total_work} "
-          "({total_percent} %){colors.BLACK}".format(
+          "({total_percent} %){colors.BLACK} of  {colors.RED}{expected} "
+          "hours{colors.BLACK}".format(
               colors=Colors,
+              expected=engagement,
               total_work=format_duration_long(total_work),
               total_percent=round(total_percent, 1)))
+
+    first_of_year = datetime(today.year, 1, 1)
+    last_of_year = datetime(today.year, 12, 31)
+    total_customer, total_intern, total_slacking, total_holidays = (
+        timelog.window_for(first_of_year, last_of_year).totals(True))
+    total_work = total_customer + total_intern
+
+    total_percent = (total_customer.total_seconds() * 100.0 /
+                     total_work.total_seconds())
+    engagement = sum(settings.engagement)
+
+    print("Total work done this year:  {colors.RED}{total_work} "
+          "({total_percent} %){colors.BLACK} of {colors.RED}{expected} "
+          "hours{colors.BLACK}".format(
+              colors=Colors,
+              expected=engagement,
+              total_work=format_duration_long(total_work),
+              total_percent=round(total_percent, 1)))
+
+
+    d_hours = timedelta(hours=today_window.settings.week_hours / 5.0)
+    time_left = d_hours - today_window.totals()[0]
+    clock_off = today_window.items[0][0] + d_hours + today_window.totals()[1]
+    print("")
+    print("Time left at work:           {colors.RED}{time_left}{colors.BLACK}"
+          " (until {until})".format(
+              colors=Colors,
+              time_left=format_duration_long(time_left),
+              until=clock_off.strftime('%H:%M')))

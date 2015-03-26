@@ -512,6 +512,7 @@ class Settings(object):
     editor = 'gvim'
     mailer = 'x-terminal-emulator -e mutt -H %s'
 
+    engagement = []
     enable_gtk_completion = True  # False enables gvim-style completion
 
     hours = 8
@@ -542,6 +543,7 @@ class Settings(object):
         config.set('gtimelog', 'mailer', self.mailer)
         config.set('gtimelog', 'gtk-completion',
                    str(self.enable_gtk_completion))
+        config.set('gtimelog', 'engagement', self.engagement)
         config.set('gtimelog', 'hours', str(self.hours))
         config.set('gtimelog', 'week_hours', str(self.week_hours))
         config.set('gtimelog', 'virtual_midnight',
@@ -569,6 +571,9 @@ class Settings(object):
         self.mailer = config.get('gtimelog', 'mailer')
         self.enable_gtk_completion = config.getboolean('gtimelog',
                                                        'gtk-completion')
+        self.engagement = config.get('gtimelog', 'engagement')
+        if self.engagement:
+            self.engagement = [int(e) for e in self.engagement.split(',')]
         self.hours = config.getfloat('gtimelog', 'hours')
         self.week_hours = config.getfloat('gtimelog', 'week_hours')
         self.virtual_midnight = gocept.gtimelog.util.parse_time(
