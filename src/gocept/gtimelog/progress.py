@@ -75,8 +75,11 @@ def main():
         timelog.window_for(first_of_month, last_of_month).totals(True))
     total_work = total_customer + total_intern
 
-    total_percent = (total_customer.total_seconds() * 100.0 /
-                     total_work.total_seconds())
+    if total_work.total_seconds():
+        total_percent = (total_customer.total_seconds() * 100.0 /
+                         total_work.total_seconds())
+    else:
+        total_percent = 0
     expected = 0
     engagement = settings.engagement
     if engagement:
@@ -108,7 +111,8 @@ def main():
               total_work=format_duration_long(total_work),
               total_percent=round(total_percent, 1)))
 
-
+    if not today_window.items:
+        return
     d_hours = timedelta(hours=today_window.settings.week_hours / 5.0)
     time_left = d_hours - today_window.totals()[0]
     clock_off = today_window.items[0][0] + d_hours + today_window.totals()[1]
