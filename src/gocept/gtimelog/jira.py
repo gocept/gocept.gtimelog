@@ -1,6 +1,5 @@
 from __future__ import absolute_import
-import jira.client
-import jira.exceptions
+import jira
 
 
 class Jira(object):
@@ -9,7 +8,7 @@ class Jira(object):
         self.url = url
         self.username = username
         self.projects = projects
-        self.api = jira.client.JIRA(
+        self.api = jira.JIRA(
             options={'server': url}, basic_auth=(username, password))
 
     def update_entry(self, entry):
@@ -49,7 +48,7 @@ def set_options(self, value):
 def get_options(self):
     return self._real_options
 
-jira.client.JIRA._options = property(get_options, set_options)
+jira.JIRA._options = property(get_options, set_options)
 
 
 # XXX workaround for <https://bitbucket.org/bspeakmon/jira-python/issue/72>
@@ -59,4 +58,4 @@ def utf8_safe_init(self, status_code=None, text=None, url=None):
     self.text = text.encode('utf-8')
     self.url = url
 
-jira.exceptions.JIRAError.__init__ = utf8_safe_init
+jira.JIRAError.__init__ = utf8_safe_init
