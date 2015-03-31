@@ -8,6 +8,7 @@ Changelog
 
 - Don't put out colors in ``gtl-progress`` when terminal doesn't support it.
 
+- Use ``jira`` instead of ``jira-python`` which no longer existis on PyPI.
 
 0.9.0 (2014-02-25)
 ------------------
