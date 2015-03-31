@@ -24,7 +24,7 @@ setup(
     install_requires=[
         'BeautifulSoup',
         'gocept.collmex>=1.2',
-        'jira-python',
+        'jira',
         'pyactiveresource',
         'setuptools',
         'transaction',
