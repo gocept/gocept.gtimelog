@@ -8,9 +8,6 @@ Changelog
 
 - Don't put out colors in ``gtl-progress`` when terminal doesn't support it.
 
-- Add script ``gtimelog-no-ssl-verification`` which does no SSL certificate
-  verification. (Python 2.7.9+)
-
 
 0.9.0 (2014-02-25)
 ------------------
