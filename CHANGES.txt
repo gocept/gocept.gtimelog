@@ -4,6 +4,10 @@ Changelog
 0.9.1 (unreleased)
 ------------------
 
+- Allow using '*' as a project in the bugtracker project list to support
+  defaulting to a tracker. Has lowest score and any specific project will
+  override.
+
 - Improve error reporting when timelog entries are out of order (i.e. end before begin)
 
 - Don't put out colors in ``gtl-progress`` when terminal doesn't support it.
