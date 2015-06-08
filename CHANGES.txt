@@ -1,8 +1,8 @@
 Changelog
 =========
 
-0.9.1 (unreleased)
-------------------
+0.10.0 (2015-06-08)
+-------------------
 
 - Improve error reporting when timelog entries are out of order (i.e. end before begin)
 
