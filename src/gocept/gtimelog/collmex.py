@@ -188,7 +188,9 @@ class TaskList(gocept.gtimelog.core.TaskList):
         for project in projects:
             product = products.get(project['Produktnummer'])
 
-            if project['Abgeschlossen'] != u'0':
+            if (project['Abgeschlossen'] != u'0' or
+                    project['Inaktiv'] != u'0' or
+                    product['Inaktiv'] is not None):
                 continue
             if lang != 'de' and product and product['Bezeichnung Eng']:
                 task_desc = product['Bezeichnung Eng']
