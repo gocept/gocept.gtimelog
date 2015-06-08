@@ -11,6 +11,9 @@ Changelog
 - Use locally build `` jira-python`` (now named ``jira``) instead of
   ``jira-python`` which no longer existis on PyPI.
 
+- Ignore inactive projects and tasks when updating tasklist from collmex.
+  (#13840)
+
 0.9.0 (2014-02-25)
 ------------------
 
