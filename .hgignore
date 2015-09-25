@@ -10,5 +10,6 @@ downloads
 eggs
 include
 lib
+lib64
 local
 parts
