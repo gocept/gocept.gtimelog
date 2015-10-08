@@ -6,6 +6,8 @@ Changelog
 
 - Bump dependencies to setuptools 18.3.2 and zc.buildout to 2.4.4
 
+- ``gtl-progress``: Workaround for Python on MacOS and Nix which is not having 
+  curses build in.
 
 0.10.0 (2015-06-08)
 -------------------
