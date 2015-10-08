@@ -6,20 +6,25 @@ from __future__ import print_function
 from datetime import datetime, timedelta
 from gocept.gtimelog.util import format_duration_long
 import argparse
-import curses
 import gocept.gtimelog.cli
 import gocept.gtimelog.core
 import gocept.gtimelog.util
 import sys
 
 
-class Colors(object):
+try:
+    import curses
+except ImportError:
+    curses = None
+
+
+class WithColors(object):
 
     RED = '\033[1m'
     BLACK = '\033[0m'
 
 
-class NoColors(object):
+class WithoutColors(object):
 
     RED = ''
     BLACK = ''
@@ -28,11 +33,15 @@ class NoColors(object):
 def main():
     global Colors
     """Run the program."""
+    Colors = WithoutColors
+    if curses:
+        try:
+            curses.setupterm()
+        except curses.error:
+               pass
+        else:
+           Colors = WithColors
 
-    try:
-        curses.setupterm()
-    except curses.error:
-        Colors = NoColors
     # Argument parsing
     parser = argparse.ArgumentParser(
         description=u'Show the progress of the current week')
