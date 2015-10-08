@@ -4,7 +4,7 @@ Changelog
 0.11.0 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Bump dependencies to setuptools 18.3.2 and zc.buildout to 2.4.4
 
 
 0.10.0 (2015-06-08)
