@@ -6,6 +6,7 @@ import gocept.gtimelog.bugtracker
 import gocept.gtimelog.core
 import gocept.gtimelog.util
 import unittest
+import mock
 
 
 class TestWindow(gocept.gtimelog.core.TimeWindow):
@@ -135,19 +136,21 @@ class Tracker(dict):
 
 class FindTrackerTest(unittest.TestCase):
 
-    def test_tracker_with_longest_prefix_match_gets_project(self):
+    @mock.patch('jira.client.JIRA.server_info')
+    def test_tracker_with_longest_prefix_match_gets_project(self, server_info):
+        server_info.return_value = {'versionNumbers': '1.0'}
         settings = type('Dummy', (object,), {})()
         settings.redmines = [
-            Tracker(url='1', projects=['as', 'bsdf']),
-            Tracker(url='2', projects=['asdfg']),
-            Tracker(url='3', projects=['asdf', 'b', 'c']),
+            Tracker(url='http://1', projects=['as', 'bsdf']),
+            Tracker(url='http://2', projects=['asdfg']),
+            Tracker(url='http://3', projects=['asdf', 'b', 'c']),
         ]
         settings.jiras = [
-            Tracker(url='4', projects=['asdf']),
-            Tracker(url='5', projects=['d', 'asdf_']),
-            Tracker(url='6', projects=['asdf', 'e']),
+            Tracker(url='http://4', projects=['asdf']),
+            Tracker(url='http://5', projects=['d', 'asdf_']),
+            Tracker(url='http://6', projects=['asdf', 'e']),
         ]
         bugtrackers = gocept.gtimelog.bugtracker.Bugtrackers(settings)
-        self.assertEqual('5', bugtrackers.find_tracker('asdf_g').url)
-        self.assertEqual('1', bugtrackers.find_tracker('AS_DF').url)
-        self.assertEqual('3', bugtrackers.find_tracker('bbsdf').url)
+        self.assertEqual('http://5', bugtrackers.find_tracker('asdf_g').url)
+        self.assertEqual('http://1', bugtrackers.find_tracker('AS_DF').url)
+        self.assertEqual('http://3', bugtrackers.find_tracker('bbsdf').url)

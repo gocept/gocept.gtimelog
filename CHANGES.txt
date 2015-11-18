@@ -4,10 +4,19 @@ Changelog
 0.11.0 (unreleased)
 -------------------
 
+- Allow unicode in task description.
+
+- Allow using '*' as a project in the bugtracker project list to support
+  defaulting to a tracker. Has lowest score and any specific project will
+  override.
+
+- Add error reporting ticket # but no tracker was found.
+
 - Bump dependencies to setuptools 18.3.2 and zc.buildout to 2.4.4
 
-- ``gtl-progress``: Workaround for Python on MacOS and Nix which is not having 
+- ``gtl-progress``: Workaround for Python on MacOS and Nix which is not having
   curses build in.
+
 
 0.10.0 (2015-06-08)
 -------------------

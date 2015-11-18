@@ -62,13 +62,17 @@ class Bugtrackers(object):
             self.trackers.append(jira)
 
     def find_tracker(self, project):
-        match_len, found = 0, None
+        matches = []  # [(len, match), (len, match), ...]
         for tracker in self.trackers:
             for p in tracker.projects:
+                if p == '*':
+                    matches.append((0, tracker))
                 if project.lower().startswith(p.lower()):
-                    match_len, found = max(
-                        (match_len, found), (len(p), tracker))
-        return found
+                    matches.append((len(p), tracker))
+        if not matches:
+            return
+        matches.sort()
+        return matches[-1][1]
 
     @staticmethod
     def extract_issue(comment):
@@ -87,7 +91,9 @@ class Bugtrackers(object):
         for entry in self._timelog_to_issues(window):
             tracker = self.find_tracker(entry.project)
             if not tracker:
-                continue
+                raise ValueError(
+                    "Found ticket {} but no associated tracker for project {}."
+                    .format(entry.issue, entry.project))
 
             try:
                 tracker.update_entry(entry)
