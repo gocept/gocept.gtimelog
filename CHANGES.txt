@@ -10,6 +10,10 @@ Changelog
   defaulting to a tracker. Has lowest score and any specific project will
   override.
 
+- Add error reporting ticket # but no tracker was found.
+
+- Improve color handling in console script.
+
 
 0.10.0 (2015-06-08)
 -------------------
