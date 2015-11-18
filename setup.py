@@ -30,6 +30,13 @@ setup(
         'transaction',
         'zope.cachedescriptors',
     ],
+    extras_require={
+        'test': [
+            'zope.testing',
+            'mock',
+            'funcsigs'
+        ]
+    },
     zip_safe=False,
     entry_points="""
         [console_scripts]
