@@ -11,7 +11,6 @@ import gocept.gtimelog.core
 import gocept.gtimelog.util
 import sys
 
-
 try:
     import curses
 except ImportError:
@@ -38,10 +37,9 @@ def main():
         try:
             curses.setupterm()
         except curses.error:
-               pass
+            pass
         else:
-           Colors = WithColors
-
+            Colors = WithColors
     # Argument parsing
     parser = argparse.ArgumentParser(
         description=u'Show the progress of the current week')
