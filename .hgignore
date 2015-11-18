@@ -2,7 +2,9 @@ syntax: glob
 *.egg-info
 *.pyc
 .Python
+.eggs
 .installed.cfg
+.tags
 bin
 develop-eggs
 dist
@@ -10,5 +12,7 @@ downloads
 eggs
 include
 lib
+lib64
 local
 parts
+tags
