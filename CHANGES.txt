@@ -12,7 +12,7 @@ Changelog
 
 - Add error reporting ticket # but no tracker was found.
 
-- Bump dependencies to setuptools 18.3.2 and zc.buildout to 2.4.4
+- Bump dependencies to newest versions.
 
 - ``gtl-progress``: Workaround for Python on MacOS and Nix which is not having
   curses build in.
@@ -30,6 +30,7 @@ Changelog
 
 - Ignore inactive projects and tasks when updating tasklist from collmex.
   (#13840)
+
 
 0.9.0 (2014-02-25)
 ------------------
