@@ -11,7 +11,7 @@ def read(*rnames):
 
 setup(
     name='gocept.gtimelog',
-    version='0.11.0.dev0',
+    version='1.0.0.dev0',
     license='ZPL 2.1',
     description='gocept fork of gtimelog.',
     long_description=read('README.txt'),

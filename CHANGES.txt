@@ -1,8 +1,11 @@
 Changelog
 =========
 
-0.11.0 (unreleased)
--------------------
+1.0.0 (unreleased)
+------------------
+
+- Bump dependencies to newest versions. Also bump package version to 1.0 as
+  its now stable for a long time.
 
 - Allow unicode in task description.
 
@@ -11,8 +14,6 @@ Changelog
   override.
 
 - Add error reporting ticket # but no tracker was found.
-
-- Bump dependencies to newest versions.
 
 - ``gtl-progress``: Workaround for Python on MacOS and Nix which is not having
   curses build in.
