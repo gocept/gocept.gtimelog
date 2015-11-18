@@ -162,7 +162,7 @@ class TimeWindow(object):
         hold.sort()
         return work, slack, hold
 
-    def totals(self):
+    def totals(self, split_intern_customer=False):
         """Calculate total time of work and slacking entries.
 
         Returns (total_work, total_slacking, total_holiday) tuple.
@@ -186,8 +186,13 @@ class TimeWindow(object):
                                   for start, entry, duration in slacking])
 
         (that is, it would be true if sum could operate on timedeltas).
+
+        If `split_intern_customer` is set to True, instead of total_work return
+        total_customer and total_intern, which means work on customer projects
+        and work on interal projects.
         """
         total_work = total_slacking = total_holiday = datetime.timedelta(0)
+        total_customer = total_intern = datetime.timedelta(0)
         for start, stop, duration, entry in self.all_entries():
             if entry.endswith('/2'):
                 duration /= 2
@@ -200,8 +205,17 @@ class TimeWindow(object):
             if '**' in entry:
                 total_slacking += duration
             else:
-                total_work += duration
-        return total_work, total_slacking, total_holiday
+                if not split_intern_customer:
+                    total_work += duration
+                elif entry.startswith('url'):
+                    continue
+                elif entry[0:2] in ['op', 'I_', 'kr']:
+                    total_intern += duration
+                else:
+                    total_customer += duration
+        if not split_intern_customer:
+            return total_work, total_slacking, total_holiday
+        return total_customer, total_intern, total_slacking, total_holiday
 
     def icalendar(self, output):
         """Create an iCalendar file with activities."""
@@ -299,7 +313,7 @@ class TimeWindow(object):
         print >> output
         work, slack, hold = self.grouped_entries()
         total_work, total_slacking, total_holidays = self.totals()
-        print >> output, ("Total work done today:     %s" %
+        print >> output, ("Total work done today:       %s" %
                           format_duration_long(total_work))
 
     def weekly_report(self, output, email, who, estimated_column=False):
@@ -498,6 +512,7 @@ class Settings(object):
     editor = 'gvim'
     mailer = 'x-terminal-emulator -e mutt -H %s'
 
+    engagement = []
     enable_gtk_completion = True  # False enables gvim-style completion
 
     hours = 8
@@ -528,6 +543,7 @@ class Settings(object):
         config.set('gtimelog', 'mailer', self.mailer)
         config.set('gtimelog', 'gtk-completion',
                    str(self.enable_gtk_completion))
+        config.set('gtimelog', 'engagement', self.engagement)
         config.set('gtimelog', 'hours', str(self.hours))
         config.set('gtimelog', 'week_hours', str(self.week_hours))
         config.set('gtimelog', 'virtual_midnight',
@@ -555,6 +571,9 @@ class Settings(object):
         self.mailer = config.get('gtimelog', 'mailer')
         self.enable_gtk_completion = config.getboolean('gtimelog',
                                                        'gtk-completion')
+        self.engagement = config.get('gtimelog', 'engagement')
+        if self.engagement:
+            self.engagement = [int(e) for e in self.engagement.split(',')]
         self.hours = config.getfloat('gtimelog', 'hours')
         self.week_hours = config.getfloat('gtimelog', 'week_hours')
         self.virtual_midnight = gocept.gtimelog.util.parse_time(
