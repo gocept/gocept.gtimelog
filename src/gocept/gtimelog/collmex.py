@@ -1,6 +1,7 @@
 # Copyright (c) 2009 gocept gmbh & co. kg
 # See also LICENSE.txt
 
+from __future__ import unicode_literals
 import datetime
 import gocept.collmex.collmex
 import gocept.collmex.model
@@ -188,13 +189,17 @@ class TaskList(gocept.gtimelog.core.TaskList):
         for project in projects:
             product = products.get(project['Produktnummer'])
 
-            if project['Abgeschlossen'] != u'0':
+            if (project['Abgeschlossen'] != u'0' or
+                    project['Inaktiv'] != u'0' or
+                    product['Inaktiv'] is not None):
                 continue
             if lang != 'de' and product and product['Bezeichnung Eng']:
                 task_desc = product['Bezeichnung Eng']
             else:
                 task_desc = project['Satz Bezeichnung']
-            tasks.write('%s: %s\n' % (project['Bezeichnung'], task_desc))
+            tasks.write((
+                u'%s: %s\n' % (project['Bezeichnung'],
+                               task_desc)).encode('utf-8'))
         tasks.close()
 
     def reload(self):
