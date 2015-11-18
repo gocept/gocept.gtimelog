@@ -6,13 +6,13 @@ Changelog
 
 - Allow unicode in task description.
 
-
-0.10.0 (2015-06-08)
--------------------
-
 - Allow using '*' as a project in the bugtracker project list to support
   defaulting to a tracker. Has lowest score and any specific project will
   override.
+
+
+0.10.0 (2015-06-08)
+-------------------
 
 - Improve error reporting when timelog entries are out of order (i.e. end before begin)
 
