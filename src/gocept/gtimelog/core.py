@@ -209,7 +209,7 @@ class TimeWindow(object):
                     total_work += duration
                 elif entry.startswith('url'):
                     continue
-                elif entry[0:2] in ['op', 'I_']:
+                elif entry[0:2] in ['op', 'I_', 'kr']:
                     total_intern += duration
                 else:
                     total_customer += duration
