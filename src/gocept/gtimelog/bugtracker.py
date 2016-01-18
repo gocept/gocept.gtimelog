@@ -89,6 +89,8 @@ class Bugtrackers(object):
 
     def update(self, window):
         for entry in self._timelog_to_issues(window):
+            if not entry.project:
+                raise ValueError("No project found in '%s'" % entry.comment)
             tracker = self.find_tracker(entry.project)
             if not tracker:
                 raise ValueError(
