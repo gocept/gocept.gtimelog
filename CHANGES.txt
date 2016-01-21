@@ -4,7 +4,11 @@ Changelog
 1.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add integration to notification center (MacOS >= 10.9).
+
+  When running the upload (e.g. via a cronjob) you now get notified via MacOSs
+  notification center. Clicking the notification opens the timelog in your
+  configured editor.
 
 
 1.0 (2015-11-18)

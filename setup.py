@@ -29,6 +29,7 @@ setup(
         'setuptools',
         'transaction',
         'zope.cachedescriptors',
+        'pync'
     ],
     extras_require={
         'test': [
