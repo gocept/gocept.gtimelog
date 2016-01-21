@@ -10,7 +10,7 @@ import logging
 import os
 import os.path
 import sys
-
+import platform
 
 log = logging.getLogger(__name__)
 
@@ -28,7 +28,8 @@ def load_config_and_timelog():
     else:
         settings.load(settings_file)
     logging.root.setLevel(settings.log_level)
-    log.debug('Logging is set to level %s' % settings.log_level)
+    notify(settings, 'debug',
+           'Logging is set to level {}'.format(settings.log_level))
 
     # Initialize data structures
     timelog = gocept.gtimelog.core.TimeLog(
@@ -49,6 +50,26 @@ def configure_logging(debug=False):
         logging.getLogger('pyactiveresource.connection').setLevel(
             logging.WARNING)
     logging.root.addHandler(stdout)
+
+
+def has_notification_center():
+    if platform.uname()[0] == 'Darwin':
+        major, minor, mini = platform.mac_ver()[0].split('.')
+        if int(major) >= 10 and int(minor) >= 9:
+            return True
+    return False
+
+
+def notify(settings, type, msg, exc=None):
+    if type == 'error':
+        log.error(msg, exc_info=True)
+        if has_notification_center():
+            import pync
+            pync.Notifier.notify(
+                str(exc), title='gocept.gtimelog', subtitle=msg,
+                execute=settings.edit_task_list_cmd)
+    else:
+        getattr(log, type)(msg)
 
 
 def main():
@@ -86,23 +107,24 @@ def main():
             datetime.date.today() + datetime.timedelta(days=1),
             timelog.virtual_midnight)
         window = timelog.window_for(begin, end)
-    log.info('Uploading %s to %s', window.min_timestamp, window.max_timestamp)
+    notify(settings, 'info', 'Uploading {} to {}'.format(
+        window.min_timestamp, window.max_timestamp))
 
     # 1. collmex
     try:
         collmex = gocept.gtimelog.collmex.Collmex(settings)
         collmex.report(window.all_entries())
-    except Exception:
-        log.error('Error filling collmex', exc_info=True)
+    except Exception, exc:
+        notify(settings, 'error', 'Error filling collmex', exc)
     else:
-        log.info('Collmex: success')
+        notify(settings, 'info', 'Collmex: success')
 
     # 2. Bugtracker
     try:
         redupdate = gocept.gtimelog.bugtracker.Bugtrackers(
             settings)
         redupdate.update(window)
-    except Exception:
-        log.error('Error filling Bugtracker', exc_info=True)
+    except Exception, exc:
+        notify(settings, 'error', 'Error filling Bugtracker', exc)
     else:
-        log.info('Bugtracker: success')
+        notify(settings, 'info', 'Bugtracker: success')
