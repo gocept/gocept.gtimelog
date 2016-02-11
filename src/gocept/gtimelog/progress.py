@@ -36,10 +36,13 @@ def main():
     if curses:
         try:
             curses.setupterm()
+            curses.initscr()
+            if curses.can_change_color():
+                Colors = WithColors
+            curses.endwin()
         except curses.error:
-            pass
-        else:
-            Colors = WithColors
+            Colors = WithoutColors
+
     # Argument parsing
     parser = argparse.ArgumentParser(
         description=u'Show the progress of the current week')

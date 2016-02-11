@@ -4,7 +4,7 @@ Changelog
 1.2.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Improve gtl-progres terminal color detection.
 
 
 1.1.0 (2016-02-03)
