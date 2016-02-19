@@ -4,7 +4,7 @@
 
 from __future__ import print_function
 from datetime import datetime, timedelta, date
-from gocept.gtimelog.util import format_duration_long
+from gocept.gtimelog.util import format_duration_long, calc_duration
 import argparse
 import gocept.gtimelog.cli
 import gocept.gtimelog.core
@@ -160,6 +160,11 @@ def main():
               expected=engagement,
               total_work=format_duration_long(total_work),
               total_percent=round(total_percent, 1)))
+
+    print("Overtime this year:          {colors.RED}{overtime}".format(
+        colors=Colors,
+        overtime=format_duration_long(
+          total_work - timedelta(hours=progress_engagement))))
 
     if not today_window.items:
         return
