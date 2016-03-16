@@ -8,19 +8,19 @@ import tempfile
 import sys
 import logging
 
-import pygtk
-pygtk.require('2.0')
 import gobject
 import gtk
 import gtk.glade
 import pango
 
-from gocept.gtimelog.util import calc_duration, virtual_day, calc_progress
+from gocept.gtimelog.util import virtual_day, calc_progress
 from gocept.gtimelog.util import format_duration, format_duration_short
 from gocept.gtimelog.util import uniq
 import gocept.gtimelog.bugtracker
 import gocept.gtimelog.collmex
 import gocept.gtimelog.core
+import pygtk
+pygtk.require('2.0')
 
 resource_dir = os.path.dirname(os.path.realpath(__file__))
 ui_file = os.path.join(resource_dir, "gtimelog.glade")
@@ -50,8 +50,10 @@ class TrayIcon(object):
         try:
             import egg.trayicon
         except ImportError:
-            return  # nothing to do here, move along
-                    # or install python-gnome2-extras
+            # nothing to do here, move along
+            # or install python-gnome2-extras
+            return
+
         self.tooltips = gtk.Tooltips()
         self.eventbox = gtk.EventBox()
         hbox = gtk.HBox()
@@ -212,7 +214,7 @@ class WorkProgressbar(object):
         day = self.from_week
         monday = day - datetime.timedelta(day.weekday())
         min = datetime.datetime.combine(monday,
-                        self.timelog.virtual_midnight)
+                                        self.timelog.virtual_midnight)
         this_monday = (self.timelog.day -
                        datetime.timedelta(self.timelog.day.weekday()))
         max = datetime.datetime.combine(
@@ -592,8 +594,8 @@ class MainWindow(object):
         """File -> Daily Report for Yesterday"""
         day = self.choose_date()
         if day:
-            min = datetime.datetime.combine(day,
-                            self.timelog.virtual_midnight)
+            min = datetime.datetime.combine(
+                day, self.timelog.virtual_midnight)
             max = min + datetime.timedelta(1)
             window = self.timelog.window_for(min, max)
             self.mail(window.daily_report)
@@ -732,7 +734,7 @@ class MainWindow(object):
         self.task_list_loading_failed = False
         self.statusbar.post_message("Loading...")
         # let the ui update become visible
-        #while gtk.events_pending():
+        # while gtk.events_pending():
         #     gtk.main_iteration()
 
     def task_list_error(self):
