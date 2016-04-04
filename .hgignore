@@ -16,3 +16,4 @@ lib64
 local
 parts
 tags
+analyze.rb
