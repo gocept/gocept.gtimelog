@@ -9,6 +9,7 @@ Changelog
 - Display progress of work done in current month and year in `gtl-progress`
   output.
 
+- No longer ignore project `urlaub` in progress scripts.
 
 1.1.0 (2016-02-03)
 ------------------
