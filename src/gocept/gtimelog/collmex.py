@@ -79,7 +79,8 @@ class Collmex(object):
             activities.append(act)
 
         for act in sorted(
-            activities, key=lambda x: (x['Projekt Nr'], x['Datum'], x['Von'])):
+                activities,
+                key=lambda x: (x['Projekt Nr'], x['Datum'], x['Von'])):
             self.collmex.create(act)
 
         try:

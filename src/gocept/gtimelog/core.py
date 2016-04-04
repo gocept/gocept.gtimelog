@@ -346,10 +346,11 @@ class TimeWindow(object):
                 entry = entry[:1].upper() + entry[1:]
                 if estimated_column:
                     print >> output, ("%-46s  %-14s  %s" %
-                                (entry, '-', format_duration_long(duration)))
+                                      (entry, '-',
+                                       format_duration_long(duration)))
                 else:
                     print >> output, ("%-62s  %s" %
-                                (entry, format_duration_long(duration)))
+                                      (entry, format_duration_long(duration)))
             print >> output
         print >> output, ("Total work done this week: %s" %
                           format_duration_long(total_work))

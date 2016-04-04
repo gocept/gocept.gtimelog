@@ -4,7 +4,7 @@
 
 from __future__ import print_function
 from datetime import datetime, timedelta, date
-from gocept.gtimelog.util import format_duration_long, calc_duration
+from gocept.gtimelog.util import format_duration_long
 import argparse
 import gocept.gtimelog.cli
 import gocept.gtimelog.core
@@ -126,7 +126,8 @@ def main():
         progress_expected = int(get_businessdays_until_now() * settings.hours)
 
     print("Total work done this month: {colors.RED}{total_work} "
-          "({total_percent} %){colors.BLACK} of {colors.RED}{progress_expected}"
+          "({total_percent} %){colors.BLACK} of "
+          "{colors.RED}{progress_expected}"
           " ({expected}) hours{colors.BLACK}".format(
               colors=Colors,
               progress_expected=progress_expected,

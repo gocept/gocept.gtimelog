@@ -81,6 +81,6 @@ class UtilityFunctions(unittest.TestCase):
                                 datetime(2005, 2, 3, 2, 15), time(2, 0))
         output = StringIO.StringIO()
         timewindow.weekly_report(output,
-                                    "somebody@example.com",
-                                    "Somebody")
+                                 "somebody@example.com",
+                                 "Somebody")
         self.assertIn("No work done this week.", output.getvalue())
