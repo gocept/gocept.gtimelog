@@ -1,4 +1,5 @@
 syntax: glob
+
 *.egg-info
 *.pyc
 .Python
@@ -15,6 +16,7 @@ include
 lib
 lib64
 local
+my-buildout.cfg
 parts
 tags
 analyze.rb
