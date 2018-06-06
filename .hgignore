@@ -4,9 +4,11 @@ syntax: glob
 *.pyc
 .Python
 .cache
+.pytest_cache
 .eggs
 .installed.cfg
 .tags
+analyze.rb
 bin
 develop-eggs
 dist
@@ -19,4 +21,4 @@ local
 my-buildout.cfg
 parts
 tags
-analyze.rb
+venv
