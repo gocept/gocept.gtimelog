@@ -223,7 +223,7 @@ class TimeWindow(object):
         try:
             import socket
             idhost = socket.getfqdn()
-        except:  # can it actually ever fail?
+        except Exception:  # can it actually ever fail?
             idhost = 'localhost'
         dtstamp = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
         for start, stop, duration, entry in self.all_entries():
