@@ -9,7 +9,7 @@ import unittest
 import mock
 
 
-class TestWindow(gocept.gtimelog.core.TimeWindow):
+class DummyWindow(gocept.gtimelog.core.TimeWindow):
 
     def __init__(self):
         self.items = []
@@ -32,14 +32,14 @@ class ConvertTimelogTest(unittest.TestCase):
         return trackers._timelog_to_issues(window)
 
     def test_no_issue_referenced_should_not_show(self):
-        window = TestWindow()
+        window = DummyWindow()
         window.add('2009-08-01 08:00', 'arrived')
         window.add('2009-08-01 10:00', 'Operations: General activities: Email')
         entries = self.convert(window)
         self.assertEqual([], entries)
 
     def test_issue_reference_should_be_found_anywhere(self):
-        window = TestWindow()
+        window = DummyWindow()
         window.add('2009-08-01 08:00', 'arrived')
         window.add('2009-08-01 10:00', 'Operations: Programming: #123: foo')
         window.add('2009-08-01 10:15', '#2: foo')
@@ -53,7 +53,7 @@ class ConvertTimelogTest(unittest.TestCase):
         self.assertEqual('JIRA-123', entries[3].issue)
 
     def test_multiple_entries_same_issue_should_be_combined(self):
-        window = TestWindow()
+        window = DummyWindow()
         window.add('2009-08-01 08:00', 'arrived')
         window.add('2009-08-01 10:00', 'Operations: Programming: #123: foo')
         window.add('2009-08-01 10:15', '#123: foo')
@@ -66,7 +66,7 @@ class ConvertTimelogTest(unittest.TestCase):
         self.assertEqual(1, entries[1].duration)
 
     def test_extract_project_from_comment(self):
-        window = TestWindow()
+        window = DummyWindow()
         window.add('2009-08-01 08:00', 'arrived')
         window.add('2009-08-01 10:00', 'Operations: Programming: #123: foo')
         window.add('2009-08-01 10:15', '#2: foo')
