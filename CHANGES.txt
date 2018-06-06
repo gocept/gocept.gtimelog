@@ -4,6 +4,8 @@ Changelog
 1.2.0 (unreleased)
 ------------------
 
+- Update the holidays of `gtl-progess` to 2018.
+
 - Improve gtl-progres terminal color detection.
 
 - Display progress of work done in current month and year in `gtl-progress`
