@@ -1,4 +1,4 @@
-# Copyright (c) 2012 gocept gmbh & co. kg
+# Copyright (c) 2012,2019 gocept gmbh & co. kg
 # See also LICENSE.txt
 
 import unittest
@@ -39,13 +39,13 @@ class UtilityFunctions(unittest.TestCase):
             timedelta(hours=12, minutes=32)))
 
     def test_parse_datetime(self):
-            self.assertEqual(datetime(2005, 2, 3, 2, 13),
-                             parse_datetime('2005-02-03 02:13'))
-            self.assertRaises(ValueError, lambda: parse_datetime('xyzzy'))
+        self.assertEqual(datetime(2005, 2, 3, 2, 13),
+                         parse_datetime('2005-02-03 02:13'))
+        self.assertRaises(ValueError, lambda: parse_datetime('xyzzy'))
 
     def test_parse_time(self):
-            self.assertEqual(time(2, 13), parse_time('02:13'))
-            self.assertRaises(ValueError, lambda: parse_time('xyzzy'))
+        self.assertEqual(time(2, 13), parse_time('02:13'))
+        self.assertRaises(ValueError, lambda: parse_time('xyzzy'))
 
     def test_virtual_day(self):
         vm = time(2, 0)
@@ -63,18 +63,18 @@ class UtilityFunctions(unittest.TestCase):
     def test_different_days(self):
         vm = time(2, 0)
         self.assertTrue(different_days(
-                datetime(2005, 2, 3, 1, 15),
-                datetime(2005, 2, 3, 2, 15), vm))
+            datetime(2005, 2, 3, 1, 15),
+            datetime(2005, 2, 3, 2, 15), vm))
         self.assertFalse(different_days(
-                datetime(2005, 2, 3, 11, 15),
-                datetime(2005, 2, 3, 12, 15), vm))
+            datetime(2005, 2, 3, 11, 15),
+            datetime(2005, 2, 3, 12, 15), vm))
 
     def test_uniq(self):
-            self.assertEqual(
-                ['a', 'b', 'c', 'd', 'b', 'd'],
-                uniq(['a', 'b', 'b', 'c', 'd', 'b', 'd']))
-            self.assertEqual(['a'], uniq(['a']))
-            self.assertEqual([], uniq([]))
+        self.assertEqual(
+            ['a', 'b', 'c', 'd', 'b', 'd'],
+            uniq(['a', 'b', 'b', 'c', 'd', 'b', 'd']))
+        self.assertEqual(['a'], uniq(['a']))
+        self.assertEqual([], uniq([]))
 
     def test_weekly_report(self):
         timewindow = TimeWindow("", datetime(2005, 2, 3, 1, 15),
