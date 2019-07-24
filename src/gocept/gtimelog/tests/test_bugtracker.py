@@ -6,7 +6,6 @@ import gocept.gtimelog.bugtracker
 import gocept.gtimelog.core
 import gocept.gtimelog.util
 import unittest
-import mock
 
 
 class DummyWindow(gocept.gtimelog.core.TimeWindow):
@@ -27,7 +26,6 @@ class ConvertTimelogTest(unittest.TestCase):
     def convert(self, window):
         settings = type('Dummy', (object,), {})()
         settings.redmines = []
-        settings.jiras = []
         trackers = gocept.gtimelog.bugtracker.Bugtrackers(settings)
         return trackers._timelog_to_issues(window)
 
@@ -136,16 +134,12 @@ class Tracker(dict):
 
 class FindTrackerTest(unittest.TestCase):
 
-    @mock.patch('jira.client.JIRA.server_info')
-    def test_tracker_with_longest_prefix_match_gets_project(self, server_info):
-        server_info.return_value = {'versionNumbers': '1.0'}
+    def test_tracker_with_longest_prefix_match_gets_project(self):
         settings = type('Dummy', (object,), {})()
         settings.redmines = [
             Tracker(url='http://1', projects=['as', 'bsdf']),
             Tracker(url='http://2', projects=['asdfg']),
             Tracker(url='http://3', projects=['asdf', 'b', 'c']),
-        ]
-        settings.jiras = [
             Tracker(url='http://4', projects=['asdf']),
             Tracker(url='http://5', projects=['d', 'asdf_']),
             Tracker(url='http://6', projects=['asdf', 'e']),

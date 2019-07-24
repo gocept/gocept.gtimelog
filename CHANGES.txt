@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.2.0 (unreleased)
-------------------
+2.0 (unreleased)
+----------------
 
 - Update the holidays of `gtl-progess` to 2018.
 
@@ -12,6 +12,9 @@ Changelog
   output.
 
 - No longer ignore project `urlaub` in progress scripts.
+
+- Drop JIRA support as the package is no longer installable on Python 2.
+
 
 1.1.0 (2016-02-03)
 ------------------

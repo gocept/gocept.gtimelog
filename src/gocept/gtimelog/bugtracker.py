@@ -1,6 +1,5 @@
 import collections
 import datetime
-import gocept.gtimelog.jira
 import gocept.gtimelog.redmine
 import logging
 import re
@@ -55,11 +54,6 @@ class Bugtrackers(object):
                 config['url'], config['api_key'], config['activity'],
                 config['projects'])
             self.trackers.append(redmine)
-        for config in settings.jiras:
-            jira = gocept.gtimelog.jira.Jira(
-                config['url'], config['username'], config['password'],
-                config['projects'])
-            self.trackers.append(jira)
 
     def find_tracker(self, project):
         matches = []  # [(len, match), (len, match), ...]

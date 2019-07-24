@@ -531,7 +531,6 @@ class Settings(object):
     collmex_task_language = 'en'
 
     redmines = []
-    jiras = []
 
     def _config(self):
         config = ConfigParser.RawConfigParser()
@@ -609,14 +608,6 @@ class Settings(object):
                 redmine['url'] = redmine['url'][:-1]
             redmine['projects'] = redmine['projects'].split()
             self.redmines.append(redmine)
-
-        for section in config.sections():
-            if not section.startswith('jira'):
-                continue
-            jira = dict(config.items(section))
-            jira['projects'] = jira['projects'].split()
-            jira['password'] = decode_password(jira['password'])
-            self.jiras.append(jira)
 
     def save(self, filename):
         config = self._config()

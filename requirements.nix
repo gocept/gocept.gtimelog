@@ -308,25 +308,6 @@ let
 
 
 
-    "jira" = python.mkDerivation {
-      name = "jira-0.16";
-      src = pkgs.fetchurl { url = "https://pypi.python.org/packages/d3/63/ac4d045934cf737f9f5c1ea9d85867613c43b910fd45e93c9e5ba5e568bc/jira-0.16.tar.gz"; sha256 = "3a30598a55ea2868cdf3466de78c7b8284a43655ee8af4755d3e837edc1b1e66"; };
-      doCheck = commonDoCheck;
-      buildInputs = commonBuildInputs;
-      propagatedBuildInputs = [
-      self."requests"
-      self."requests-oauthlib"
-      self."tlslite"
-    ];
-      meta = with pkgs.stdenv.lib; {
-        homepage = "";
-        license = licenses.bsdOriginal;
-        description = "A library to ease use of the JIRA 5 REST APIs.";
-      };
-    };
-
-
-
     "mccabe" = python.mkDerivation {
       name = "mccabe-0.6.1";
       src = pkgs.fetchurl { url = "https://pypi.python.org/packages/06/18/fa675aa501e11d6d6ca0ae73a101b2f3571a565e0f7d38e062eec18a91ee/mccabe-0.6.1.tar.gz"; sha256 = "dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"; };

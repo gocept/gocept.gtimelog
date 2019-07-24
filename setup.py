@@ -11,7 +11,7 @@ def read(*rnames):
 
 setup(
     name='gocept.gtimelog',
-    version='1.2.0.dev0',
+    version='2.0.dev0',
     license='ZPL 2.1',
     description='gocept fork of gtimelog.',
     long_description=read('README.txt'),
@@ -24,7 +24,6 @@ setup(
     install_requires=[
         'BeautifulSoup',
         'gocept.collmex>=1.2',
-        'jira<0.20',
         'pyactiveresource<1.2',
         'setuptools',
         'transaction',
