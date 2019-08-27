@@ -17,6 +17,8 @@ Changelog
 
 - Require ``pytest < 5`` to keep Python 2 support.
 
+- Migarte to Github.
+
 
 1.1.0 (2016-02-03)
 ------------------
