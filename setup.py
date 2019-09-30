@@ -14,7 +14,7 @@ setup(
     version='2.0.dev0',
     license='ZPL 2.1',
     description='gocept fork of gtimelog.',
-    long_description=read('README.txt'),
+    long_description=read('README.rst'),
     author='gocept gmbh & co. kg',
     author_email='mail@gocept.com',
     packages=find_packages('src'),
