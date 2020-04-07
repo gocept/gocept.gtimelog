@@ -26,6 +26,7 @@ setup(
         'gocept.collmex>=1.2',
         'pyactiveresource<1.2',
         'setuptools',
+        'soupsieve < 2',  # PY2
         'transaction',
         'zope.cachedescriptors',
         'pync'
