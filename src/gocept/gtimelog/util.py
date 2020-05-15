@@ -47,10 +47,10 @@ def format_duration_long(duration):
         return '%2d min' % m
 
 
-def uniq(l):
+def uniq(list_):
     """Return list with consecutive duplicates removed."""
-    result = l[:1]
-    for item in l[1:]:
+    result = list_[:1]
+    for item in list_[1:]:
         if item != result[-1]:
             result.append(item)
     return result

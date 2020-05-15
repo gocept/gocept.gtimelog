@@ -775,8 +775,8 @@ class MainWindow(object):
             return
         if self.history_pos == 0:
             self.history_undo = self.task_entry.get_text()
-            self.filtered_history = uniq([l for l in self.history
-                                          if l.startswith(self.history_undo)])
+            self.filtered_history = uniq([x for x in self.history
+                                          if x.startswith(self.history_undo)])
         history = self.filtered_history
         new_pos = max(0, min(self.history_pos + delta, len(history)))
         if new_pos == 0:
