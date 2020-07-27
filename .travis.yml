@@ -1,12 +1,14 @@
 language: python
 python:
   - 2.7
+before_install:
+  - pip freeze | xargs pip uninstall -y
 install:
   - pip install -U setuptools zc.buildout setuptools-scm
   - buildout -nvv
 script:
   - bin/test --cache-clear --cov-report term-missing --cov src
-after_success: 
+after_success:
 cache:
   pip: true
   directories:
