@@ -1,15 +1,15 @@
-syntax: glob
-
 *.egg-info
 *.pyc
 .Python
 .cache
-.pytest_cache
+.coverage
 .eggs
 .installed.cfg
+.pytest_cache
 .tags
 analyze.rb
 bin
+coverage-report
 develop-eggs
 dist
 downloads
