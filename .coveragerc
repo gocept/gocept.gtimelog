@@ -4,10 +4,7 @@ source = gocept.gtimelog
 
 [report]
 precision = 2
-omit = */interfaces.py
-       */interfaces/*
-       */tests.py
-       */tests/*
+fail_under = 27
 
 [html]
 directory = coverage-report

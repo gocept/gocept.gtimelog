@@ -16,7 +16,8 @@ jobs:
         # [Python version, tox env]
         - ["2.7",   "flake8"]
         - ["2.7",   "py27"]
-        - ["2.7",   "coverage"]
+        # Deactivate coverage as coveralls does not support Python 2.7 anymore.
+        # - ["2.7",   "coverage"]
     runs-on: ubuntu-latest
     name: ${{ matrix.config[1] }}
     steps:
