@@ -87,8 +87,8 @@ class CollmexTest(unittest.TestCase):
             gocept.gtimelog.core.Settings())
         projects = collmex.projects
         self.assertEquals(2, len(projects))
-        zodbi = projects[0]
-        self.assertEquals('I_ZODBIndexing', zodbi.match_string)
+        zodbi = [p for p in projects
+                 if p.match_string == 'I_ZODBIndexing'][0]
         self.assertEquals('1', zodbi.id)
         tasks = zodbi.references
         self.assertEquals(4, len(tasks))
