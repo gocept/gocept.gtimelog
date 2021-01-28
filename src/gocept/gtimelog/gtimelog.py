@@ -1,25 +1,26 @@
-# coding: utf-8
 # Copyright (c) 2011-2013 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-import os
-import datetime
-import tempfile
-import sys
-import logging
-
-import gobject
-import gtk
-import gtk.glade
-import pango
-
-from gocept.gtimelog.util import virtual_day, calc_progress
-from gocept.gtimelog.util import format_duration, format_duration_short
+from gocept.gtimelog.util import calc_progress
+from gocept.gtimelog.util import format_duration
+from gocept.gtimelog.util import format_duration_short
 from gocept.gtimelog.util import uniq
+from gocept.gtimelog.util import virtual_day
+import datetime
+import gobject
 import gocept.gtimelog.bugtracker
 import gocept.gtimelog.collmex
 import gocept.gtimelog.core
+import gtk
+import gtk.glade
+import logging
+import os
+import pango
 import pygtk
+import sys
+import tempfile
+
+
 pygtk.require('2.0')
 
 resource_dir = os.path.dirname(os.path.realpath(__file__))

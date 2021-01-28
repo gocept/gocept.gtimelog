@@ -1,13 +1,21 @@
 # Copyright (c) 2012,2019 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-import unittest
-import StringIO
-from gocept.gtimelog.util import (
-    format_duration, format_duration_short, format_duration_long,
-    parse_datetime, parse_time, virtual_day, different_days, uniq)
+from datetime import date
+from datetime import datetime
+from datetime import time
+from datetime import timedelta
 from gocept.gtimelog.core import TimeWindow
-from datetime import timedelta, datetime, date, time
+from gocept.gtimelog.util import different_days
+from gocept.gtimelog.util import format_duration
+from gocept.gtimelog.util import format_duration_long
+from gocept.gtimelog.util import format_duration_short
+from gocept.gtimelog.util import parse_datetime
+from gocept.gtimelog.util import parse_time
+from gocept.gtimelog.util import uniq
+from gocept.gtimelog.util import virtual_day
+import StringIO
+import unittest
 
 
 class UtilityFunctions(unittest.TestCase):

@@ -1,15 +1,17 @@
-# -*- coding: utf-8 -*-
 # Copyright (c) 2012 gocept gmbh & co. kg
 # See also LICENSE.txt
 
 from __future__ import print_function
-from datetime import datetime, timedelta, date
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
 from gocept.gtimelog.util import format_duration_long
 import argparse
 import gocept.gtimelog.cli
 import gocept.gtimelog.core
 import gocept.gtimelog.util
 import sys
+
 
 try:
     import curses
@@ -155,7 +157,7 @@ def main():
             progress_engagement += settings.engagement[i - 1]
         else:
             progress_engagement += int(
-              get_businessdays_until_now() * settings.hours)
+                get_businessdays_until_now() * settings.hours)
     engagement = sum(settings.engagement)
 
     print("Total work done this year:  {colors.RED}{total_work} "

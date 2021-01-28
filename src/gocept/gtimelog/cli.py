@@ -6,8 +6,9 @@ import gocept.gtimelog.redmine
 import logging
 import os
 import os.path
-import sys
 import platform
+import sys
+
 
 log = logging.getLogger(__name__)
 

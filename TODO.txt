@@ -20,4 +20,3 @@ Better integration with GNOME (gconf for options, use user's preferred editor
 and mailer).
 
 More options: "virtual midnight" (currently hardcoded at 2 am).
-
