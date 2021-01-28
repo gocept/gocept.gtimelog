@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 # Copyright (c) 2009 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-from gocept.gtimelog.collmex import match, MatchableObject
+from gocept.gtimelog.collmex import MatchableObject
+from gocept.gtimelog.collmex import match
 import gocept.collmex.collmex
 import gocept.collmex.model
 import gocept.gtimelog.core

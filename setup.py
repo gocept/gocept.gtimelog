@@ -1,7 +1,8 @@
 # Copyright (c) 2009-2012 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-from setuptools import setup, find_packages
+from setuptools import find_packages
+from setuptools import setup
 import os.path
 
 

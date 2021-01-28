@@ -5,10 +5,11 @@ from __future__ import unicode_literals
 import datetime
 import gocept.collmex.collmex
 import gocept.collmex.model
-import gocept.gtimelog.core
 import gocept.gtimelog.bugtracker
+import gocept.gtimelog.core
 import logging
 import transaction
+
 
 log = logging.getLogger(__name__)
 

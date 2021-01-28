@@ -247,4 +247,3 @@ Icon
 
 gtimelog.png is really a renamed copy of gnome-set-time.png from
 /usr/share/pixmaps/
-

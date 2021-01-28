@@ -1,7 +1,8 @@
 # Copyright (c) 2012-2013 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-from gocept.gtimelog.util import different_days, format_duration_long
+from gocept.gtimelog.util import different_days
+from gocept.gtimelog.util import format_duration_long
 import ConfigParser
 import datetime
 import gocept.gtimelog.util
