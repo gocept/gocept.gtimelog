@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python
 # Copyright (c) 2012 gocept gmbh & co. kg
 # See also LICENSE.txt
 
@@ -125,7 +125,7 @@ def main():
                       help=u'Print records until DATE (default: %(default)s)')
     args = argp.parse_args()
     facts = Facts(args.database, args.start, args.end)
-    sys.stdout.write(facts.render().encode('UTF-8'))
+    sys.stdout.write(facts.render())
 
 
 if __name__ == '__main__':
