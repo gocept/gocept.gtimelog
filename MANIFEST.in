@@ -1,0 +1,20 @@
+include gtimelog.sublime-project
+exclude gtimelog.sublime-project
+
+include *.bash_completion
+include *.example
+include *.nix
+include *.rst
+include *.txt
+include *.yaml
+include .coveragerc
+include buildout-build-gtk.cfg
+include buildout.cfg
+include pytest.ini
+include tox.ini
+prune downloads*
+recursive-include contrib *.py
+recursive-include src *.desktop
+recursive-include src *.glade
+recursive-include src *.gladep
+recursive-include src *.png
