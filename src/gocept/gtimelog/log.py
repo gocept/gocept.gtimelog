@@ -29,5 +29,5 @@ def download():
     settings, timelog = gocept.gtimelog.cli.load_config_and_timelog()
     configdir = os.path.expanduser('~/.gtimelog')
     tasks = gocept.gtimelog.collmex.TaskList(
-        os.path.join(configdir, 'tasks-collmex.txt'), settings)
+        os.path.join(configdir, settings.collmex_task_file), settings)
     tasks.reload()

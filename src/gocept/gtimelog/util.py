@@ -31,6 +31,7 @@ def format_duration(duration):
     return '%2d h %2d min' % calc_duration(duration)
 
 
+# Propably do not need that. XXX GUI
 def format_duration_short(duration):
     """Format a datetime.timedelta with minute precision."""
     return '%2d:%02d' % calc_duration(duration)
@@ -47,6 +48,7 @@ def format_duration_long(duration):
         return '%2d min' % m
 
 
+# Propably do not need that. XXX GUI
 def uniq(list_):
     """Return list with consecutive duplicates removed."""
     result = list_[:1]

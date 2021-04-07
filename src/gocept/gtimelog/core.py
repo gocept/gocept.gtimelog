@@ -530,6 +530,7 @@ class Settings(object):
     collmex_username = ''
     collmex_password = ''
     collmex_task_language = 'en'
+    collmex_task_file = 'tasks.txt'
 
     redmines = []
 
@@ -558,6 +559,7 @@ class Settings(object):
         config.set('collmex', 'username', self.collmex_username)
         config.set('collmex', 'password', self.collmex_password)
         config.set('collmex', 'task_language', self.collmex_task_language)
+        config.set('collmex', 'task_file', self.collmex_task_file)
 
         return config
 
@@ -600,6 +602,7 @@ class Settings(object):
         self.collmex_password = decode_password(config.get(
             'collmex', 'password'))
         self.collmex_task_language = config.get('collmex', 'task_language')
+        self.collmex_task_file = config.get('collmex', 'task_file')
 
         for section in config.sections():
             if not section.startswith('redmine'):

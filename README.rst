@@ -8,6 +8,12 @@ my (working, mostly) time.
 GTimeLog
 --------
 
+.. caution::
+
+  Use the upstream package https://github.com/gtimelog/gtimelog for GUI from
+  now on.
+
+
 The most interesting of those is GTimeLog, which is a Gtk+ application.  Here's
 how it works: every day, when you arrive to work, start up gtimelog and type
 "arrived".  Then start doing some activity (e.g. reading mail, or working on
@@ -68,37 +74,60 @@ enter any activities in GTimeLog while you have timelog.txt open in a text
 editor.
 
 
-Future Plans
-------------
+Tools in this package
+---------------------
 
-Configuration dialog.  The ability to browse through history (view daily and
-weekly reports for past days and weeks).
+gtl-log
++++++++
 
+``gtl-log`` is a text-mode version of gtimelog.  You type in activity names,
+and ``gtl-log`` writes them down into timelog.txt with timestamps prepended.
+There is the possibility to enable bash completion, see
+``gtl-log.bash_completion``.
 
-Other Tools
------------
+gtl-progress
+++++++++++++
 
-timelog.py is an earlier, less powerful text-mode version of gtimelog.  You
-type in activity names, and timelog writes them down into timelog.txt with
-timestamps prepended.
+``gtl-progres`` can generate a report of the last time spans. It combines a daily
+report with a weekly, monthly, and yearly report with respect to the
+``engagement`` setting in ``~/.gtimelog/gtimelogrc``.::
 
-today.py can generate a daily report from timelog.txt.  It does not group
-activities with the same name, and it does not spawn a mail client.
-You can also specify the date on the command line -- generating reports for
-earlier days is not yet possible with GTimeLog.
+  2021-04-07 report for username (Wed, week 14)
 
-sum.py can help you consolidate daily reports.  It is designed to work as a
-filter: it reads lines from the standard input, extracts durations from
-those lines (formatted as "N hours, M min" at the end of the line, and
-separated by at least two spaces from other text), sums them and prints the
-total.  If you use vim for editing daily reports, you can select a bunch of
-lines and pipe them through sum.py.
+  08:20 - 09:00 ( 40): Mails
+  09:00 - 09:16 ( 16): client_1: project management: prepare tickets
+  09:16 - 09:30 ( 14): **current task**
 
-difftime.py is a hacky interactive calculator that I used to generate daily
-reports from timelog.txt before today.py and gtimelog.py could automate the
-task.  The biggest feature of difftime.py (it's raison d'etre if you will)
-is the ability to calculate the duration between two timestamps.
+  Total work done today:        1 hour 0 min
+  Total work done this week:   16 hours 29 min of 35 hours
+  Total work done this month: 24 hours 41 min (69.0 %) of 21 (140) hours
+  Total work done this year:  491 hours  5 min (64.1 %) of 523 (1853) hours
+  Overtime this year:          -32 hours  5 min
 
+  Time left at work:           7 hours 30 min (until 15:20)
+
+gtl-updatetasks
++++++++++++++++
+
+``gtl-updatetasks`` retrieve tasks from collmex and stores them in
+``~/.gtimelog/tasks-collmex.txt``. The access and an alternative filename can
+be configured in the ``[collmex]`` section of ``~/.gtimelog/gtimelogrc``::
+
+  [collmex]
+  customer_id = 12345
+  company_id = 1
+  employee_id = 1
+  username = <username>
+  password = <password>
+  task_language = en
+  task_file = tasks.txt
+
+gtl-upload
+++++++++++
+
+``gtl-upload`` upload the timelog of the current week or the week, the day
+specified by ``--day 2021-02-28``. Upload first to collmex and afterwards to
+redmine.
 
 Data Formats
 ------------
@@ -159,34 +188,6 @@ starting with a '#' are ignored.  Task names should consist of a group name
 (project name, XP-style story, whatever), a colon, and a task name.  Tasks will
 be grouped.  If there is no colon on a line, the task will be grouped under
 "Other".
-
-Hourtracker
------------
-If you're using the hourtracker version from gocept, add a new section
-to your configuration file::
-
-    [hours]
-    url = http://www.myhourtracker.com/
-    username = foo
-    password = bar
-    tasks = http://www.myhourtracker.com/tasks
-    projects = http://www.myhourtracker.com/projects
-
-Specify the projects and tasks like the following example::
-
-    2006-07-25 09:37: operations: General activities: Morgen meeting
-    date       time   project     task                description
-
-Note: You don't have to provide the _full_ project and task name. In
-the example above the string 'operat' will probably match operations
-if nothing else starts with 'operat' in the project listing of the
-hour tracker system.
-
-Start your gtimelog in the console first. It'll print out useful debug
-information.
-
-Use the File > Fill Hour Tracker menuitem to upload your hours.
-
 
 Redmine
 -------
