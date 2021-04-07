@@ -4,6 +4,18 @@ Changelog
 2.0 (unreleased)
 ----------------
 
+Note
+++++
+
+This will be the last release with GTK/GUI support. The upstream package did
+diverge too much from this code base, so this part is dropped. The CLI tools
+and upload scripts will be still maintained in the future.
+
+This will also be the last release compatible with Python 2.
+
+Changes
++++++++
+
 - Update the holidays of `gtl-progess` to 2018.
 
 - Improve gtl-progres terminal color detection.

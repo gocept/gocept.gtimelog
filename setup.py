@@ -21,6 +21,16 @@ setup(
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=['gocept'],
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: X11 Applications :: GTK',
+        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Topic :: Office/Business',
+    ],
+    python_requires='< 3.0',
+
     include_package_data=True,
     install_requires=[
         'BeautifulSoup',
