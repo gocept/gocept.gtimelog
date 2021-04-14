@@ -24,7 +24,6 @@ setup(
     namespace_packages=['gocept'],
     classifiers=[
         'Development Status :: 4 - Beta',
-        'Environment :: X11 Applications :: GTK',
         'License :: OSI Approved :: GNU General Public License (GPL)',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: Implementation :: CPython',
@@ -53,7 +52,6 @@ setup(
     zip_safe=False,
     entry_points="""
         [console_scripts]
-        gtimelog = gocept.gtimelog.gtimelog:main
         gtl-upload = gocept.gtimelog.cli:main
         gtl-progress = gocept.gtimelog.progress:main
         gtl-log = gocept.gtimelog.log:log

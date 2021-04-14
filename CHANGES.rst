@@ -4,7 +4,8 @@ Changelog
 3.0 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Remove the GTK-GUI from this package. Use the upstream
+  https://github.com/gtimelog/gtimelog for GUI from now on.
 
 
 2.0 (2021-04-07)
