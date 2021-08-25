@@ -25,6 +25,10 @@ class UtilityFunctions(unittest.TestCase):
         self.assertEqual(' 0 h  0 min', format_duration(timedelta(0)))
         self.assertEqual(' 0 h  1 min', format_duration(timedelta(minutes=1)))
         self.assertEqual(' 1 h  0 min', format_duration(timedelta(minutes=60)))
+        self.assertEqual('-42 h 19 min', format_duration(
+            timedelta(seconds=-152340)))
+        self.assertEqual('42 h 19 min', format_duration(
+            timedelta(seconds=152340)))
 
     def test_format_short(self):
         self.assertEqual(' 0:00', format_duration_short(timedelta(0)))

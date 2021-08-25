@@ -5,8 +5,15 @@ import datetime
 
 
 def calc_duration(duration):
-    """Calculates duration and returns tuple (h, m)"""
-    return divmod((duration.days * 24 * 60 + duration.seconds // 60), 60)
+    """Calculates duration and returns tuple (h, m)
+
+    m is always positive, the sign of h indicates positive or negative duration
+    """
+    minutes = (duration.days * 24 * 60 + duration.seconds // 60)
+    hours = int(minutes / 60)
+    remainder = minutes / 60 - hours
+    minutes = abs(round(remainder * 60))
+    return (hours, minutes)
 
 
 def calc_progress(settings, timelog, week_window):
