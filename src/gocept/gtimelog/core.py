@@ -155,12 +155,9 @@ class TimeWindow(object):
                     start = min(start, old_start)
                     duration += old_duration
                 entries[entry] = (start, entry, duration)
-        work = list(work.values())
-        work.sort()
-        slack = list(slack.values())
-        slack.sort()
-        hold = list(hold.values())
-        hold.sort()
+        work = sorted(work.values())
+        slack = sorted(slack.values())
+        hold = sorted(hold.values())
         return work, slack, hold
 
     def totals(self, split_intern_customer=False):
@@ -498,8 +495,7 @@ class TaskList(object):
                 groups.setdefault(group, []).append(task)
         except IOError:
             pass  # the file's not there, so what?
-        self.groups = list(groups.items())
-        self.groups.sort()
+        self.groups = sorted(groups.items())
 
     def reload(self):
         """Reload the task list."""
