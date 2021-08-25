@@ -86,17 +86,16 @@ class CollmexTest(unittest.TestCase):
         collmex = gocept.gtimelog.collmex.Collmex(
             gocept.gtimelog.core.Settings())
         projects = collmex.projects
-        self.assertEquals(2, len(projects))
+        assert 2 == len(projects)
         zodbi = [p for p in projects
                  if p.match_string == 'I_ZODBIndexing'][0]
-        self.assertEquals('1', zodbi.id)
+        assert '1' == zodbi.id
         tasks = zodbi.references
-        self.assertEquals(4, len(tasks))
-        self.assertEquals('Research', tasks[2].match_string)
-        self.assertEquals('2', tasks[2].id)
-        self.assertEquals('Programming application in english',
-                          tasks[1].match_string)
-        self.assertEquals('1', tasks[1].id)
+        assert 4 == len(tasks)
+        assert 'Research' == tasks[2].match_string
+        assert '2' == tasks[2].id
+        assert 'Programming application in english' == tasks[1].match_string
+        assert '1' == tasks[1].id
 
     def test_split_timelog_entry(self):
         collmex = gocept.gtimelog.collmex.Collmex(
@@ -104,9 +103,9 @@ class CollmexTest(unittest.TestCase):
 
         entry = 'I_ZODB: Research: Testing the timelog split'
         r = collmex.mapEntry(entry)
-        self.assertEquals('I_ZODBIndexing', r[0].match_string)
-        self.assertEquals('Research', r[1].match_string)
-        self.assertEquals('Testing the timelog split', r[2])
+        assert 'I_ZODBIndexing' == r[0].match_string
+        assert 'Research' == r[1].match_string
+        assert 'Testing the timelog split' == r[2]
 
         invalid_entries = [
             'administration: Research: Did something stupid.',
@@ -128,16 +127,16 @@ class MatchableTest(unittest.TestCase):
 
     def test_match_exact(self):
         for machable_string in TEST_MATCHES:
-            self.assertEquals(machable_string, self.match(machable_string))
+            assert machable_string, self.match(machable_string)
 
     def test_match_simple(self):
-        self.assertEquals('I_zope3-12345', self.match('I_zope3'))
-        self.assertEquals('I_zope3-12345', self.match('i_zope3'))
+        assert 'I_zope3-12345' == self.match('I_zope3')
+        assert 'I_zope3-12345' == self.match('i_zope3')
 
     def test_match_transformed(self):
-        self.assertEquals('I_zope3-12345', self.match('I zope3'))
-        self.assertEquals('I_zope3-12345', self.match('i zope3'))
-        self.assertEquals('I_ZODBIndexing', self.match('I_ZODB'))
+        assert 'I_zope3-12345' == self.match('I zope3')
+        assert 'I_zope3-12345' == self.match('i zope3')
+        assert 'I_ZODBIndexing' == self.match('I_ZODB')
         self.assertRaises(ValueError, self.match, 'I_')
 
     def test_no_match(self):
