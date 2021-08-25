@@ -3,6 +3,7 @@
 
 from gocept.gtimelog.util import different_days
 from gocept.gtimelog.util import format_duration_long
+from gocept.gtimelog.util import parse_date
 import base64
 import codecs
 import configparser
@@ -514,6 +515,9 @@ class Settings(object):
 
     engagement = []
 
+    # the holidays for the current year. used for gtl-progress
+    holidays = []
+
     hours = 8
     week_hours = 40
     virtual_midnight = datetime.time(2, 0)
@@ -541,6 +545,7 @@ class Settings(object):
         config.set('gtimelog', 'editor', self.editor)
         config.set('gtimelog', 'mailer', self.mailer)
         config.set('gtimelog', 'engagement', self.engagement)
+        config.set('gtimelog', 'holidays', self.holidays)
         config.set('gtimelog', 'hours', str(self.hours))
         config.set('gtimelog', 'week_hours', str(self.week_hours))
         config.set('gtimelog', 'virtual_midnight',
@@ -570,6 +575,9 @@ class Settings(object):
         self.engagement = config.get('gtimelog', 'engagement')
         if self.engagement:
             self.engagement = [int(e) for e in self.engagement.split(',')]
+        self.holidays = config.get('gtimelog', 'holidays')
+        if self.holidays:
+            self.holidays = [parse_date(e) for e in self.holidays.split()]
         self.hours = config.getfloat('gtimelog', 'hours')
         self.week_hours = config.getfloat('gtimelog', 'week_hours')
         self.virtual_midnight = gocept.gtimelog.util.parse_time(

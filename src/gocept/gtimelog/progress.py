@@ -31,36 +31,21 @@ class WithoutColors(object):
     BLACK = ''
 
 
-HOLIDAYS = [
-    date(2018, 1, 1),
-    date(2018, 1, 6),
-    date(2018, 3, 30),
-    date(2018, 4, 1),
-    date(2018, 4, 2),
-    date(2018, 5, 1),
-    date(2018, 5, 10),
-    date(2018, 5, 20),
-    date(2018, 5, 21),
-    date(2018, 10, 3),
-    date(2018, 10, 31),
-    date(2018, 12, 24),
-    date(2018, 12, 25),
-    date(2018, 12, 26),
-]
+# This is just the fallback, it can be configured via gtimlogrc.
+HOLIDAYS = []
 
 
-def get_businessdays_until_now():
+def get_businessdays_until_now(holidays=HOLIDAYS):
     """Return amount of businessdays of current month until today.
 
      This allows showing a progress over the current month and the
      current year.
     """
-
     now = datetime.now()
     businessdays = 0
     for i in range(1, now.day + 1):
         thisdate = date(now.year, now.month, i)
-        if thisdate.weekday() < 5 and thisdate not in HOLIDAYS:
+        if thisdate.weekday() < 5 and thisdate not in holidays:
             businessdays += 1
     return businessdays
 
@@ -130,7 +115,8 @@ def main():
     engagement = settings.engagement
     if engagement:
         expected = engagement[today.month - 1]
-        progress_expected = int(get_businessdays_until_now() * settings.hours)
+        progress_expected = int(get_businessdays_until_now(
+            holidays=settings.holidays) * settings.hours)
 
     print("Total work done this month: {colors.RED}{total_work} "
           "({total_percent} %){colors.BLACK} of "
@@ -157,7 +143,8 @@ def main():
             progress_engagement += settings.engagement[i - 1]
         else:
             progress_engagement += int(
-                get_businessdays_until_now() * settings.hours)
+                get_businessdays_until_now(
+                    holidays=settings.holidays) * settings.hours)
     engagement = sum(settings.engagement)
 
     print("Total work done this year:  {colors.RED}{total_work} "
