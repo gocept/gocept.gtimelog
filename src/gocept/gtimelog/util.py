@@ -2,7 +2,6 @@
 # See also LICENSE.txt
 
 import datetime
-import re
 
 
 def calc_duration(duration):
@@ -69,16 +68,17 @@ def different_days(dt1, dt2, virtual_midnight):
 
 def parse_datetime(dt):
     """Parse a datetime instance from 'YYYY-MM-DD HH:MM' formatted string."""
-    m = re.match(r'^(\d+)-(\d+)-(\d+) (\d+):(\d+)$', dt)
-    if not m:
-        raise ValueError('bad date time: ', dt)
-    year, month, day, hour, min = list(map(int, m.groups()))
-    return datetime.datetime(year, month, day, hour, min)
+    return datetime.datetime.fromisoformat(dt)
 
 
 def parse_date(date):
     """Parse a date instance from 'YYYY-MM-DD' formatted string."""
     return datetime.date.fromisoformat(date)
+
+
+def parse_time(t):
+    """Parse a time instance from 'HH:MM' formatted string."""
+    return datetime.time.fromisoformat(t)
 
 
 def virtual_day(dt, virtual_midnight):
@@ -90,12 +90,3 @@ def virtual_day(dt, virtual_midnight):
     if dt.time() < virtual_midnight:     # assign to previous day
         return dt.date() - datetime.timedelta(1)
     return dt.date()
-
-
-def parse_time(t):
-    """Parse a time instance from 'HH:MM' formatted string."""
-    m = re.match(r'^(\d+):(\d+)$', t)
-    if not m:
-        raise ValueError('bad time: ', t)
-    hour, min = list(map(int, m.groups()))
-    return datetime.time(hour, min)
