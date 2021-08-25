@@ -3,6 +3,8 @@
 
 from gocept.gtimelog.util import different_days
 from gocept.gtimelog.util import format_duration_long
+import base64
+import codecs
 import configparser
 import datetime
 import gocept.gtimelog.util
@@ -303,7 +305,7 @@ class TimeWindow(object):
         for start, stop, duration, entry in items[1:]:
             print("%s - %s (%3s): %s" % (
                 start.strftime('%H:%M'), stop.strftime('%H:%M'),
-                duration.seconds / 60, entry.encode('utf-8')), file=output)
+                duration.seconds // 60, entry), file=output)
         now = datetime.datetime.now()
         if stop.date() == now.date():
             print("%s - %s (%3d): **current task**" % (
@@ -511,7 +513,6 @@ class Settings(object):
     mailer = 'x-terminal-emulator -e mutt -H %s'
 
     engagement = []
-    enable_gtk_completion = True  # False enables gvim-style completion
 
     hours = 8
     week_hours = 40
@@ -539,8 +540,6 @@ class Settings(object):
         config.set('gtimelog', 'name', self.name)
         config.set('gtimelog', 'editor', self.editor)
         config.set('gtimelog', 'mailer', self.mailer)
-        config.set('gtimelog', 'gtk-completion',
-                   str(self.enable_gtk_completion))
         config.set('gtimelog', 'engagement', self.engagement)
         config.set('gtimelog', 'hours', str(self.hours))
         config.set('gtimelog', 'week_hours', str(self.week_hours))
@@ -568,8 +567,6 @@ class Settings(object):
         self.name = config.get('gtimelog', 'name')
         self.editor = config.get('gtimelog', 'editor')
         self.mailer = config.get('gtimelog', 'mailer')
-        self.enable_gtk_completion = config.getboolean('gtimelog',
-                                                       'gtk-completion')
         self.engagement = config.get('gtimelog', 'engagement')
         if self.engagement:
             self.engagement = [int(e) for e in self.engagement.split(',')]
@@ -584,10 +581,9 @@ class Settings(object):
 
         def decode_password(password):
             if self.decode_passwords == 'base64':
-                return password.decode('base64')
+                return base64.b64decode(password)
             elif self.decode_passwords == 'rot13':
-                # .decode('rot13') returns unicode
-                return password.decode('rot13').encode('utf-8')
+                return codecs.decode(password, codec='rot13')
             elif not self.decode_passwords:
                 return password
             raise ValueError(
