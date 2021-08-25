@@ -45,13 +45,14 @@ class Redmine(object):
         return self.api('Issue').find(issue_id).subject
 
     def _delete_existing_entries(self, timelog_entry):
-        entries = self.api('TimeEntry').find(issue_id=timelog_entry.issue)
-        for entry in entries:
+        result = self.api('TimeEntry').find(issue_id=timelog_entry.issue)
+        for entry_ in result[0]['time_entries']:
+            entry = self.api('TimeEntry').find(id_=entry_['id'])
             if entry.user.id != self.user['id']:
                 continue
             # Redmine returns time entries of subtasks, too, so we need to
             # filter those
-            if entry.issue != timelog_entry.issue:
+            if entry.issue.id != timelog_entry.issue:
                 continue
             if entry.spent_on != timelog_entry.date:
                 continue

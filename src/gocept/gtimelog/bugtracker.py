@@ -73,7 +73,8 @@ class Bugtrackers(object):
         match = re.search(r'#([-A-Z0-9]+)', comment)
         if not match:
             return
-        return match.group(1)
+        # Redmine only supports integer as issue label
+        return int(match.group(1))
 
     @staticmethod
     def duration_to_float(duration):
