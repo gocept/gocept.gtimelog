@@ -4,7 +4,7 @@ source = gocept.gtimelog
 
 [report]
 precision = 2
-fail_under = 44
+fail_under = 45
 
 [html]
 directory = coverage-report

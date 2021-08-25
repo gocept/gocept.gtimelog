@@ -390,12 +390,11 @@ class TimeLog(object):
 
     def raw_append(self, line):
         """Append a line to the time log file."""
-        f = open(self.filename, "a")
-        if self.need_space:
-            self.need_space = False
-            print(file=f)
-        print(line, file=f)
-        f.close()
+        with open(self.filename, "a") as f:
+            if self.need_space:
+                self.need_space = False
+                print(file=f)
+            print(line, file=f)
 
     def append(self, entry):
         """Append a new entry to the time log."""
@@ -421,12 +420,10 @@ class TimeLog(object):
 
     def pop(self):
         last = self.window.items[-1]
-        f = open(self.filename, 'r')
-        lines = f.readlines()
-        f.close()
-        f = open(self.filename, 'w')
-        f.writelines(lines[:-1])
-        f.close()
+        with open(self.filename, 'r') as f:
+            lines = f.readlines()
+        with open(self.filename, 'w') as f:
+            f.writelines(lines[:-1])
         self.reread()
         return last
 
@@ -484,15 +481,16 @@ class TaskList(object):
         groups = {}
         self.last_mtime = self.get_mtime()
         try:
-            for line in open(self.filename, encoding='utf-8'):
-                line = line.strip()
-                if not line or line.startswith('#'):
-                    continue
-                if ':' in line:
-                    group, task = [s.strip() for s in line.split(':', 1)]
-                else:
-                    group, task = self.other_title, line
-                groups.setdefault(group, []).append(task)
+            with open(self.filename, encoding='utf-8') as lines:
+                for line in lines:
+                    line = line.strip()
+                    if not line or line.startswith('#'):
+                        continue
+                    if ':' in line:
+                        group, task = [s.strip() for s in line.split(':', 1)]
+                    else:
+                        group, task = self.other_title, line
+                    groups.setdefault(group, []).append(task)
         except IOError:
             pass  # the file's not there, so what?
         self.groups = sorted(groups.items())
@@ -615,8 +613,5 @@ class Settings(object):
 
     def save(self, filename):
         config = self._config()
-        f = open(filename, 'w', encoding='utf-8')
-        try:
+        with open(filename, 'w', encoding='utf-8') as f:
             config.write(f)
-        finally:
-            f.close()
