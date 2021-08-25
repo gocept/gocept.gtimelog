@@ -25,17 +25,19 @@ setup(
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: GNU General Public License (GPL)',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Office/Business',
     ],
-    python_requires='< 3.0',
+    python_requires='>=3.7',
 
     include_package_data=True,
     install_requires=[
-        'BeautifulSoup',
+        'beautifulSoup4',
         'gocept.collmex>=1.2',
-        'pyactiveresource<1.2',
+        'pyactiveresource>=2.1',
         'setuptools',
         'soupsieve < 2',  # PY2
         'transaction',

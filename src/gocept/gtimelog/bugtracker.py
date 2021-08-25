@@ -65,7 +65,7 @@ class Bugtrackers(object):
                     matches.append((len(p), tracker))
         if not matches:
             return
-        matches.sort()
+        matches.sort(key=lambda x: x[0])
         return matches[-1][1]
 
     @staticmethod
@@ -93,7 +93,7 @@ class Bugtrackers(object):
 
             try:
                 tracker.update_entry(entry)
-            except Exception, e:
+            except Exception as e:
                 log.error(
                     'Error updating #%s (%s)' % (entry.issue, entry.date),
                     exc_info=True)

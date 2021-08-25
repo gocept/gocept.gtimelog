@@ -4,8 +4,18 @@ Changelog
 3.0 (unreleased)
 ----------------
 
+Backwards incompatible changes
+++++++++++++++++++++++++++++++
+
 - Remove the GTK-GUI from this package. Use the upstream
   https://github.com/gtimelog/gtimelog for GUI from now on.
+
+- Drop support for Python 2.7.
+
+Features
+++++++++
+
+- Add support for Python 3.7, 3.8, 3.9.
 
 
 2.0 (2021-04-07)

@@ -122,7 +122,7 @@ class Collmex(object):
         try:
             project = match(parts[0].strip(), self.projects)
             task = match(parts[1].strip(), project.references)
-        except ValueError, e:
+        except ValueError as e:
             message = e.args[0]
             raise ValueError("While mapping '%s': %s" % (entry, message))
         desc = ':'.join(parts[2:]).strip()
@@ -187,22 +187,21 @@ class TaskList(gocept.gtimelog.core.TaskList):
         products = dict((p['Produktnummer'], p) for p in
                         collmex.get_products())
         lang = self.settings.collmex_task_language
-        tasks = open(self.filename, 'w')
-        for project in projects:
-            product = products.get(project['Produktnummer'])
+        with open(self.filename, 'w') as tasks:
+            for project in projects:
+                product = products.get(project['Produktnummer'])
 
-            if (project['Abgeschlossen'] != u'0' or
-                    project['Inaktiv'] != u'0' or
-                    product['Inaktiv'] is not None):
-                continue
-            if lang != 'de' and product and product['Bezeichnung Eng']:
-                task_desc = product['Bezeichnung Eng']
-            else:
-                task_desc = project['Satz Bezeichnung']
-            tasks.write((
-                u'%s: %s\n' % (project['Bezeichnung'],
-                               task_desc)).encode('utf-8'))
-        tasks.close()
+                if (project['Abgeschlossen'] != u'0'
+                        or project['Inaktiv'] != u'0'
+                        or product['Inaktiv'] is not None):
+                    continue
+                if lang != 'de' and product and product['Bezeichnung Eng']:
+                    task_desc = product['Bezeichnung Eng']
+                else:
+                    task_desc = project['Satz Bezeichnung']
+                tasks.write((
+                    u'%s: %s\n' % (project['Bezeichnung'],
+                                   task_desc)).encode('utf-8'))
 
     def reload(self):
         self.download()

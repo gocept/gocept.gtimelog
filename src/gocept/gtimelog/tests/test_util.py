@@ -14,7 +14,7 @@ from gocept.gtimelog.util import parse_datetime
 from gocept.gtimelog.util import parse_time
 from gocept.gtimelog.util import uniq
 from gocept.gtimelog.util import virtual_day
-import StringIO
+from io import StringIO
 import unittest
 
 
@@ -87,7 +87,7 @@ class UtilityFunctions(unittest.TestCase):
     def test_weekly_report(self):
         timewindow = TimeWindow("", datetime(2005, 2, 3, 1, 15),
                                 datetime(2005, 2, 3, 2, 15), time(2, 0))
-        output = StringIO.StringIO()
+        output = StringIO()
         timewindow.weekly_report(output,
                                  "somebody@example.com",
                                  "Somebody")

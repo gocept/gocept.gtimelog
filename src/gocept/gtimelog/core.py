@@ -3,7 +3,7 @@
 
 from gocept.gtimelog.util import different_days
 from gocept.gtimelog.util import format_duration_long
-import ConfigParser
+import configparser
 import datetime
 import gocept.gtimelog.util
 import logging
@@ -42,7 +42,7 @@ class TimeWindow(object):
         """Parse the time log file and update self.items."""
         self.items = []
         try:
-            f = open(self.filename)
+            f = open(self.filename, encoding='utf-8')
         except IOError:
             return
         line = ''
@@ -55,7 +55,7 @@ class TimeWindow(object):
             except ValueError:
                 continue
             else:
-                entry = unicode(entry.strip(), 'utf-8')
+                entry = entry.strip()
                 if callback:
                     callback(entry)
                 if self.min_timestamp <= time < self.max_timestamp:
@@ -155,12 +155,9 @@ class TimeWindow(object):
                     start = min(start, old_start)
                     duration += old_duration
                 entries[entry] = (start, entry, duration)
-        work = work.values()
-        work.sort()
-        slack = slack.values()
-        slack.sort()
-        hold = hold.values()
-        hold.sort()
+        work = sorted(work.values())
+        slack = sorted(slack.values())
+        hold = sorted(hold.values())
         return work, slack, hold
 
     def totals(self, split_intern_customer=False):
@@ -218,9 +215,9 @@ class TimeWindow(object):
 
     def icalendar(self, output):
         """Create an iCalendar file with activities."""
-        print >> output, "BEGIN:VCALENDAR"
-        print >> output, "PRODID:-//mg.pov.lt/NONSGML GTimeLog//EN"
-        print >> output, "VERSION:2.0"
+        print("BEGIN:VCALENDAR", file=output)
+        print("PRODID:-//mg.pov.lt/NONSGML GTimeLog//EN", file=output)
+        print("VERSION:2.0", file=output)
         try:
             import socket
             idhost = socket.getfqdn()
@@ -228,16 +225,17 @@ class TimeWindow(object):
             idhost = 'localhost'
         dtstamp = datetime.datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
         for start, stop, duration, entry in self.all_entries():
-            print >> output, "BEGIN:VEVENT"
-            print >> output, "UID:%s@%s" % (hash((start, stop, entry)), idhost)
-            print >> output, "SUMMARY:%s" % (entry.replace('\\', '\\\\')
-                                                  .replace(';', '\\;')
-                                                  .replace(',', '\\,'))
-            print >> output, "DTSTART:%s" % start.strftime('%Y%m%dT%H%M%S')
-            print >> output, "DTEND:%s" % stop.strftime('%Y%m%dT%H%M%S')
-            print >> output, "DTSTAMP:%s" % dtstamp
-            print >> output, "END:VEVENT"
-        print >> output, "END:VCALENDAR"
+            print("BEGIN:VEVENT", file=output)
+            print("UID:%s@%s" % (hash((start, stop, entry)), idhost),
+                  file=output)
+            print("SUMMARY:%s" % (entry.replace('\\', '\\\\')
+                                  .replace(';', '\\;')
+                                  .replace(',', '\\,')), file=output)
+            print("DTSTART:%s" % start.strftime('%Y%m%dT%H%M%S'), file=output)
+            print("DTEND:%s" % stop.strftime('%Y%m%dT%H%M%S'), file=output)
+            print("DTSTAMP:%s" % dtstamp, file=output)
+            print("END:VEVENT", file=output)
+        print("END:VCALENDAR", file=output)
 
     def daily_report(self, output, email, who):
         """Format a daily report.
@@ -249,39 +247,41 @@ class TimeWindow(object):
         weekday_names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         weekday = weekday_names[self.min_timestamp.weekday()]
         week = self.min_timestamp.strftime('%V')
-        print >> output, "To: %(email)s" % {'email': email}
-        print >> output, ("Subject: %(date)s report for %(who)s"
-                          " (%(weekday)s, week %(week)s)"
-                          % {'date': self.min_timestamp.strftime('%Y-%m-%d'),
-                             'weekday': weekday, 'week': week, 'who': who})
-        print >> output
+        print("To: %(email)s" % {'email': email}, file=output)
+        print(("Subject: %(date)s report for %(who)s"
+               " (%(weekday)s, week %(week)s)"
+               % {'date': self.min_timestamp.strftime('%Y-%m-%d'),
+                  'weekday': weekday, 'week': week, 'who': who}), file=output)
+        print(file=output)
         items = list(self.all_entries())
         if not items:
-            print >> output, "No work done today."
+            print("No work done today.", file=output)
             return
         start, stop, duration, entry = items[0]
         entry = entry[:1].upper() + entry[1:]
-        print >> output, "%s at %s" % (entry, start.strftime('%H:%M'))
-        print >> output
+        print("%s at %s" % (entry, start.strftime('%H:%M')), file=output)
+        print(file=output)
         work, slack, hold = self.grouped_entries()
         total_work, total_slacking, total_holidays = self.totals()
         if work:
             for start, entry, duration in work:
                 entry = entry[:1].upper() + entry[1:]
-                print >> output, "%-62s  %s" % (entry,
-                                                format_duration_long(duration))
-            print >> output
-        print >> output, ("Total work done: %s" %
-                          format_duration_long(total_work))
-        print >> output
+                print("%-62s  %s" % (entry,
+                                     format_duration_long(duration)),
+                      file=output)
+            print(file=output)
+        print(("Total work done: %s" %
+               format_duration_long(total_work)), file=output)
+        print(file=output)
         if slack:
             for start, entry, duration in slack:
                 entry = entry[:1].upper() + entry[1:]
-                print >> output, "%-62s  %s" % (entry,
-                                                format_duration_long(duration))
-            print >> output
-        print >> output, ("Time spent slacking: %s" %
-                          format_duration_long(total_slacking))
+                print("%-62s  %s" % (entry,
+                                     format_duration_long(duration)),
+                      file=output)
+            print(file=output)
+        print(("Time spent slacking: %s" %
+               format_duration_long(total_slacking)), file=output)
 
     def daily_report_timeline(self, output, email, who):
         """Format a daily report with your timeline entries."""
@@ -290,30 +290,30 @@ class TimeWindow(object):
         weekday_names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         weekday = weekday_names[self.min_timestamp.weekday()]
         week = self.min_timestamp.strftime('%V')
-        print >> output, ("%(date)s report for %(who)s"
-                          " (%(weekday)s, week %(week)s)"
-                          % {'date': self.min_timestamp.strftime('%Y-%m-%d'),
-                             'weekday': weekday, 'week': week, 'who': who})
-        print >> output
+        print(("%(date)s report for %(who)s"
+               " (%(weekday)s, week %(week)s)"
+               % {'date': self.min_timestamp.strftime('%Y-%m-%d'),
+                  'weekday': weekday, 'week': week, 'who': who}), file=output)
+        print(file=output)
         items = list(self.all_entries())
         if not items:
-            print >> output, "No work done today."
+            print("No work done today.", file=output)
             return
         start, stop, duration, entry = items[0]
         for start, stop, duration, entry in items[1:]:
-            print >> output, "%s - %s (%3s): %s" % (
+            print("%s - %s (%3s): %s" % (
                 start.strftime('%H:%M'), stop.strftime('%H:%M'),
-                duration.seconds / 60, entry.encode('utf-8'))
+                duration.seconds / 60, entry.encode('utf-8')), file=output)
         now = datetime.datetime.now()
         if stop.date() == now.date():
-            print >> output, "%s - %s (%3d): **current task**" % (
+            print("%s - %s (%3d): **current task**" % (
                 stop.strftime('%H:%M'), now.strftime('%H:%M'),
-                (now - stop).seconds / 60)
-        print >> output
+                (now - stop).seconds / 60), file=output)
+        print(file=output)
         work, slack, hold = self.grouped_entries()
         total_work, total_slacking, total_holidays = self.totals()
-        print >> output, ("Total work done today:       %s" %
-                          format_duration_long(total_work))
+        print(("Total work done today:       %s" %
+               format_duration_long(total_work)), file=output)
 
     def weekly_report(self, output, email, who, estimated_column=False):
         """Format a weekly report.
@@ -321,19 +321,19 @@ class TimeWindow(object):
         Writes a weekly report template in RFC-822 format to output.
         """
         week = self.min_timestamp.strftime('%V')
-        print >> output, "To: %(email)s" % {'email': email}
-        print >> output, "Subject: Weekly report for %s (week %s)" % (who,
-                                                                      week)
-        print >> output
+        print("To: %(email)s" % {'email': email}, file=output)
+        print("Subject: Weekly report for %s (week %s)" % (who,
+                                                           week), file=output)
+        print(file=output)
         items = list(self.all_entries())
         if not items:
-            print >> output, "No work done this week."
+            print("No work done this week.", file=output)
             return
-        print >> output, " " * 46,
+        print(" " * 46, end=' ', file=output)
         if estimated_column:
-            print >> output, "estimated       actual"
+            print("estimated       actual", file=output)
         else:
-            print >> output, "                time"
+            print("                time", file=output)
         work, slack, hold = self.grouped_entries()
         total_work, total_slacking, total_holidays = self.totals()
         if work:
@@ -344,15 +344,16 @@ class TimeWindow(object):
                     continue  # skip empty "arrival" entries
                 entry = entry[:1].upper() + entry[1:]
                 if estimated_column:
-                    print >> output, ("%-46s  %-14s  %s" %
-                                      (entry, '-',
-                                       format_duration_long(duration)))
+                    print(("%-46s  %-14s  %s" %
+                           (entry, '-',
+                            format_duration_long(duration))), file=output)
                 else:
-                    print >> output, ("%-62s  %s" %
-                                      (entry, format_duration_long(duration)))
-            print >> output
-        print >> output, ("Total work done this week: %s" %
-                          format_duration_long(total_work))
+                    print(("%-62s  %s" %
+                           (entry, format_duration_long(duration))),
+                          file=output)
+            print(file=output)
+        print(("Total work done this week: %s" %
+               format_duration_long(total_work)), file=output)
 
 
 class TimeLog(object):
@@ -389,12 +390,11 @@ class TimeLog(object):
 
     def raw_append(self, line):
         """Append a line to the time log file."""
-        f = open(self.filename, "a")
-        if self.need_space:
-            self.need_space = False
-            print >> f
-        print >> f, line
-        f.close()
+        with open(self.filename, "a") as f:
+            if self.need_space:
+                self.need_space = False
+                print(file=f)
+            print(line, file=f)
 
     def append(self, entry):
         """Append a new entry to the time log."""
@@ -420,12 +420,10 @@ class TimeLog(object):
 
     def pop(self):
         last = self.window.items[-1]
-        f = open(self.filename, 'r')
-        lines = f.readlines()
-        f.close()
-        f = open(self.filename, 'w')
-        f.writelines(lines[:-1])
-        f.close()
+        with open(self.filename, 'r') as f:
+            lines = f.readlines()
+        with open(self.filename, 'w') as f:
+            f.writelines(lines[:-1])
         self.reread()
         return last
 
@@ -483,19 +481,19 @@ class TaskList(object):
         groups = {}
         self.last_mtime = self.get_mtime()
         try:
-            for line in file(self.filename):
-                line = line.strip()
-                if not line or line.startswith('#'):
-                    continue
-                if ':' in line:
-                    group, task = [s.strip() for s in line.split(':', 1)]
-                else:
-                    group, task = self.other_title, line
-                groups.setdefault(group, []).append(task)
+            with open(self.filename, encoding='utf-8') as lines:
+                for line in lines:
+                    line = line.strip()
+                    if not line or line.startswith('#'):
+                        continue
+                    if ':' in line:
+                        group, task = [s.strip() for s in line.split(':', 1)]
+                    else:
+                        group, task = self.other_title, line
+                    groups.setdefault(group, []).append(task)
         except IOError:
             pass  # the file's not there, so what?
-        self.groups = groups.items()
-        self.groups.sort()
+        self.groups = sorted(groups.items())
 
     def reload(self):
         """Reload the task list."""
@@ -535,7 +533,7 @@ class Settings(object):
     redmines = []
 
     def _config(self):
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         config.add_section('gtimelog')
         config.set('gtimelog', 'list-email', self.email)
         config.set('gtimelog', 'name', self.name)
@@ -615,8 +613,5 @@ class Settings(object):
 
     def save(self, filename):
         config = self._config()
-        f = file(filename, 'w')
-        try:
+        with open(filename, 'w', encoding='utf-8') as f:
             config.write(f)
-        finally:
-            f.close()
