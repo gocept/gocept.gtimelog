@@ -72,7 +72,7 @@ def parse_datetime(dt):
     m = re.match(r'^(\d+)-(\d+)-(\d+) (\d+):(\d+)$', dt)
     if not m:
         raise ValueError('bad date time: ', dt)
-    year, month, day, hour, min = map(int, m.groups())
+    year, month, day, hour, min = list(map(int, m.groups()))
     return datetime.datetime(year, month, day, hour, min)
 
 
@@ -92,5 +92,5 @@ def parse_time(t):
     m = re.match(r'^(\d+):(\d+)$', t)
     if not m:
         raise ValueError('bad time: ', t)
-    hour, min = map(int, m.groups())
+    hour, min = list(map(int, m.groups()))
     return datetime.time(hour, min)

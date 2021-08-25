@@ -112,7 +112,7 @@ def main():
     try:
         collmex = gocept.gtimelog.collmex.Collmex(settings)
         collmex.report(window.all_entries())
-    except Exception, exc:
+    except Exception as exc:
         notify(settings, 'error', 'Error filling collmex', exc)
     else:
         notify(settings, 'info', 'Collmex: success')
@@ -122,7 +122,7 @@ def main():
         redupdate = gocept.gtimelog.bugtracker.Bugtrackers(
             settings)
         redupdate.update(window)
-    except Exception, exc:
+    except Exception as exc:
         notify(settings, 'error', 'Error filling Bugtracker', exc)
     else:
         notify(settings, 'info', 'Bugtracker: success')

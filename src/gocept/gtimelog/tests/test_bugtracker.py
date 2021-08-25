@@ -27,7 +27,7 @@ class ConvertTimelogTest(unittest.TestCase):
         settings = type('Dummy', (object,), {})()
         settings.redmines = []
         trackers = gocept.gtimelog.bugtracker.Bugtrackers(settings)
-        return trackers._timelog_to_issues(window)
+        return list(trackers._timelog_to_issues(window))
 
     def test_no_issue_referenced_should_not_show(self):
         window = DummyWindow()

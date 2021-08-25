@@ -122,7 +122,7 @@ class Collmex(object):
         try:
             project = match(parts[0].strip(), self.projects)
             task = match(parts[1].strip(), project.references)
-        except ValueError, e:
+        except ValueError as e:
             message = e.args[0]
             raise ValueError("While mapping '%s': %s" % (entry, message))
         desc = ':'.join(parts[2:]).strip()
