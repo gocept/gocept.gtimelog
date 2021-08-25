@@ -1,10 +1,10 @@
 # Copyright (c) 2012-2013 gocept gmbh & co. kg
 # See also LICENSE.txt
 
-import codecs
-import base64
 from gocept.gtimelog.util import different_days
 from gocept.gtimelog.util import format_duration_long
+import base64
+import codecs
 import configparser
 import datetime
 import gocept.gtimelog.util
