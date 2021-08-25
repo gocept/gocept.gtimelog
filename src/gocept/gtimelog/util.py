@@ -76,6 +76,11 @@ def parse_datetime(dt):
     return datetime.datetime(year, month, day, hour, min)
 
 
+def parse_date(date):
+    """Parse a date instance from 'YYYY-MM-DD' formatted string."""
+    return datetime.date.fromisoformat(date)
+
+
 def virtual_day(dt, virtual_midnight):
     """Return the "virtual day" of a timestamp.
 

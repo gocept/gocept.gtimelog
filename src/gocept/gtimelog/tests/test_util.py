@@ -10,6 +10,7 @@ from gocept.gtimelog.util import different_days
 from gocept.gtimelog.util import format_duration
 from gocept.gtimelog.util import format_duration_long
 from gocept.gtimelog.util import format_duration_short
+from gocept.gtimelog.util import parse_date
 from gocept.gtimelog.util import parse_datetime
 from gocept.gtimelog.util import parse_time
 from gocept.gtimelog.util import uniq
@@ -50,6 +51,13 @@ class UtilityFunctions(unittest.TestCase):
         self.assertEqual(datetime(2005, 2, 3, 2, 13),
                          parse_datetime('2005-02-03 02:13'))
         self.assertRaises(ValueError, lambda: parse_datetime('xyzzy'))
+
+    def test_parse_date(self):
+        self.assertEqual(date(2021, 8, 25), parse_date('2021-08-25'))
+        self.assertRaises(ValueError, lambda: parse_date('2021-08-25 10:00'))
+        self.assertRaises(ValueError, lambda: parse_date('2021-08'))
+        self.assertRaises(ValueError, lambda: parse_date('25.08.2021'))
+        self.assertRaises(ValueError, lambda: parse_date('xyzzy'))
 
     def test_parse_time(self):
         self.assertEqual(time(2, 13), parse_time('02:13'))
