@@ -193,7 +193,7 @@ class TaskList(gocept.gtimelog.core.TaskList):
 
                 if (project['Abgeschlossen'] != u'0'
                         or project['Inaktiv'] != u'0'
-                        or product['Inaktiv'] is not None):
+                        or product['Inaktiv'] != u'0'):
                     continue
                 if lang != 'de' and product and product['Bezeichnung Eng']:
                     task_desc = product['Bezeichnung Eng']

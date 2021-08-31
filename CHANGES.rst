@@ -17,6 +17,12 @@ Features
 
 - Add support for Python 3.7, 3.8, 3.9.
 
+Bug fixes
++++++++++
+
+- Fix collmex tasks download: Probably due to an Collmex API change the task
+  list was empty when newly downloaded.
+
 
 2.0 (2021-04-07)
 ----------------
