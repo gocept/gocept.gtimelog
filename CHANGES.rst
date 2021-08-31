@@ -6,6 +6,12 @@ Changelog
 
 - Nothing changed yet.
 
+Bug fixes
++++++++++
+
+- Fix collmex tasks download: Probably due to an Collmex API change the task
+  list was empty when newly downloaded.
+
 
 2.0 (2021-04-07)
 ----------------
