@@ -199,7 +199,7 @@ class TaskList(gocept.gtimelog.core.TaskList):
                     task_desc = product['Bezeichnung Eng']
                 else:
                     task_desc = project['Satz Bezeichnung']
-                tasks.write((f'{project["Bezeichnung"]}: {task_desc}\n'))
+                tasks.write(f'{project["Bezeichnung"]}: {task_desc}\n')
 
     def reload(self):
         self.download()
