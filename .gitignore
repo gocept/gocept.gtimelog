@@ -20,5 +20,6 @@ lib64
 local
 my-buildout.cfg
 parts
+pyvenv.cfg
 tags
 venv
