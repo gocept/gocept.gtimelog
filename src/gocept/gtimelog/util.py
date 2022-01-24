@@ -1,11 +1,12 @@
 # Copyright (c) 2011 gocept gmbh & co. kg
 # See also LICENSE.txt
 
+from datetime import timedelta
 import datetime
 
 
-def calc_duration(duration):
-    """Calculates duration and returns tuple (h, m)
+def calc_duration(duration: timedelta):
+    """Calculate duration and returns tuple (h, m)
 
     m is always positive, the sign of h indicates positive or negative duration
     """
@@ -32,18 +33,18 @@ def calc_progress(settings, timelog, week_window):
     return week_done, week_exp, week_todo
 
 
-def format_duration(duration):
+def format_duration(duration: timedelta):
     """Format a datetime.timedelta with minute precision."""
     return '%2d h %2d min' % calc_duration(duration)
 
 
 # Propably do not need that. XXX GUI
-def format_duration_short(duration):
+def format_duration_short(duration: timedelta):
     """Format a datetime.timedelta with minute precision."""
     return '%2d:%02d' % calc_duration(duration)
 
 
-def format_duration_long(duration):
+def format_duration_long(duration: timedelta):
     """Format a datetime.timedelta with minute precision, long format."""
     h, m = calc_duration(duration)
     if h and m:
@@ -73,17 +74,17 @@ def different_days(dt1, dt2, virtual_midnight):
                                                              virtual_midnight)
 
 
-def parse_datetime(dt):
+def parse_datetime(dt: str):
     """Parse a datetime instance from 'YYYY-MM-DD HH:MM' formatted string."""
     return datetime.datetime.fromisoformat(dt)
 
 
-def parse_date(date):
+def parse_date(date: str):
     """Parse a date instance from 'YYYY-MM-DD' formatted string."""
     return datetime.date.fromisoformat(date)
 
 
-def parse_time(t):
+def parse_time(t: str):
     """Parse a time instance from 'HH:MM' formatted string."""
     return datetime.time.fromisoformat(t)
 

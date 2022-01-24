@@ -88,9 +88,9 @@ There is the possibility to enable bash completion, see
 gtl-progress
 ++++++++++++
 
-``gtl-progres`` can generate a report of the last time spans. It combines a daily
-report with a weekly, monthly, and yearly report with respect to the
-``engagement`` setting in ``~/.gtimelog/gtimelogrc``.::
+``gtl-progress`` can generate a report of the last time spans. It combines a
+daily report with a weekly, monthly, and yearly report with respect to the
+``engagement`` and ``holidays`` setting in ``~/.gtimelog/gtimelogrc``.::
 
   2021-04-07 report for username (Wed, week 14)
 
@@ -105,6 +105,32 @@ report with a weekly, monthly, and yearly report with respect to the
   Overtime this year:          -32 hours  5 min
 
   Time left at work:           7 hours 30 min (until 15:20)
+
+The following settings have to be set::
+
+- engagement: a comma separated list of monthly hours required to work
+
+    ``engagement = 201, 140, 161, 140, 133, 154, 154, 154, 154, 147, 154, 161``
+
+- holidays: a list of iso dates which should be treated as holidays
+
+    .. code_block::
+
+      holidays =
+        2021-01-01
+        2021-01-06
+        2021-04-02
+        2021-04-04
+        2021-04-05
+        2021-05-01
+        2021-05-13
+        2021-05-23
+        2021-05-24
+        2021-10-03
+        2021-10-31
+        2021-12-24
+        2021-12-25
+        2021-12-26
 
 gtl-updatetasks
 +++++++++++++++
