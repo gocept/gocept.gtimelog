@@ -10,6 +10,9 @@ Bug fixes
 - Fix collmex tasks download: Probably due to an Collmex API change the task
   list was empty when newly downloaded.
 
+- Add ability to start the name of a bugtracker in ``gtimelogrc`` with
+  ``disabled`` so it gets ignored during bugtracker upload.
+
 
 2.0 (2021-04-07)
 ----------------

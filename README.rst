@@ -213,6 +213,16 @@ Unfortunately, the Redmine activity can't be retrieved currently, so the ID to
 use needs to be given in the configuration. You can look it up in the HTML
 source of /issues/123/time_entries/new.
 
+Disabled bug tracker
+--------------------
+
+If you are using the ``#`` prefix for your ticket numbers but do not want to
+upload the hours spent to a bugtracker, use the ``disabled`` prefix. Example::
+
+    [disabled-azure]
+    projects =
+        CUSTOMER_project_2022_
+
 
 Holidays
 --------

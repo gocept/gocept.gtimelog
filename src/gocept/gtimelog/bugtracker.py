@@ -1,6 +1,7 @@
 import collections
 import datetime
 import gocept.gtimelog.redmine
+import gocept.gtimelog.disabled_tracker
 import logging
 import re
 
@@ -54,6 +55,10 @@ class Bugtrackers(object):
                 config['url'], config['api_key'], config['activity'],
                 config['projects'])
             self.trackers.append(redmine)
+        for config in settings.disabled_trackers:
+            disabled = gocept.gtimelog.disabled_tracker.DisabledTracker(
+                config['projects'])
+            self.trackers.append(disabled)
 
     def find_tracker(self, project):
         matches = []  # [(len, match), (len, match), ...]

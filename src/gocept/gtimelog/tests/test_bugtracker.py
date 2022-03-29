@@ -26,6 +26,7 @@ class ConvertTimelogTest(unittest.TestCase):
     def convert(self, window):
         settings = type('Dummy', (object,), {})()
         settings.redmines = []
+        settings.disabled_trackers = []
         trackers = gocept.gtimelog.bugtracker.Bugtrackers(settings)
         return trackers._timelog_to_issues(window)
 
@@ -139,12 +140,15 @@ class FindTrackerTest(unittest.TestCase):
         settings.redmines = [
             Tracker(url='http://1', projects=['as', 'bsdf']),
             Tracker(url='http://2', projects=['asdfg']),
-            Tracker(url='http://3', projects=['asdf', 'b', 'c']),
             Tracker(url='http://4', projects=['asdf']),
             Tracker(url='http://5', projects=['d', 'asdf_']),
             Tracker(url='http://6', projects=['asdf', 'e']),
         ]
+        settings.disabled_trackers = [
+            Tracker(url='http://3', projects=['asdf', 'b', 'c']),
+        ]
         bugtrackers = gocept.gtimelog.bugtracker.Bugtrackers(settings)
         self.assertEqual('http://5', bugtrackers.find_tracker('asdf_g').url)
         self.assertEqual('http://1', bugtrackers.find_tracker('AS_DF').url)
-        self.assertEqual('http://3', bugtrackers.find_tracker('bbsdf').url)
+        # disabled tracker
+        self.assertIsNone(bugtrackers.find_tracker('bbsdf').url)

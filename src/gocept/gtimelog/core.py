@@ -532,6 +532,7 @@ class Settings(object):
     collmex_task_language = 'en'
 
     redmines = []
+    disabled_trackers = []
 
     def _config(self):
         config = ConfigParser.RawConfigParser()
@@ -602,13 +603,16 @@ class Settings(object):
         self.collmex_task_language = config.get('collmex', 'task_language')
 
         for section in config.sections():
-            if not section.startswith('redmine'):
-                continue
-            redmine = dict(config.items(section))
-            if redmine['url'].endswith('/'):
-                redmine['url'] = redmine['url'][:-1]
-            redmine['projects'] = redmine['projects'].split()
-            self.redmines.append(redmine)
+            if section.startswith('redmine'):
+                redmine = dict(config.items(section))
+                if redmine['url'].endswith('/'):
+                    redmine['url'] = redmine['url'][:-1]
+                redmine['projects'] = redmine['projects'].split()
+                self.redmines.append(redmine)
+            if section.startswith('disabled'):
+                disabled = dict(config.items(section))
+                disabled['projects'] = disabled['projects'].split()
+                self.disabled_trackers.append(disabled)
 
     def save(self, filename):
         config = self._config()
