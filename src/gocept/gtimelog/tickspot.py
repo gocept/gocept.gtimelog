@@ -21,7 +21,6 @@ class Tickspot(object):
         self.tickspot_subscription_id = settings.tickspot_subscription_id
         self.projects = self.get_projects_and_tasks()
 
-
     def auth_headers(self):
         user_agent = {"User-Agent": f"Gtimelog User <{self.tickspot_email}>"}
         get_heads = {
@@ -52,7 +51,6 @@ class Tickspot(object):
 
             save_tick_activity(tick_task_id, duration, desc)
 
-
     def get_projects_and_tasks(self):
         # XXX fetch from tickspot
         url = 'https://www.tickspot.com/{self.tickspot_subscription_id}/api/v2/projects.json'
@@ -78,7 +76,6 @@ class Tickspot(object):
             data.update({"notes": notes})
 
         url = 'https://www.tickspot.com/{self.tickspot_subscription_id}/api/v2/entries.json'
-
 
     def mapEntry(self, entry):
         parts = entry.split(':')
